@@ -427,10 +427,27 @@ class GitHubRepository(
 
     private fun fetch(windowStartEpochSeconds: Long, freshness: Freshness): Fetched {
         val since = iso8601(windowStartEpochSeconds)
-        val commits =
+        val upstream =
             get("$API/$REPO/commits?since=$since&per_page=100", freshness)?.let {
                 json.decodeFromString<List<GhCommit>>(it)
             } ?: throw IllegalStateException("commits unavailable")
+
+        // The fork's history is the upstream history with the fork's own work on top, so the same
+        // window is read there too and the two are merged: the fork's own commits are new, and
+        // everything else is a duplicate SHA that [timeline] collapses. A failure here must not
+        // lose the upstream commits, which is why this one is optional where the other is not.
+        val fork =
+            runCatching { get("$API/$FORK_REPO/commits?since=$since&per_page=100", freshness) }
+                .onFailure { e ->
+                    // A cold cache answers FORCE_CACHE with a 504 on every Cached load; see [load]
+                    // for the same guard on the upstream fetch.
+                    if (freshness != Freshness.Cached) {
+                        logW("feed: fork commit fetch failed, showing upstream only", e)
+                    }
+                }
+                .getOrNull()
+                ?.let { runCatching { json.decodeFromString<List<GhCommit>>(it) }.getOrNull() }
+                .orEmpty()
 
         // The repo stats are a nice-to-have; a failure here must not lose the commits.
         val repo =
@@ -438,7 +455,7 @@ class GitHubRepository(
                 .getOrNull()
 
         val total = runCatching { fetchTotalCommits() }.getOrDefault(0L)
-        return Fetched(commits, repo, total)
+        return Fetched(upstream + fork, repo, total)
     }
 
     /**
@@ -926,6 +943,15 @@ class GitHubRepository(
     companion object {
         const val OWNER = "JingMatrix"
         const val REPO = "$OWNER/Vector"
+
+        /**
+         * A fork whose own activity joins the feed beside the upstream's.
+         *
+         * Its history is the upstream history with the fork's work on top, so reading the same
+         * window here contributes only the commits the fork wrote itself; the rest are duplicate
+         * SHAs that [timeline] drops.
+         */
+        const val FORK_REPO = "Lxiaoyao077/Revector"
         const val REPO_URL = "https://github.com/$REPO"
         const val ISSUES_URL = "$REPO_URL/issues"
         const val PULLS_URL = "$REPO_URL/pulls"
