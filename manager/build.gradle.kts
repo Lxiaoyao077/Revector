@@ -70,6 +70,17 @@ android {
         // the daemon are flashed separately, so they can be different builds of the same number.
         // This is what tells them apart, and the status page shows both.
         buildConfigField("String", "VERSION_HASH", """"${versionHashProvider.get()}"""")
+
+        // Which repository this build's update channel belongs to. CI stamps the build with its own
+        // repository (the workflow's VECTOR_BUILD_REPOSITORY, which stays the build's own even for
+        // a pull request from a fork); a local build has neither variable and is a build of
+        // upstream. The update page reads this repository's releases, so a Revector build offers
+        // Revector builds and a Vector build offers Vector builds.
+        buildConfigField(
+            "String",
+            "VECTOR_BUILD_REPOSITORY",
+            """"${project.providers.environmentVariable("VECTOR_BUILD_REPOSITORY").orElse(project.providers.environmentVariable("GITHUB_REPOSITORY")).orElse("JingMatrix/Vector").get()}"""",
+        )
         buildConfigField("String", "MANAGER_PACKAGE_NAME", "\"$defaultManagerPackageName\"")
         buildConfigField("String", "INJECTED_PACKAGE_NAME", "\"$injectedPackageName\"")
 

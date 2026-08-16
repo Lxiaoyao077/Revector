@@ -436,7 +436,7 @@ private fun PullRequestSlot(number: Int?, onOpenUrl: (String) -> Unit) {
                             RoundedCornerShape(4.dp),
                         )
                         .clickable {
-                            onOpenUrl("${GitHubRepository.REPO_URL}/pull/$number")
+                            onOpenUrl("${GitHubRepository.BUILD_REPO_URL}/pull/$number")
                         }
                         .padding(horizontal = PR_CHIP_PADDING, vertical = 2.dp),
             )

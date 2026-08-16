@@ -216,7 +216,7 @@ fun FrameworkUpdateScreen(
                 val html =
                     remember(release?.notesMarkdown) {
                         release?.notesMarkdown?.takeIf { it.isNotBlank() }?.let {
-                            releaseMarkdownToHtml(it, GitHubRepository.REPO_URL)
+                            releaseMarkdownToHtml(it, GitHubRepository.BUILD_REPO_URL)
                         }
                     }
                 when {

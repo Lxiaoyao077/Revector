@@ -9,6 +9,7 @@ import kotlinx.serialization.json.Json
 import okhttp3.CacheControl
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import org.matrix.vector.manager.BuildConfig
 import org.matrix.vector.manager.logE
 import org.matrix.vector.manager.logW
 
@@ -717,7 +718,7 @@ class GitHubRepository(
      * from the same three constants is how the two lists drift apart.
      */
     private fun releaseListJson(freshness: Freshness): String? =
-        runCatching { get("$API/$REPO/releases?per_page=$CANARY_FETCH", freshness) }
+        runCatching { get("$API/$BUILD_REPO/releases?per_page=$CANARY_FETCH", freshness) }
             .onFailure { e -> logW("update: github release list unavailable", e) }
             .getOrNull()
 
@@ -834,11 +835,15 @@ class GitHubRepository(
      * when LSPosed became Vector: this repository's own release list holds `LSPosed-v1.11.0-7209`
      * beside `Vector-v2.0-3021`, so a plain numeric comparison makes the *older* project look four
      * thousand builds newer, and the manager would offer LSPosed 1.11.0 to a Vector device as an
-     * update — a cross-product downgrade, flashed with root. Matching the [ZIP_PREFIX] asset prefix
-     * is what keeps the comparison inside one numbering scheme.
+     * update — a cross-product downgrade, flashed with root. Matching the [ZIP_PREFIX] and
+     * [FORK_ZIP_PREFIX] asset prefixes is what keeps the comparison inside one numbering scheme.
      */
     private fun GhRelease.versionCode(): Long? {
-        val ours = assets.filter { it.name.startsWith(ZIP_PREFIX, ignoreCase = true) }
+        val ours =
+            assets.filter {
+                it.name.startsWith(ZIP_PREFIX, ignoreCase = true) ||
+                    it.name.startsWith(FORK_ZIP_PREFIX, ignoreCase = true)
+            }
         if (ours.isEmpty()) return null
         if (tagName.startsWith(CANARY_TAG_PREFIX)) {
             return tagName.removePrefix(CANARY_TAG_PREFIX).toLongOrNull()
@@ -945,6 +950,20 @@ class GitHubRepository(
         const val REPO = "$OWNER/Vector"
 
         /**
+         * The repository this build's update channel belongs to.
+         *
+         * CI stamps the build with its own repository — `VECTOR_BUILD_REPOSITORY` — so a Revector
+         * build offers Revector builds and a Vector build offers Vector builds, never one
+         * another's. A local build has no such variable and is a build of upstream. Only the
+         * update page reads this: the feed is deliberately both repositories, and the store links
+         * stay the upstream's.
+         */
+        val BUILD_REPO: String = BuildConfig.VECTOR_BUILD_REPOSITORY.ifBlank { REPO }
+
+        /** The update channel's home on the web, for release notes whose links are repository-relative. */
+        val BUILD_REPO_URL = "https://github.com/$BUILD_REPO"
+
+        /**
          * A fork whose own activity joins the feed beside the upstream's.
          *
          * Its history is the upstream history with the fork's work on top, so reading the same
@@ -958,14 +977,15 @@ class GitHubRepository(
         const val DISCUSSIONS_URL = "$REPO_URL/discussions"
 
         /**
-         * The Actions page, filtered the way the project README's build badge filters it.
+         * This build's own Actions page, filtered the way the project README's build badge
+         * filters it.
          *
          * `event:push` and `is:completed` as well as the branch: a run started by hand, or one
          * still going, is not a build anyone should be told to fetch, and the badge is the link
          * that already draws that line.
          */
-        const val CANARY_URL =
-            "$REPO_URL/actions/workflows/core.yml" +
+        val CANARY_URL =
+            "$BUILD_REPO_URL/actions/workflows/core.yml" +
                 "?query=event%3Apush+branch%3Amaster+is%3Acompleted"
         private const val CANARY_TAG_PREFIX = "canary-"
 
@@ -976,6 +996,9 @@ class GitHubRepository(
          * from a different and higher numbering; see `versionCode()`.
          */
         private const val ZIP_PREFIX = "Vector-"
+
+        /** The fork's zips carry its own name; both share the same commit-count numbering. */
+        private const val FORK_ZIP_PREFIX = "Revector-"
 
         /** CI keeps five; a few extra are fetched so a stable release among them costs nothing. */
         private const val CANARY_FETCH = 12
