@@ -1,6 +1,6 @@
 {
-	"version": "v2.2",
-	"versionCode": 3080,
-	"zipUrl": "https://github.com/Lxiaoyao077/Revector/releases/download/v2.2/Revector-v2.2-3080-Release.zip",
+	"version": "v2.3",
+	"versionCode": 3106,
+	"zipUrl": "https://github.com/Lxiaoyao077/Revector/releases/download/v2.3/Revector-v2.3-3106-Release.zip",
 	"changelog": "https://raw.githubusercontent.com/Lxiaoyao077/Revector/master/zygisk/changelog.md"
 }
