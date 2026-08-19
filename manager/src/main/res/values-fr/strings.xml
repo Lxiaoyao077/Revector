@@ -222,7 +222,7 @@
     <string name="canary_after_release">Vous êtes sur une version plus récente que toutes les canary listées ici. La prochaine canary sera construite dessus.</string>
     <string name="canary_build">canary %1$d</string>
     <string name="canary_report_title">Vous avez trouvé quelque chose ?</string>
-    <string name="canary_report_body">Une canary qui déraille, c'est précisément l'intérêt d'en utiliser une — c'est le rapport qui la transforme en correctif. Prenez le ZIP Debug si vous traquez un bogue : il n'est pas minifié, ce qui rend un rapport plus lisible.</string>
+    <string name="canary_report_body">Une canary qui déraille, c\'est précisément l\'intérêt d\'en utiliser une — c\'est le rapport qui la transforme en correctif. Prenez le ZIP Debug si vous traquez un bogue : il n\'est pas minifié, ce qui rend un rapport plus lisible.</string>
     <string name="home_contributors_by_commits">Plus de commits</string>
     <string name="home_contributors_by_recent">Plus récents</string>
     <string name="scope_recommended_only">Ce que le module demande</string>
