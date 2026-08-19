@@ -18,7 +18,6 @@ import java.lang.ref.WeakReference;
 import java.util.Map;
 
 import de.robv.android.xposed.XSharedPreferences;
-import de.robv.android.xposed.XposedBridge;
 
 /**
  * Contains various methods for information about the current app.
@@ -50,8 +49,7 @@ public final class AndroidAppHelper {
 	private static Object createResourcesKey(String resDir, String[] splitResDirs, String[] overlayDirs, String[] libDirs, int displayId, Configuration overrideConfiguration, CompatibilityInfo compatInfo) {
 		try {
 			return newInstance(CLASS_RESOURCES_KEY, resDir, splitResDirs, overlayDirs, libDirs, displayId, overrideConfiguration, compatInfo);
-		} catch (Throwable t) {
-			XposedBridge.log(t);
+		} catch (Throwable ignored) {
 			return null;
 		}
 	}

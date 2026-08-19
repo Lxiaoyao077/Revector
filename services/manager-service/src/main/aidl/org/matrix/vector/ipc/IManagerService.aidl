@@ -73,7 +73,7 @@ interface IManagerService {
      * transaction ids follow declaration order, this number is the only thing standing between a
      * mismatched pair and a call that lands on the wrong method.</p>
      */
-    const int PROTOCOL_VERSION = 1;
+    const int PROTOCOL_VERSION = 2;
 
     /**
      * Which generation of this interface the daemon implements, never below 1.
@@ -387,108 +387,6 @@ interface IManagerService {
      */
     void setStatusNotificationEnabled(boolean enabled);
 
-    /**
-     * Whether the daemon is capturing the verbose log. True on a device where nobody has said
-     * otherwise.
-     *
-     * <p>The stored value, not the value or'd with the build type. It used to be the latter, which
-     * made the setting unwritable on a debug daemon: the manager could never read false, so its
-     * switch snapped back on every tap and had to be greyed out.</p>
-     */
-    boolean isVerboseLogEnabled();
-
-    /**
-     * Sets that, and asks the daemon's log reader to start or stop capturing to match.
-     *
-     * <p>The reader acts on a sentinel written into the log rather than on this call returning, so
-     * capture is not yet in step when this comes back. What is already written stays written; only
-     * what is captured from here on changes.</p>
-     */
-    void setVerboseLogEnabled(boolean enabled);
-
-    // ---- logs -------------------------------------------------------------------------------------
-
-    /**
-     * The part of one of the two logs that is being written right now, read-only, or null when the
-     * daemon holds no descriptor for it.
-     *
-     * <p>One method rather than the two it replaces, because every other call in this group already
-     * takes the same boolean and the single caller was choosing between them by hand.</p>
-     *
-     * <p>The two were not symmetric and still are not: only the modules stream asks the daemon's
-     * log reader to re-open a descriptor it has lost. Levelling that would change when a lost
-     * verbose descriptor is repaired, which is a decision about the log and not one this merge is
-     * entitled to take.</p>
-     */
-    @nullable ParcelFileDescriptor getLiveLogPart(boolean verbose);
-
-    /**
-     * The parts of that log still on disk, oldest first, as bare file names.
-     *
-     * <p>{@link #getLiveLogPart} only ever hands over the part being written, and the daemon keeps
-     * ten, so on a device that has been logging for an hour most of the history was unreachable.
-     * Listed from the log directory rather than from the reader's own record of what it has opened,
-     * so a part the reader never had in hand is still offered. The names carry an ISO-8601
-     * timestamp, which is why this order is chronological.</p>
-     *
-     * <p>This daemon run's parts only. A restart moves the whole log directory aside and starts an
-     * empty one, so the previous run's parts are reachable through {@link #writeBugReport} and
-     * nowhere else.</p>
-     */
-    List<String> getLogParts(boolean verbose);
-
-    /**
-     * Opens one part by a name {@link #getLogParts} returned, read-only.
-     *
-     * <p>Any other name is refused. The name arrives from an unprivileged process and is used to
-     * build a path inside a directory only root can read, so it is checked against that listing
-     * rather than pattern-matched for {@code ..}: traversal and anything outside the log directory
-     * are ruled out by construction.</p>
-     *
-     * @return null for a name that is not one of the current parts, which includes a part that
-     *         rotated away between the two calls
-     */
-    @nullable ParcelFileDescriptor getLogPart(boolean verbose, String name);
-
-    /**
-     * Closes the part being written and opens a fresh one.
-     *
-     * <p><b>Nothing is deleted and nothing is truncated.</b> The closed part stays on disk under
-     * the ten-part limit, stays reachable through {@link #getLogParts} and {@link #getLogPart}, and
-     * still travels in {@link #writeBugReport}. This was called {@code clearLogs}, which is what a
-     * caller offering it to a user will say, and the moment the part list was added that inaccuracy
-     * became a visible contradiction: the user cleared the log and the cleared lines were still one
-     * tap away.</p>
-     *
-     * <p>Answers nothing, and used not to: it returned a boolean that was the constant true, which
-     * the manager read as a success signal, so a rotation that never happened was reported as one
-     * that had. There is nothing truthful to answer - the daemon asks its reader to rotate by
-     * writing a sentinel into the log and does not learn whether it acted. What did happen is
-     * visible in {@link #getLogParts}.</p>
-     */
-    void startNewLogPart(boolean verbose);
-
-    /**
-     * Writes a bug report into {@code zipFd} as a zip.
-     *
-     * <p>Far more than the logs, which is why it is no longer called {@code getLogs} and why the
-     * logs are the last thing added: tombstones and ANR traces, both crash directories, a full
-     * {@code logcat -b all -d} and {@code dmesg}, every root module's prop, remove, disable, update
-     * and sepolicy files, the {@code /proc} maps, mountinfo and status of the daemon and of the
-     * caller, the module database, and the resolved scopes rendered as text. The zip's comment
-     * names the build type, version, version code and build stamp, so an attached archive can be
-     * tied to a binary.</p>
-     *
-     * <p>Synchronous, and the slowest call here by a wide margin - it walks several directories and
-     * forks two commands before it deflates anything. Each side owns its copy of the descriptor and
-     * closes it.</p>
-     *
-     * <p>Errors met while filling the zip are logged and swallowed, so a partial archive arrives
-     * looking exactly like a complete one: this transaction succeeding is not evidence that
-     * everything is in it.</p>
-     */
-    void writeBugReport(in ParcelFileDescriptor zipFd);
-
     // ---- the device, as only a privileged process can see it ---------------------------------------
 
     /**
@@ -700,10 +598,9 @@ interface IManagerService {
      * <p>Returns as soon as the work has been handed to a daemon thread. "The daemon accepted it"
      * and "the flash finished" are therefore two events on two channels, deliberately: a flash runs
      * for minutes and can end in a reboot, and a caller suspended until this returned would be
-     * suspended across that. Output is streamed to {@code receiver} <b>and</b> written to the
-     * daemon's log, so a flash that failed on a device that no longer boots can still be read out
-     * of a saved bug report. A receiver that has gone away does not stop the flash: stopping
-     * halfway would leave the module tree half written.</p>
+     * suspended across that. Output is streamed to {@code receiver} and the flash continues even
+     * after the receiver has gone away: stopping halfway would leave the module tree half
+     * written.</p>
      *
      * @param zipPath  a path the daemon can read; one it cannot is reported as
      *                 {@code IFrameworkInstallReceiver.INSTALL_NO_SUCH_FILE} rather than refused

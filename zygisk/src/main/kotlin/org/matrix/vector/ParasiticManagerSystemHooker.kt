@@ -5,7 +5,6 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Build
 import java.lang.reflect.Field
-import org.matrix.vector.util.Utils
 import org.matrix.vector.impl.hookers.HandleSystemServerProcessHooker
 import org.matrix.vector.impl.hooks.VectorHookBuilder
 import org.matrix.vector.service.BridgeService
@@ -82,12 +81,7 @@ class ParasiticManagerSystemHooker : HandleSystemServerProcessHooker.Callback {
 
                     val originalActivityInfo =
                         result as? ActivityInfo
-                            ?: run {
-                                Utils.logD(
-                                    "Redirection: result is not ActivityInfo (was ${result?.javaClass?.name})"
-                                )
-                                return@intercept result
-                            }
+                            ?: return@intercept result
 
                     // We only intercept if it's currently resolving to the shell/fallback
                     if (originalActivityInfo.packageName != BuildConfig.InjectedPackageName)
@@ -116,10 +110,8 @@ class ParasiticManagerSystemHooker : HandleSystemServerProcessHooker.Callback {
 
                     redirectedInfo
                 }
+        }
 
-                Utils.logD("Successfully hooked Activity Supervisor for Manager redirection.")
-            }
-            .onFailure { Utils.logE("Failed to hook system server activity resolution", it) }
     }
 
     private fun hookSplashScreenSuppression(classLoader: ClassLoader) {
@@ -151,13 +143,11 @@ class ParasiticManagerSystemHooker : HandleSystemServerProcessHooker.Callback {
                         val info = infoField.get(activityRecord) as ActivityInfo
 
                         if (info.processName == BuildConfig.ManagerPackageName) {
-                            Utils.logD("Suppressing Android 12+ Splash Screen for Vector Manager.")
                             return@intercept null
                         }
                         chain.proceed()
                     }
                 }
-                .onFailure { Utils.logE("Failed to hook StartingSurfaceController", it) }
         } else {
             // ---------------------------------------------------------
             // Android 8.1 - 11 (API 27 - 30) - ActivityRecord
@@ -183,13 +173,11 @@ class ParasiticManagerSystemHooker : HandleSystemServerProcessHooker.Callback {
                         val info = infoField.get(activityRecord) as ActivityInfo
 
                         if (info.processName == BuildConfig.ManagerPackageName) {
-                            Utils.logD("Suppressing Legacy Starting Window for Vector Manager.")
                             return@intercept null
                         }
                         chain.proceed()
                     }
                 }
-                .onFailure { Utils.logE("Failed to hook Legacy ActivityRecord", it) }
         }
     }
 }

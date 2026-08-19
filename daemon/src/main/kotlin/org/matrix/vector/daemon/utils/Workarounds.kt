@@ -8,11 +8,8 @@ import android.content.Intent
 import android.content.pm.UserInfo
 import android.os.Build
 import android.os.IUserManager
-import android.util.Log
-import java.lang.ClassNotFoundException
 import org.matrix.vector.daemon.system.*
 
-private const val TAG = "VectorWorkarounds"
 private val isLenovo = Build.MANUFACTURER.equals("lenovo", ignoreCase = true)
 private val isXiaomi = Build.MANUFACTURER.equals("xiaomi", ignoreCase = true)
 
@@ -20,7 +17,6 @@ fun IUserManager.getRealUsers(): List<UserInfo> {
   val users =
       runCatching { getUsers(true, true, true) }
           .recoverCatching { t -> if (t is NoSuchMethodError) getUsers(true) else throw t }
-          .onFailure { Log.e(TAG, "All user retrieval attempts failed", it) }
           .getOrDefault(emptyList())
           .toMutableList()
 
@@ -29,7 +25,6 @@ fun IUserManager.getRealUsers(): List<UserInfo> {
     for (i in 900..909) {
       if (i !in existingIds) {
         runCatching { getUserInfo(i) }
-            .onFailure { Log.e(TAG, "Failed to apply Lenovo's app cloning workaround", it) }
             .getOrNull()
             ?.let { users.add(it) }
       }
@@ -61,18 +56,12 @@ fun applyNotificationWorkaround() {
           val field = feature.getDeclaredField("systemui_is_cached").apply { isAccessible = true }
           field.set(null, true)
         }
-        .onFailure {
-          if (it !is ClassNotFoundException)
-              Log.e(TAG, "Failed to bypass systemui_is_cached flag", it)
-        }
   }
 
   runCatching { Notification.Builder(FakeContext(), "notification_workaround").build() }
       .onFailure {
         if (it is AbstractMethodError) {
           FakeContext.nullProvider = !FakeContext.nullProvider
-        } else {
-          Log.e(TAG, "Failed to build dummy notification", it)
         }
       }
 }
@@ -119,10 +108,8 @@ fun applySqliteHelperWorkaround() {
         // Prevents from calling getPkgs()
         if (syncModeField.get(null) == null) {
           syncModeField.set(null, "NORMAL")
-          Log.i(TAG, "SQLiteGlobal.sDefaultSyncMode initialized to NORMAL.")
         }
       }
-      .onFailure { Log.v(TAG, "SQLiteGlobal workaround not applied: ${it.message}") }
 
   // Fix AOSP Settings.Global dependency (API 28+ but not recent Android versions)
   if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
@@ -140,8 +127,6 @@ fun applySqliteHelperWorkaround() {
             isAccessible = true
             set(null, true)
           }
-          Log.i(TAG, "SQLiteCompatibilityWalFlags successfully bypassed.")
         }
-        .onFailure { Log.v(TAG, "Could not disable SQLiteCompatibilityWalFlags: ${it.message}") }
   }
 }

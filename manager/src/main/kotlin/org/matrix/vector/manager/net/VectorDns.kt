@@ -12,7 +12,6 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.dnsoverhttps.DnsOverHttps
 import org.matrix.vector.manager.data.repository.SettingsRepository
-import org.matrix.vector.manager.logW
 
 /**
  * What the last name lookup of this session actually did.
@@ -40,8 +39,7 @@ sealed interface DohStatus {
      *
      * No hostname here on purpose. What failed is reaching the DoH endpoint; whichever name was
      * being looked up at that moment is incidental — it is simply whatever the app asked for first
-     * — and naming it reads as though that host were the subject of a test. The log line keeps it
-     * for anyone diagnosing; the sheet does not need it.
+     * — and naming it reads as though that host were the subject of a test.
      */
     data class FellBack(val reason: String) : DohStatus
 }
@@ -159,10 +157,6 @@ class VectorDns(private val settings: SettingsRepository, bootstrapClient: OkHtt
                 // OkHttp dispatcher thread, with no coroutine in the stack.
                 dohUnavailable = true
                 _status.value = DohStatus.FellBack(e.describe(hostname))
-                logW(
-                    "dns: DoH lookup of $hostname failed, using the system resolver for this session",
-                    e,
-                )
             }
         }
         // Latched: the status already says why, and repeating it on every name would only replace

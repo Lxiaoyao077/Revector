@@ -74,7 +74,7 @@ data class NavPanels(val order: List<TopLevelDestination>, val hidden: Set<Strin
 
 /**
  * The arrangement as one preference string: keys in order, comma separated, a hidden one prefixed
- * with '!' — `"logs,home,!store,modules"`.
+ * with '!' — `"modules,home,!store"`.
  *
  * One delimited string rather than a set of keys, because `putStringSet` does not preserve order
  * and the order is the whole point. Route keys rather than ordinals or class names, because R8

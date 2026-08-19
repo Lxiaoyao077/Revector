@@ -2,11 +2,8 @@ package org.matrix.vector.daemon.data
 
 import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
-import android.util.Log
 import org.matrix.vector.ipc.ScopeEntry
 import org.matrix.vector.daemon.system.NotificationManager
-
-private const val TAG = "VectorModuleDatabase"
 
 /**
  * The module configuration: what the user asked for.
@@ -256,7 +253,6 @@ object ModuleDatabase {
     ConfigCache.staticScopeOf(packageName)?.let { claimed ->
       val beyond = scope.map { it.packageName }.distinct().filterNot { claimed.contains(it) }
       if (beyond.isNotEmpty()) {
-        Log.w(TAG, "$packageName fixes its scope; refusing to add ${beyond.joinToString()}")
         return false
       }
     }
@@ -293,8 +289,7 @@ object ModuleDatabase {
         db.insertWithOnConflict("scope", null, values, SQLiteDatabase.CONFLICT_IGNORE)
       }
       db.setTransactionSuccessful()
-    } catch (e: Exception) {
-      Log.e(TAG, "Failed to set scope", e)
+    } catch (_: Exception) {
       return false
     } finally {
       db.endTransaction()
@@ -326,7 +321,6 @@ object ModuleDatabase {
                 arrayOf(mid.toString()) + claimed.toTypedArray())
           }
         }
-        .onFailure { Log.e(TAG, "Failed to prune the scope of $packageName", it) }
         .getOrDefault(0)
   }
 

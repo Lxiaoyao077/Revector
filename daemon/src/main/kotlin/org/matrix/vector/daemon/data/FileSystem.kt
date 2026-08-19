@@ -2,18 +2,13 @@ package org.matrix.vector.daemon.data
 
 import android.content.res.AssetManager
 import android.content.res.Resources
-import android.os.Binder
 import android.os.Build
-import android.os.ParcelFileDescriptor
 import android.os.Process
 import android.os.RemoteException
 import android.os.SELinux
 import android.os.SharedMemory
-import android.system.ErrnoException
 import android.system.Os
 import android.system.OsConstants
-import android.util.Log
-import hidden.HiddenApiBridge
 import java.io.File
 import java.io.FileInputStream
 import java.io.InputStream
@@ -25,20 +20,13 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.StandardOpenOption
 import java.nio.file.attribute.PosixFilePermissions
-import java.time.Instant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import java.util.Properties
-import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
-import java.util.zip.ZipOutputStream
 import kotlin.io.path.exists
 import kotlin.io.path.isDirectory
 import org.matrix.vector.ipc.ModuleCode
 import org.matrix.vector.daemon.BuildConfig
 import org.matrix.vector.daemon.utils.ObfuscationManager
-
-private const val TAG = "VectorFileSystem"
 
 /**
  * What came of trying to load a module APK.
@@ -66,8 +54,6 @@ val ModuleLoad.apkOrNull: ModuleCode?
 
 object FileSystem {
   val basePath: Path = Paths.get("/data/adb/lspd")
-  val logDirPath: Path = basePath.resolve("log")
-  val oldLogDirPath: Path = basePath.resolve("log.old")
   val modulePath: Path = basePath.resolve("modules")
   val socketPath: Path = basePath.resolve(".cli_sock")
   val daemonApkPath: Path = Paths.get(System.getProperty("java.class.path", ""))
@@ -77,7 +63,6 @@ object FileSystem {
 
   @Volatile private var preloadDex: SharedMemory? = null
 
-  private val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneId.systemDefault())
   private val lockPath: Path = basePath.resolve("lock")
   private var fileLock: FileLock? = null
   private var lockChannel: FileChannel? = null
@@ -89,7 +74,6 @@ object FileSystem {
           SELinux.setFileContext(basePath.toString(), "u:object_r:system_file:s0")
           Files.createDirectories(configDirPath)
         }
-        .onFailure { Log.e(TAG, "Failed to initialize directories", it) }
   }
 
   fun setupCli(): String {
@@ -100,13 +84,11 @@ object FileSystem {
             cliSource.copyTo(cliDest, overwrite = true)
             Os.chmod(cliDest.absolutePath, "700".toInt(8))
           }
-          .onFailure { Log.e(TAG, "Failed to deploy CLI script", it) }
     }
 
     val cliSocket: String = socketPath.toString()
     val socketFile = File(cliSocket)
     if (socketFile.exists()) {
-      Log.d(TAG, "Existing $cliSocket deleted")
       socketFile.delete()
     }
 
@@ -127,20 +109,6 @@ object FileSystem {
         .getOrDefault(false)
   }
 
-  /** Clears all special file attributes (like immutable) on a directory. */
-  fun chattr0(path: Path): Boolean {
-    return runCatching {
-          val fd = Os.open(path.toString(), OsConstants.O_RDONLY, 0)
-          // 0x40086602 for 64-bit, 0x40046602 for 32-bit (FS_IOC_SETFLAGS)
-          val req = if (Process.is64Bit()) 0x40086602 else 0x40046602
-          HiddenApiBridge.Os_ioctlInt(fd, req, 0)
-          Os.close(fd)
-          true
-        }
-        .recover { e -> if (e is ErrnoException && e.errno == OsConstants.ENOTSUP) true else false }
-        .getOrDefault(false)
-  }
-
   /** Recursively sets SELinux context. Crucial for modules to read their data. */
   fun setSelinuxContextRecursive(path: Path, context: String) {
     runCatching {
@@ -151,7 +119,6 @@ object FileSystem {
             }
           }
         }
-        .onFailure { Log.e(TAG, "Failed to set SELinux context for $path", it) }
   }
 
   /**
@@ -220,13 +187,11 @@ object FileSystem {
               // the user's; the manager's ModuleDetection ignores it too, so the picker it draws
               // and the writes accepted here agree about what the module may hook.
               if (claimed.isEmpty()) {
-                Log.w(TAG, "$apkPath fixes its scope but names nothing; ignoring staticScope")
                 return@use null
               }
               claimed
             }
           }
-          .onFailure { Log.w(TAG, "Cannot read the scope list of $apkPath", it) }
           .getOrNull()
 
   /** Parses the module APK, extracts init lists, and loads DEXes into SharedMemory. */
@@ -256,7 +221,6 @@ object FileSystem {
                     // APK unloadable, not least because a legacy module is selected by
                     // assets/xposed_init and needs no module.prop at all.
                     runCatching { zip.getInputStream(entry).use { load(it) } }
-                        .onFailure { Log.w(TAG, "Malformed module.prop in $apkPath", it) }
                   }
                 }
 
@@ -304,7 +268,6 @@ object FileSystem {
                 readList("assets/native_init", moduleLibraryNames)
               }
               "UNSUPPORTED" -> {
-                Log.w(TAG, "Module $apkPath uses API 100 which is no longer supported.")
                 return ModuleLoad.UnsupportedApi
               }
               else -> return ModuleLoad.Unusable // No valid init files found
@@ -323,7 +286,6 @@ object FileSystem {
           }
         }
         .onFailure {
-          Log.e(TAG, "Failed to load module $apkPath", it)
           return ModuleLoad.Unusable
         }
 
@@ -353,49 +315,12 @@ object FileSystem {
     return ModuleLoad.Loaded(preLoadedApk)
   }
 
-  /** Safely creates the log directory. If a file exists with the same name, it deletes it first. */
-  private fun createLogDirPath() {
-    if (!Files.isDirectory(logDirPath, java.nio.file.LinkOption.NOFOLLOW_LINKS)) {
-      logDirPath.toFile().deleteRecursively()
-    }
-    Files.createDirectories(logDirPath)
-  }
-
-  /**
-   * Rotates the log directory by clearing file attributes (chattr 0), deleting the old backup, and
-   * renaming the current log directory to the backup.
-   */
-  fun moveLogDir() {
-    runCatching {
-          if (Files.exists(logDirPath)) {
-            if (chattr0(logDirPath)) {
-              // Kotlin's deleteRecursively replaces the verbose Java SimpleFileVisitor
-              oldLogDirPath.toFile().deleteRecursively()
-              Files.move(logDirPath, oldLogDirPath)
-            }
-          }
-          Files.createDirectories(logDirPath)
-        }
-        .onFailure { Log.e(TAG, "Failed to move log directory", it) }
-  }
-
-  fun getPropsPath(): File {
-    createLogDirPath()
-    return logDirPath.resolve("props.txt").toFile()
-  }
-
-  fun getKmsgPath(): File {
-    createLogDirPath()
-    return logDirPath.resolve("kmsg.log").toFile()
-  }
-
   @Synchronized
   fun getPreloadDex(obfuscate: Boolean): SharedMemory? {
     if (preloadDex == null) {
       runCatching {
             FileInputStream("framework/vector.dex").use { preloadDex = readDex(it, obfuscate) }
           }
-          .onFailure { Log.e(TAG, "Failed to load framework dex", it) }
     }
     return preloadDex
   }
@@ -496,7 +421,6 @@ object FileSystem {
               dir.toString()
             }
           }
-          .onFailure { Log.e(TAG, "Failed to stage the native libraries of $packageName", it) }
           .getOrNull()
 
   /**
@@ -514,166 +438,10 @@ object FileSystem {
                 .forEach { it.toFile().deleteRecursively() }
           }
         }
-        .onFailure { Log.e(TAG, "Failed to prune staged native libraries", it) }
   }
 
   fun toGlobalNamespace(path: String): File {
     return if (path.startsWith("/")) File("/proc/1/root", path) else File("/proc/1/root/$path")
-  }
-
-  fun getLogs(zipFd: ParcelFileDescriptor) {
-    runCatching {
-          ZipOutputStream(java.io.FileOutputStream(zipFd.fileDescriptor)).use { os ->
-            // The commit, not just the version code: the code is the commit count on master, so
-            // every branch build at the same depth wears the number of an official build it was
-            // never made from. Without it an attached archive cannot be tied to a binary.
-            val comment =
-                "Vector ${BuildConfig.BUILD_TYPE} ${BuildConfig.VERSION_NAME} " +
-                    "(${BuildConfig.VERSION_CODE}) ${BuildConfig.VERSION_HASH}"
-            os.setComment(comment)
-            os.setLevel(java.util.zip.Deflater.BEST_COMPRESSION)
-
-            fun addFile(name: String, file: File) {
-              if (!file.exists() || !file.isFile) return
-              runCatching {
-                    os.putNextEntry(ZipEntry(name))
-                    file.inputStream().use { it.copyTo(os) }
-                    os.closeEntry()
-                  }
-                  .onFailure { Log.e(TAG, "Failed to export $file as $name", it) }
-            }
-
-            fun addDir(basePath: String, dir: File) {
-              if (!dir.exists() || !dir.isDirectory) return
-              dir.walkTopDown()
-                  .filter { it.isFile }
-                  .forEach { file ->
-                    val relativePath = dir.toPath().relativize(file.toPath()).toString()
-                    val entryName =
-                        if (basePath.isEmpty()) relativePath else "$basePath/$relativePath"
-                    addFile(entryName, file)
-                  }
-            }
-
-            fun addProcOutput(name: String, vararg cmd: String) {
-              runCatching {
-                val proc = ProcessBuilder(*cmd).start()
-                os.putNextEntry(ZipEntry(name))
-                proc.inputStream.use { it.copyTo(os) }
-                os.closeEntry()
-              }
-            }
-
-            // Gather system crash traces
-            addDir("tombstones", File("/data/tombstones"))
-            addDir("anr", File("/data/anr"))
-            addDir(
-                "crash_shell",
-                File("/data/data/${BuildConfig.MANAGER_INJECTED_PKG_NAME}/cache/crash"))
-            addDir(
-                "crash_manager",
-                File("/data/data/${BuildConfig.DEFAULT_MANAGER_PACKAGE_NAME}/cache/crash"))
-
-            // Gather system logs directly via shell
-            addProcOutput("full.log", "logcat", "-b", "all", "-d")
-            addProcOutput("dmesg.log", "dmesg")
-
-            // Gather system module states safely
-            val magiskDataDir = File("/data/adb/modules")
-            if (magiskDataDir.exists() && magiskDataDir.isDirectory) {
-              magiskDataDir.listFiles()?.forEach { moduleDir ->
-                val modName = moduleDir.name
-                listOf("module.prop", "remove", "disable", "update", "sepolicy.rule").forEach {
-                  addFile("modules/$modName/$it", File(moduleDir, it))
-                }
-              }
-            }
-
-            // Gather memory/mount info for daemon and caller
-            val proc = File("/proc")
-            arrayOf("self", Binder.getCallingPid().toString()).forEach { pid ->
-              val pidPath = File(proc, pid)
-              listOf("maps", "mountinfo", "status").forEach {
-                addFile("proc/$pid/$it", File(pidPath, it))
-              }
-            }
-
-            // Gather Database and Scopes
-            addFile("modules_config.db", dbPath)
-            runCatching {
-                  val scopes = ConfigCache.state.scopes
-                  Log.d(TAG, "Exporting scopes for ${scopes.size} targets")
-                  os.putNextEntry(ZipEntry("scopes.txt"))
-                  scopes.forEach { (scope, modules) ->
-                    os.write("${scope.processName}/${scope.uid}\n".toByteArray())
-                    modules.forEach { mod ->
-                      os.write("\t${mod.packageName}\n".toByteArray())
-                      mod.code?.moduleClassNames?.forEach { cn ->
-                        os.write("\t\t$cn\n".toByteArray())
-                      }
-                      mod.code?.moduleLibraryNames?.forEach { ln ->
-                        os.write("\t\t$ln\n".toByteArray())
-                      }
-                    }
-                  }
-                  os.closeEntry()
-                }
-                .onFailure { Log.e(TAG, "Failed to export module scopes", it) }
-
-            // Gather daemon logs
-            addDir("log", logDirPath.toFile())
-            addDir("log.old", oldLogDirPath.toFile())
-          }
-        }
-        .onFailure { Log.e(TAG, "Failed to export logs", it) }
-        .also { runCatching { zipFd.close() } }
-  }
-
-  private fun getNewLogFileName(prefix: String): String {
-    return "${prefix}_${formatter.format(Instant.now())}.log"
-  }
-
-  /**
-   * The parts still on disk for one of the two logs, oldest first.
-   *
-   * Read from the directory rather than from LogcatMonitor's LRU so that a manager opened after a
-   * daemon restart still sees the history: the LRU is rebuilt empty, the files are not.
-   */
-  fun listLogParts(verbose: Boolean): List<String> {
-    val prefix = if (verbose) "verbose_" else "modules_"
-    return runCatching {
-          logDirPath
-              .toFile()
-              .listFiles { file -> file.isFile && file.name.startsWith(prefix) && file.name.endsWith(".log") }
-              ?.map { it.name }
-              // The names carry an ISO-8601 timestamp, so lexicographic order is chronological.
-              ?.sorted()
-              .orEmpty()
-        }
-        .getOrDefault(emptyList())
-  }
-
-  /**
-   * Opens one part by name.
-   *
-   * The name arrives from an unprivileged process and is used to build a path inside a directory
-   * only root can read, so it is never trusted: it has to be one of the names [listLogParts] just
-   * returned, which rules out traversal and anything outside the log directory by construction
-   * rather than by pattern-matching for "..".
-   */
-  fun openLogPart(verbose: Boolean, name: String): File? {
-    if (name !in listLogParts(verbose)) return null
-    return logDirPath.resolve(name).toFile().takeIf { it.isFile }
-  }
-
-  fun getNewVerboseLogPath(): File {
-    createLogDirPath()
-    return logDirPath.resolve(getNewLogFileName("verbose")).toFile()
-  }
-
-  fun getNewModulesLogPath(): File {
-    createLogDirPath()
-    return logDirPath.resolve(getNewLogFileName("modules")).toFile()
   }
 
   // Matches the manager's leading-integer parsing, including values such as "101.0".

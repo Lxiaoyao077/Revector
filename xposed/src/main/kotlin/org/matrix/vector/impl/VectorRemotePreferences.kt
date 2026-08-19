@@ -9,7 +9,6 @@ import java.util.TreeMap
 import java.util.concurrent.ConcurrentHashMap
 import org.matrix.vector.ipc.IModuleService
 import org.matrix.vector.ipc.IRemotePreferenceCallback
-import org.matrix.vector.util.Log
 
 @Suppress("DEPRECATION", "UNCHECKED_CAST")
 private inline fun <reified T> Bundle.getSerializableCompat(key: String): T? {
@@ -81,7 +80,6 @@ internal class VectorRemotePreferences(service: IModuleService, group: String) :
                 }
             }
         } catch (e: RemoteException) {
-            Log.e("VectorContext", "Failed to request remote preferences for group: $group", e)
             throw XposedFrameworkError("Remote preferences IPC failure", e)
         }
     }

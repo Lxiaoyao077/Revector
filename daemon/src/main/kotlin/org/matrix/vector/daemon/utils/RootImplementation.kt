@@ -1,13 +1,10 @@
 package org.matrix.vector.daemon.utils
 
-import android.util.Log
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
 import org.matrix.vector.ipc.IFrameworkInstallReceiver
 import org.matrix.vector.ipc.IManagerService
-
-private const val TAG = "VectorRootInstaller"
 
 /**
  * Which root implementation is managing this device, and how to flash through it.
@@ -60,12 +57,10 @@ object RootImplementation {
     if (found.size > 1) {
       // Not a failure to detect — a device with two root implementations installed, where
       // flashing through either is a coin toss about which one owns the module tree.
-      Log.w(TAG, "Multiple root implementations: ${found.joinToString { it.version ?: "?" }}")
       return Detection(IManagerService.ROOT_MULTIPLE, found.joinToString { it.version ?: "?" })
     }
 
     val only = found.firstOrNull() ?: return Detection(IManagerService.ROOT_NONE, null)
-    Log.i(TAG, "Root implementation: ${only.version} via ${only.binary}")
     return only
   }
 
@@ -137,11 +132,7 @@ object RootImplementation {
   }
 
   /**
-   * Runs the installer, handing every line to [onLine] and to the daemon's log.
-   *
-   * Both, not either: the screen is where a user reads a failure, and the log is where a
-   * maintainer reads it afterwards from a bug report — including the case where the flash left the
-   * device unable to boot the manager at all.
+   * Runs the installer, handing every line to [onLine].
    *
    * Blocks until the installer exits. The caller runs it off the binder thread.
    */
@@ -149,7 +140,6 @@ object RootImplementation {
     val zip = File(zipPath)
     if (!zip.isFile || !zip.canRead()) {
       val message = "Refusing to flash $zipPath: not a readable file"
-      Log.e(TAG, message)
       onLine(message)
       return IFrameworkInstallReceiver.INSTALL_NO_SUCH_FILE
     }
@@ -158,12 +148,10 @@ object RootImplementation {
         installCommand(zipPath)
             ?: run {
               val message = "No usable root implementation to flash through (code $implementation)"
-              Log.e(TAG, message)
               onLine(message)
               return IFrameworkInstallReceiver.INSTALL_NO_ROOT
             }
 
-    Log.i(TAG, "Flashing ${zip.name} with: ${command.joinToString(" ")}")
     onLine("$ ${command.joinToString(" ")}")
 
     return runCatching {
@@ -172,17 +160,11 @@ object RootImplementation {
           // order they happened in.
           val process = ProcessBuilder(command).redirectErrorStream(true).start()
           BufferedReader(InputStreamReader(process.inputStream)).use { reader ->
-            reader.lineSequence().forEach { line ->
-              Log.i(TAG, line)
-              onLine(line)
-            }
+            reader.lineSequence().forEach(onLine)
           }
-          val exit = process.waitFor()
-          Log.i(TAG, "Installer exited with $exit")
-          exit
+          process.waitFor()
         }
         .getOrElse {
-          Log.e(TAG, "Installer could not be started", it)
           onLine("Could not start the installer: ${it.message}")
           IFrameworkInstallReceiver.INSTALL_NOT_EXECUTED
         }

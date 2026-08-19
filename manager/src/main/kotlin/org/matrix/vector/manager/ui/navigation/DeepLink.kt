@@ -158,7 +158,6 @@ object DeepLink {
         // no screen to open and guessing at one would be worse than ignoring the request.
         return when (data.toString()) {
             "modules" -> PendingDestination(TopLevelRoute.Modules)
-            "logs" -> PendingDestination(TopLevelRoute.Logs)
             "repo" -> PendingDestination(TopLevelRoute.Store)
             else -> null
         }

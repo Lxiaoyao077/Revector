@@ -1,5 +1,4 @@
 package org.matrix.vector.manager.ui.screens.home
-import kotlinx.coroutines.CancellationException
 import org.matrix.vector.manager.data.repository.FrameworkUpdateState
 import org.matrix.vector.manager.data.repository.LaunchShortcut
 import org.matrix.vector.manager.data.repository.ManagerInstallStep
@@ -26,8 +25,6 @@ import org.matrix.vector.manager.data.github.GitHubRepository
 import org.matrix.vector.manager.data.model.ManagerCopy
 import org.matrix.vector.manager.di.ServiceLocator
 import org.matrix.vector.manager.ipc.DaemonClient
-import org.matrix.vector.manager.logE
-import org.matrix.vector.manager.logW
 import org.matrix.vector.manager.ui.components.FrameworkState
 
 /** A specific reason the framework is degraded, so the UI never has to say merely "something". */
@@ -394,29 +391,11 @@ class HomeViewModel(
 
         val versionName = daemon.getFrameworkVersionName().getOrNull()
         val commit = daemon.getBuildStamp().getOrNull()
-        val versionCode =
-            daemon
-                .getFrameworkVersionCode()
-                .onFailure { e ->
-                    logW("status: framework version code unavailable, update check skipped", e)
-                }
-                .getOrDefault(0L)
+        val versionCode = daemon.getFrameworkVersionCode().getOrDefault(0L)
         val api = daemon.getLibxposedApiVersion().getOrNull()
 
-        // One line for both, because they fail together on a wedged binder and only these two
-        // defaults synthesise a red HealthIssue card.
-        val sepolicyResult = daemon.isSepolicyLoaded()
-        val systemServerResult = daemon.isSystemServerAttached()
-        val healthFailure = sepolicyResult.exceptionOrNull() ?: systemServerResult.exceptionOrNull()
-        if (healthFailure != null && healthFailure !is CancellationException) {
-            logW(
-                "status: framework health read failed, defaulting to sepolicy/system_server " +
-                    "not loaded",
-                healthFailure,
-            )
-        }
-        val sepolicy = sepolicyResult.getOrDefault(false)
-        val systemServer = systemServerResult.getOrDefault(false)
+        val sepolicy = daemon.isSepolicyLoaded().getOrDefault(false)
+        val systemServer = daemon.isSystemServerAttached().getOrDefault(false)
         val dex2oat = daemon.getDex2OatWrapperState().getOrDefault(IManagerService.DEX2OAT_OK)
         val inliningDisabled = daemon.isDex2OatInliningDisabled().getOrDefault(true)
 
@@ -524,8 +503,8 @@ class HomeViewModel(
      */
     private suspend fun refreshToggles() {
         // Nothing to ask and nothing gained by asking: with no binder both reads fail without
-        // leaving the process, and the log fills with unreadable-toggle warnings about a framework
-        // that is simply not running.
+        // leaving the process, and there is nothing to do about a framework that is simply not
+        // running.
         if (!daemon.isAlive) return
         daemon
             .isStatusNotificationEnabled()
@@ -545,13 +524,9 @@ class HomeViewModel(
                     it.copy(notificationEnabled = enabled, notificationKnown = true)
                 }
             }
-            .onFailure { e -> logW("status: notification toggle unread", e) }
         // Read rather than assumed: this one is a global system setting, so anything on the device
         // can have moved it since the manager last wrote it.
-        daemon
-            .isForcedLauncherIcons()
-            .onSuccess { _hiddenIcon.value = it }
-            .onFailure { e -> logW("status: launcher-icon toggle unread", e) }
+        daemon.isForcedLauncherIcons().onSuccess { _hiddenIcon.value = it }
     }
 
     fun setStatusNotification(enabled: Boolean) {
@@ -567,9 +542,6 @@ class HomeViewModel(
                     _presence.update {
                         it.copy(notificationEnabled = enabled, notificationKnown = true)
                     }
-                }
-                .onFailure { e ->
-                    logE("framework: setting the status notification to $enabled failed", e)
                 }
         }
     }

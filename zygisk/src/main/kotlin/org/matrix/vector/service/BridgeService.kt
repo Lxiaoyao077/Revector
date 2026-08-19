@@ -8,7 +8,6 @@ import android.os.Parcel
 import hidden.HiddenApiBridge.Binder_allowBlocking
 import hidden.HiddenApiBridge.Context_getActivityToken
 import org.matrix.vector.ipc.IVectorDaemon
-import org.matrix.vector.util.Log
 
 /**
  * Manages manual Binder transactions for the Vector framework.
@@ -19,7 +18,6 @@ import org.matrix.vector.util.Log
 object BridgeService {
     private const val TRANSACTION_CODE =
         ('_'.code shl 24) or ('V'.code shl 16) or ('E'.code shl 8) or 'C'.code
-    private const val TAG = "VectorZygiskBridge"
 
     /** Actions supported by the manual IPC bridge. */
     private enum class Action {
@@ -34,7 +32,6 @@ object BridgeService {
 
     /** Cleans up service references if the remote Vector daemon crashes. */
     private val serviceRecipient: DeathRecipient = DeathRecipient {
-        Log.e(TAG, "Vector daemin service died.")
         serviceBinder?.unlinkToDeath(this.serviceRecipient, 0)
         serviceBinder = null
         service = null
@@ -49,10 +46,7 @@ object BridgeService {
      * @param binder The raw binder for [IVectorDaemon].
      */
     private fun receiveFromBridge(binder: IBinder?) {
-        if (binder == null) {
-            Log.e(TAG, "Received null binder from bridge.")
-            return
-        }
+        if (binder == null) return
 
         // Cleanup old death recipient if we are re-initializing
         val token = Binder.clearCallingIdentity()
@@ -68,7 +62,6 @@ object BridgeService {
         service = IVectorDaemon.Stub.asInterface(blockingBinder)
 
         runCatching { blockingBinder.linkToDeath(serviceRecipient, 0) }
-            .onFailure { Log.e(TAG, "Failed to link to service death", it) }
 
         // Provide the system context to the service so it can manage system-wide states
         runCatching {
@@ -78,9 +71,6 @@ object BridgeService {
                 val systemCtx = activityThread.systemContext
                 service?.dispatchSystemServerContext(atBinder, Context_getActivityToken(systemCtx))
             }
-            .onFailure { Log.e(TAG, "Failed to dispatch system context", it) }
-
-        Log.i(TAG, "Vector daemin service binder linked.")
     }
 
     /** Handles manual parcel transactions. Called via reflection/JNI from the native hook. */
@@ -89,8 +79,6 @@ object BridgeService {
         return try {
             val actionIdx = data.readInt()
             val action = Action.values().getOrElse(actionIdx) { Action.UNKNOWN }
-
-            Log.d(TAG, "onTransact: action=$action, callerUid=${Binder.getCallingUid()}")
 
             when (action) {
                 Action.SEND_BINDER -> {
@@ -121,8 +109,7 @@ object BridgeService {
                 }
                 else -> false
             }
-        } catch (e: Throwable) {
-            Log.e(TAG, "Error handling bridge transaction", e)
+        } catch (_: Throwable) {
             false
         }
     }
@@ -145,7 +132,6 @@ object BridgeService {
         val reply = replyObj.asParcel()
 
         if (data == null || reply == null) {
-            Log.w(TAG, "Transaction dropped: null parcel pointers.")
             return false
         }
 
@@ -156,7 +142,6 @@ object BridgeService {
                 reply.setDataPosition(0)
                 reply.writeException(e)
             }
-            Log.e(TAG, "Exception during execTransact", e)
             true // We handled it, even if by returning an exception
         } finally {
             data.recycle()

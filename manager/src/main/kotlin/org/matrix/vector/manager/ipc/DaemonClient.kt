@@ -7,8 +7,6 @@ import org.matrix.vector.ipc.IFrameworkInstallReceiver
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import org.matrix.vector.ipc.IManagerService
-import org.matrix.vector.manager.logE
-import org.matrix.vector.manager.logW
 
 /**
  * Every call the manager makes to the daemon, as coroutines.
@@ -45,7 +43,6 @@ class DaemonClient(private val serviceState: StateFlow<IManagerService?>) {
                 // RuntimeException thrown while unparcelling a large ParcelableListSlice are all
                 // reachable here, and any of them escaping fails the calling coroutine — which for
                 // an unhandled failure in a viewModelScope means the process goes down.
-                logW("ipc: daemon transaction failed", e)
                 Result.failure(e)
             }
         }
@@ -112,14 +109,7 @@ class DaemonClient(private val serviceState: StateFlow<IManagerService?>) {
     ): Result<Boolean> {
         val resolved = findAppUi(packageName, userId, companionFirst)
         val target = resolved.getOrNull()
-        if (target == null) {
-            logE(
-                "ipc: open resolved no activity for $packageName in user $userId " +
-                    "(companionFirst=$companionFirst)",
-                resolved.exceptionOrNull(),
-            )
-            return Result.success(false)
-        }
+        if (target == null) return Result.success(false)
         return runIpc { service ->
             val code =
                 service.startActivityAsUser(
@@ -138,14 +128,7 @@ class DaemonClient(private val serviceState: StateFlow<IManagerService?>) {
             // refusals occupy -100 to -1, and 100 to 199 is the non-fatal error band —
             // START_SWITCHES_CANCELED (100), START_RETURN_LOCK_TASK_MODE_VIOLATION (101),
             // START_ABORTED (102) — where nothing came up either.
-            val started = code in 0..99
-            if (!started) {
-                logE(
-                    "ipc: ${target.packageName}/${target.name} refused by the activity manager " +
-                        "in user $userId (code $code)",
-                )
-            }
-            started
+            code in 0..99
         }
     }
 
@@ -213,49 +196,6 @@ class DaemonClient(private val serviceState: StateFlow<IManagerService?>) {
         it.setStatusNotificationEnabled(enabled)
     }
 
-    suspend fun isVerboseLogEnabled(): Result<Boolean> = runIpc { it.isVerboseLogEnabled }
-
-    suspend fun setVerboseLogEnabled(enabled: Boolean): Result<Unit> = runIpc { it.setVerboseLogEnabled(enabled)
-    }
-
-    /**
-     * The rotated parts the daemon still holds for one of the two logs, oldest first.
-     *
-     * Empty against a daemon too old to answer the call, in which case the manager shows the live
-     * part alone.
-     */
-    suspend fun getLogParts(verbose: Boolean): Result<List<String>> = runIpc {
-        it.getLogParts(verbose).orEmpty()
-    }
-
-    suspend fun getLogPart(
-        verbose: Boolean,
-        name: String,
-    ): Result<android.os.ParcelFileDescriptor?> = runIpc { it.getLogPart(verbose, name) }
-
-    /**
-     * The part currently being written, or `null` when the daemon has not opened one yet.
-     *
-     * The AIDL returns a platform type, so the nullability is spelled out in the type parameter:
-     * "the daemon is unreachable" and "there is no log file yet" are different situations, the Logs
-     * screen renders them differently, and a `Result<ParcelFileDescriptor>` would collapse them.
-     */
-    suspend fun getLiveLogPart(verbose: Boolean): Result<android.os.ParcelFileDescriptor?> = runIpc {
-        it.getLiveLogPart(verbose)
-    }
-
-    /**
-     * Closes the part being written and opens a fresh one. Nothing is deleted.
-     *
-     * `Result<Unit>` because there is nothing truthful to answer: the daemon asks its log reader to
-     * rotate by writing a sentinel and never learns whether it acted. The call used to answer a
-     * constant `true`, which the Logs screen read as a success signal — so a rotation that never
-     * happened was reported as one that had. Success here means the daemon took the request.
-     */
-    suspend fun startNewLogPart(verbose: Boolean): Result<Unit> = runIpc {
-        it.startNewLogPart(verbose)
-    }
-
     suspend fun forceStopPackage(packageName: String, userId: Int): Result<Unit> = runIpc { it.forceStopPackage(packageName, userId)
     }
 
@@ -279,16 +219,6 @@ class DaemonClient(private val serviceState: StateFlow<IManagerService?>) {
 
     suspend fun optimizePackage(packageName: String): Result<Boolean> = runIpc {
         it.optimizePackage(packageName)
-    }
-
-    /**
-     * Writes the daemon's bug report into [zipFd].
-     *
-     * More than the logs: the daemon adds tombstones, ANR traces, both crash directories, a full
-     * logcat and dmesg, the module database and the resolved scopes.
-     */
-    suspend fun writeBugReportTo(zipFd: android.os.ParcelFileDescriptor): Result<Unit> = runIpc {
-        it.writeBugReport(zipFd)
     }
 
     /**

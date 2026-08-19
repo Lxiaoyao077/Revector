@@ -6,12 +6,9 @@ import android.os.IBinder
 import android.os.IServiceCallback
 import android.os.Parcel
 import android.os.ServiceManager
-import android.util.Log
 import org.matrix.vector.ipc.IFrameworkService
 import org.matrix.vector.daemon.*
 import org.matrix.vector.daemon.system.getSystemServiceManager
-
-private const val TAG = "VectorSystemServer"
 
 /**
  * The daemon's end of the one handshake system_server gets.
@@ -30,9 +27,6 @@ object SystemServerService : Binder(), IBinder.DeathRecipient {
   var systemServerRequested = false
 
   fun registerProxyService(serviceName: String) {
-    // Register as the service name early to setup an IPC for `system_server`.
-    Log.d(TAG, "Registering bridge service for `system_server` with name `$serviceName`.")
-
     // `IServiceManager.registerForNotifications` is only available since Android R.
     // On older platforms we simply let the real service replace our proxy in servicemanager.
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -42,7 +36,6 @@ object SystemServerService : Binder(), IBinder.DeathRecipient {
             // allowing us to capture it and then naturally stop intercepting traffic.
             override fun onRegistration(name: String, binder: IBinder?) {
               if (name == serviceName && binder != null && binder !== this@SystemServerService) {
-                Log.d(TAG, "Intercepted system service registration with name `$name`")
                 originService = binder
                 runCatching { binder.linkToDeath(this@SystemServerService, 0) }
               }
@@ -51,7 +44,6 @@ object SystemServerService : Binder(), IBinder.DeathRecipient {
             override fun asBinder(): IBinder = this
           }
       runCatching { getSystemServiceManager().registerForNotifications(serviceName, callback) }
-          .onFailure { Log.e(TAG, "Failed to register IServiceCallback", it) }
     }
 
     // The Zygisk module polls this name during `system_server` specialization,
@@ -60,7 +52,6 @@ object SystemServerService : Binder(), IBinder.DeathRecipient {
           ServiceManager.addService(serviceName, this)
           proxyServiceName = serviceName
         }
-        .onFailure { Log.e(TAG, "Failed to register proxy service `$serviceName`", it) }
   }
 
   /**
@@ -90,7 +81,6 @@ object SystemServerService : Binder(), IBinder.DeathRecipient {
     originService?.let {
       // This is unlikely to happen unless system_server restarts / crashes, since we intentionally
       // discard our proxy upon later replacements in registerProxyService.
-      Log.d(TAG, "Forwarding request to real `$proxyServiceName` service.")
       return it.transact(code, data, reply, flags)
     }
 

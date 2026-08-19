@@ -10,8 +10,6 @@ import android.os.Build
 import androidx.core.content.IntentCompat
 import java.util.UUID
 import kotlinx.coroutines.suspendCancellableCoroutine
-import org.matrix.vector.manager.logE
-import org.matrix.vector.manager.logW
 
 /**
  * Asks for an install that replaces whatever copy of the package is already on the device.
@@ -38,7 +36,6 @@ fun PackageInstaller.SessionParams.requestReplaceExisting() {
             val flags = PackageInstaller.SessionParams::class.java.getDeclaredField("installFlags")
             flags.setInt(this, flags.getInt(this) or INSTALL_REPLACE_EXISTING)
         }
-        .onFailure { logW("ipc: install session could not request a replace", it) }
 }
 
 /**
@@ -47,8 +44,7 @@ fun PackageInstaller.SessionParams.requestReplaceExisting() {
  * The verdict arrives as a broadcast, and the receiver is registered here rather than declared:
  * parasitically the manager's manifest is never installed, so a declared receiver would never fire.
  * `STATUS_PENDING_USER_ACTION` is not terminal — it means the system is asking the user, and the
- * real status follows their answer. [onPrompt] is the caller's chance to say so on screen, and
- * [promptFailure] is what to log if the prompt cannot be started.
+ * real status follows their answer. [onPrompt] is the caller's chance to say so on screen.
  *
  * **The UUID in the action is what keeps the verdict ours, and below API 33 nothing else can.** A
  * registered receiver has no exported flag before then, so anything installed can broadcast to one
@@ -69,7 +65,6 @@ fun PackageInstaller.SessionParams.requestReplaceExisting() {
 suspend fun Context.commitForResult(
     session: PackageInstaller.Session,
     sessionId: Int,
-    promptFailure: String,
     onPrompt: () -> Unit = {},
 ): Pair<Int, String?> = suspendCancellableCoroutine { continuation ->
     val action = "$RESULT_ACTION.$sessionId.${UUID.randomUUID()}"
@@ -87,9 +82,8 @@ suspend fun Context.commitForResult(
                     IntentCompat.getParcelableExtra(intent, Intent.EXTRA_INTENT, Intent::class.java)
                         ?.let { confirm ->
                             runCatching {
-                                    startActivity(confirm.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-                                }
-                                .onFailure { logE(promptFailure, it) }
+                                startActivity(confirm.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                            }
                         }
                     return
                 }

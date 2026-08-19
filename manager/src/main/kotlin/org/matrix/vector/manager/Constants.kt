@@ -14,19 +14,6 @@ import org.matrix.vector.manager.di.ServiceLocator
  * breaks the handshake silently, at runtime, with no compile error anywhere.
  */
 object Constants {
-    /**
-     * The only tag the manager logs under, and it is not arbitrary.
-     *
-     * `logcat.cpp` routes any tag beginning `Vector` into the daemon's **verbose** stream, so with
-     * verbose logging on everything logged here appears in the Verbose tab beside the daemon's own
-     * lines and travels in the zip export — the place a reader already looks. A file-local tag
-     * would be ordinary Android practice and would land nowhere; there are none in this app.
-     *
-     * Nothing logs with it directly. [logE], [logW] and [logI] hold it, and the conventions for
-     * what a message says and which level it says it at are documented on them.
-     */
-    const val TAG = "VectorManager"
-
     @JvmStatic
     fun setBinder(binder: IBinder): Boolean {
         // The interface's fully qualified name is its binder descriptor, and this APK can be older
@@ -46,10 +33,6 @@ object Constants {
         // mismatch, so it falls through to binding and lets linkToDeath below report the death.
         val theirDescriptor = runCatching { binder.interfaceDescriptor }.getOrNull()
         if (theirDescriptor != null && theirDescriptor != IManagerService.DESCRIPTOR) {
-            logE(
-                "ipc: the daemon speaks $theirDescriptor, this manager speaks " +
-                    "${IManagerService.DESCRIPTOR}; refusing to bind"
-            )
             ServiceLocator.bindMismatch(theirDescriptor)
             return false
         }
@@ -66,10 +49,6 @@ object Constants {
         // and refused for the right reason.
         val theirProtocol = runCatching { service.protocolVersion }.getOrNull()
         if (theirProtocol != null && theirProtocol != IManagerService.PROTOCOL_VERSION) {
-            logE(
-                "ipc: the daemon speaks protocol $theirProtocol, this manager speaks " +
-                    "${IManagerService.PROTOCOL_VERSION}; refusing to bind"
-            )
             ServiceLocator.bindMismatch("protocol $theirProtocol")
             return false
         }
@@ -82,13 +61,11 @@ object Constants {
             // framework is gone". Exiting is blunt but honest.
             binder.linkToDeath(
                 {
-                    logW("ipc: daemon binder died, manager exiting")
                     exitProcess(0)
                 },
                 0,
             )
-        } catch (e: Exception) {
-            logE("ipc: linkToDeath on the daemon binder failed, exiting the manager process", e)
+        } catch (_: Exception) {
             exitProcess(0)
         }
 

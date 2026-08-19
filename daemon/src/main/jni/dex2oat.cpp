@@ -1,3 +1,4 @@
+#include <cerrno>
 #include <fcntl.h>
 #include <jni.h>
 #include <sched.h>

@@ -17,7 +17,6 @@ import org.matrix.vector.manager.data.github.GitHubRepository
 import org.matrix.vector.manager.data.repository.CanaryBoard
 import org.matrix.vector.manager.data.repository.CanaryLayout
 import org.matrix.vector.manager.di.ServiceLocator
-import org.matrix.vector.manager.logW
 
 /**
  * The canary list, joined to the history it comes from.
@@ -63,10 +62,7 @@ class CanaryViewModel : ViewModel() {
             val installed =
                 daemon
                     .getFrameworkVersionCode()
-                    .getOrElse { e ->
-                        logW("canary: framework version unavailable, using the manager's own", e)
-                        0L
-                    }
+                    .getOrDefault(0L)
                     .takeIf { it > 0 } ?: BuildConfig.VERSION_CODE.toLong()
             updates.refresh(installed, daemon.getBuildStamp().getOrNull())
             attempted.value = true

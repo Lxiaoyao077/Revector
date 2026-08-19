@@ -6,7 +6,6 @@ import org.matrix.vector.impl.core.VectorDeopter;
 
 import java.io.Serializable;
 
-import de.robv.android.xposed.XposedBridge;
 
 /**
  * Base class for Xposed callbacks.
@@ -126,9 +125,7 @@ abstract public class XCallback {
         for (int i = 0; i < param.callbacks.length; i++) {
             try {
                 param.callbacks[i].call(param);
-            } catch (Throwable t) {
-                XposedBridge.log(t);
-            }
+            } catch (Throwable ignored) { }
         }
     }
 

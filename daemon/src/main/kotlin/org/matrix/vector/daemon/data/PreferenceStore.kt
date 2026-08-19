@@ -4,8 +4,6 @@ import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
 import org.apache.commons.lang3.SerializationUtilsX
 
-private const val TAG = "VectorPreferenceStore"
-
 object PreferenceStore {
 
   fun getModulePrefs(
@@ -90,12 +88,6 @@ object PreferenceStore {
 
   fun setStatusNotification(enabled: Boolean) =
       updateModulePref("lspd", 0, "config", "enable_status_notification", enabled)
-
-  fun isVerboseLogEnabled(): Boolean =
-      getModulePrefs("lspd", 0, "config")["enable_verbose_log"] as? Boolean ?: true
-
-  fun setVerboseLog(enabled: Boolean) =
-      updateModulePref("lspd", 0, "config", "enable_verbose_log", enabled)
 
   fun isScopeRequestBlocked(pkg: String): Boolean =
       (getModulePrefs("lspd", 0, "config")["scope_request_blocked"] as? Set<*>)?.contains(pkg) ==

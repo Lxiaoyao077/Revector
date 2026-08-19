@@ -1,3 +1,4 @@
+#include <fmt/format.h>
 #include <dex_builder.h>
 #include <sys/mman.h>
 #include <unistd.h>

@@ -9,7 +9,6 @@ import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import org.matrix.vector.impl.di.VectorBootstrap
 import org.matrix.vector.nativebridge.HookBridge
-import org.matrix.vector.util.Utils
 
 /**
  * Base implementation of the Invoker system. Handles the resolution of [Invoker.Type] to determine
@@ -202,8 +201,7 @@ internal class VectorMethodInvoker(method: Method) :
         val override =
             try {
                 VectorInvocation.virtualTargetOf(executable, parameterTypes, receiverClass)
-            } catch (e: LinkageError) {
-                Utils.logW("Cannot resolve the override of $executable for $receiverClass", e)
+            } catch (_: LinkageError) {
                 return this
             }
 

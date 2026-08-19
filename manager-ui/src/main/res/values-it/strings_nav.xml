@@ -2,7 +2,6 @@
 <resources>
     <string name="nav_home">Home</string>
     <string name="nav_modules">Moduli</string>
-    <string name="nav_logs">Log</string>
     <string name="nav_manage">Gestisci</string>
     <string name="panels_ball_close">Chiudi la navigazione</string>
     <string name="panels_ball_open">Apri la navigazione</string>

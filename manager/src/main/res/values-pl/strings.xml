@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   Strings for the Compose manager.
-
   These are new keys, kept separate from the legacy :app string set while both modules
   exist. When :app is retired, app/src/main/res/values*/strings.xml moves here and
   crowdin.yml is repointed so the ~40 existing translations carry over rather than
@@ -11,7 +10,6 @@
     <!-- Navigation -->
     <string name="nav_home">Start</string>
     <string name="nav_modules">Moduły</string>
-    <string name="nav_logs">Dzienniki</string>
     <!-- Rearranging the panels, and the ball that can stand in for the bar -->
     <string name="panels_done">Gotowe</string>
     <!-- Example: "Hide Store". The name is one of the four panels above. -->
@@ -30,6 +28,8 @@
     <string name="status_mismatched">Niezgodność wersji</string>
     <string name="status_checking">Sprawdzanie…</string>
     <string name="status_open_details">Otwórz stan systemu</string>
+    <string name="copied">Skopiowano do schowka</string>
+    <string name="action_copy_all">Kopiuj wszystko</string>
     <!-- Degraded causes, in the priority order the daemon reports them -->
     <string name="issue_sepolicy_title">Zasady SELinux nie zostały załadowane</string>
     <string name="issue_sepolicy_summary">Niektóre funkcje nie będą działać. Zwykle oznacza to, że implementacja roota nie zastosowała reguł Vectora</string>
@@ -37,20 +37,8 @@
     <string name="issue_system_server_summary">Moduły nie mogą się podłączyć do usług systemowych. Zdarza się to rzadko i zwykle jest spowodowane przez inny moduł roota, który powoduje konflikt działania.</string>
     <string name="issue_dex2oat_title">Warstwa optymalizatora DEX jest niedostępna</string>
     <string name="issue_dex2oat_summary">Niektóre właściwości systemu zostały usunięte lub zmienione. Moduły mogą przestać działać po aktualizacji aplikacji.</string>
-    <string name="crash_recorded_title">Menedżer nieoczekiwanie się zamknął</string>
-    <string name="crash_recorded_summary">Pełny ślad stosu znajduje się w eksporcie dziennika, w sekcji crash_manager.</string>
-    <string name="crash_recorded_clear">Odrzuć</string>
-    <string name="crash_what">Co</string>
-    <string name="crash_message">Wiadomość</string>
-    <string name="crash_where">Gdzie</string>
-    <string name="crash_when">Kiedy</string>
     <!-- Shown for "Where" when no frame in the trace belongs to Vector's own code. -->
-    <string name="crash_where_unknown">Nigdzie we własnym kodzie Vectora</string>
     <!-- %1$s is a timestamp, %2$s a thread name, e.g. "2026-07-29 11:42:03 +0200 on main". -->
-    <string name="crash_when_value">%1$s w %2$s</string>
-    <string name="crash_open_trace">Zobacz ślad stosu</string>
-    <string name="crash_trace">Awaria</string>
-    <string name="crash_caused_by">Spowodowana przez</string>
     <!-- The frames printStackTrace replaced with "... N more" because it had printed them already. -->
     <plurals name="crash_frames_elided">
         <item quantity="one">%1$d ramka więcej, taka sama jak powyżej</item>
@@ -58,7 +46,6 @@
         <item quantity="many">%1$d ramek więcej, takich samych jak powyżej</item>
         <item quantity="other">%1$d ramek więcej, takich samych jak powyżej</item>
     </plurals>
-    <string name="crash_unreadable">Nie udało się odczytać tej awarii. Skopiuj ją i dołącz do raportu w obecnej formie.</string>
     <!-- System status detail -->
     <string name="system_status">Stan systemu</string>
     <string name="info_manager_version">Menedżer</string>
@@ -307,6 +294,7 @@
     <!-- Generic -->
     <string name="back">Wstecz</string>
     <string name="retry">Spróbuj ponownie</string>
+    <string name="cancel">Anuluj</string>
     <string name="appearance_color">Kolor</string>
     <string name="appearance_custom_color">Wybierz kolor</string>
     <string name="modules_expand">Pokaż pełny opis</string>
@@ -414,15 +402,7 @@
     <string name="report_step_canary_body">Może to być już naprawione, a kompilacja debug jest tym, czego potrzebują opiekunowie, aby ci pomóc. Pozostań na głównej gałęzi — kompilacje żądań zmian są niestabilne.</string>
     <string name="report_step_zygisk">Nie masz Magiska? Zaktualizuj Zygisk</string>
     <string name="report_step_zygisk_body">Wgraj najnowszą implementację Zygiska, w jego kompilacji debug, jeśli taka istnieje.</string>
-    <string name="report_step_logs">Dołącz dzienniki</string>
-    <string name="report_step_logs_body">Raport bez dzienników to rozmowa, która zaczyna się od początku. Spowoduje to zapisanie obu dzienników do pliku zip, który możesz dołączyć.</string>
-    <string name="report_step_crashed">Jeśli Zygisk uległ awarii</string>
-    <string name="report_step_crashed_body">Usługa nie może już udostępnić pliku zip na żądanie, ale pliki nadal zostały zapisane. Root może je odczytać, nawet gdy nic innego nie może.</string>
     <string name="report_open_tracker">Otwórz system zgłaszania problemów</string>
-    <string name="report_save_with_root">Zapisz folder dziennika (wymaga roota)</string>
-    <string name="report_saved_to">Zapisano w %1$s</string>
-    <string name="report_see_guide">Pełny poradnik w zgłoszeniu</string>
-    <string name="report_root_refused">Odmówiono dostępu root. Zezwól Vectorowi na dostęp w swoim menedżerze roota, a następnie spróbuj ponownie%1$s</string>
     <string name="home_custom_build">Niestandardowa kompilacja — nowsza niż główna</string>
     <string name="language_title">Język</string>
     <string name="language_system">Domyślny systemowy</string>

@@ -9,10 +9,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import org.matrix.vector.ipc.ScopeEntry
-import org.matrix.vector.manager.data.log.archiveBuildStamp
 import org.matrix.vector.manager.ipc.DaemonClient
-import org.matrix.vector.manager.logE
-import org.matrix.vector.manager.logW
 
 /**
  * Backup and restore of which modules are on and what each may hook.
@@ -29,10 +26,6 @@ class BackupRepository(private val context: Context, private val daemon: DaemonC
     @Serializable
     private data class BackupFile(
         val version: Int = FORMAT_VERSION,
-        // Which build wrote this. gzip's own comment field is not reachable through
-        // GZIPOutputStream, and this document is ours, so it says so itself -- `zcat file | head`
-        // answers "where did this come from" without a restore.
-        val build: String = archiveBuildStamp(),
         val createdAt: Long,
         val modules: List<BackupModule>,
     )
@@ -68,15 +61,7 @@ class BackupRepository(private val context: Context, private val daemon: DaemonC
                 val modules =
                     enabled.map { packageName ->
                         val scope =
-                            daemon
-                                .getModuleScope(packageName)
-                                .onFailure { e ->
-                                    logW(
-                                        "backup: scope of $packageName unreadable, saved as empty",
-                                        e,
-                                    )
-                                }
-                                .getOrDefault(emptyList())
+                            daemon.getModuleScope(packageName).getOrDefault(emptyList())
                                 .map { BackupTarget(it.packageName, it.userId) }
                         BackupModule(packageName, enabled = true, scope = scope)
                     }
@@ -94,15 +79,7 @@ class BackupRepository(private val context: Context, private val daemon: DaemonC
 
                 modules.size
             }
-                .onFailure { e ->
-                    if (e is CancellationException) throw e
-                    logE(
-                        "backup: writing a backup of " +
-                            (if (only.isEmpty()) "all enabled" else "${only.size} selected") +
-                            " modules failed",
-                        e,
-                    )
-                }
+                .onFailure { e -> if (e is CancellationException) throw e }
         }
 
     suspend fun restoreFrom(uri: Uri): Result<RestoreOutcome> =
@@ -123,12 +100,7 @@ class BackupRepository(private val context: Context, private val daemon: DaemonC
                     // case: the daemon accepts an enable for a package this device does not have,
                     // and drops the row itself on its next cache update.
                     val enabledOk =
-                        daemon
-                            .setModuleEnabled(module.packageName, module.enabled)
-                            .onFailure { e ->
-                                logW("restore: enabling ${module.packageName} failed, skipping", e)
-                            }
-                            .getOrDefault(false)
+                        daemon.setModuleEnabled(module.packageName, module.enabled).getOrDefault(false)
                     if (!enabledOk) {
                         skipped++
                         return@forEach
@@ -141,26 +113,13 @@ class BackupRepository(private val context: Context, private val daemon: DaemonC
                                     userId = target.userId
                                 }
                             }
-                        val scopeResult = daemon.setModuleScope(module.packageName, scope)
-                        if (!scopeResult.getOrDefault(false)) {
-                            logE(
-                                "restore: scope of ${module.packageName} not applied " +
-                                    "(${scope.size} targets)",
-                                scopeResult.exceptionOrNull(),
-                            )
-                        }
+                        daemon.setModuleScope(module.packageName, scope)
                     }
                     restored++
                 }
                 RestoreOutcome(restored, skipped)
             }
-                .onFailure { e ->
-                    if (e is CancellationException) throw e
-                    logE(
-                        "restore: reading or parsing the backup file from ${uri.authority} failed",
-                        e,
-                    )
-                }
+                .onFailure { e -> if (e is CancellationException) throw e }
         }
 
     private companion object {

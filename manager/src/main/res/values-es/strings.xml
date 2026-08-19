@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="nav_home">Inicio</string>
     <string name="nav_modules">Módulos</string>
-    <string name="nav_logs">Registros</string>
-
     <string name="panels_done">Listo</string>
     <string name="panels_hide">Ocultar %1$s</string>
     <string name="panels_show">Mostrar %1$s</string>
@@ -12,21 +9,20 @@
     <string name="panels_move_later">Mover después</string>
     <string name="panels_ball_open">Abrir la navegación</string>
     <string name="panels_ball_close">Cerrar la navegación</string>
-
     <string name="status_active">Activo</string>
     <string name="status_degraded">Revisar</string>
     <string name="status_inactive">Sin activar</string>
     <string name="status_mismatched">Versiones incompatibles</string>
     <string name="status_checking">Comprobando…</string>
     <string name="status_open_details">Abrir el estado del sistema</string>
-
+    <string name="copied">Copiado al portapapeles</string>
+    <string name="action_copy_all">Copiar todo</string>
     <string name="issue_sepolicy_title">Política de SELinux no cargada</string>
     <string name="issue_sepolicy_summary">Algunas funciones no van a funcionar. Suele significar que la implementación de root no aplicó las reglas de Vector.</string>
     <string name="issue_system_server_title">Falló la inyección en el framework del sistema</string>
     <string name="issue_system_server_summary">Los módulos no pueden hookear servicios del sistema. Es poco frecuente y casi siempre lo causa otro módulo root que interfiere.</string>
     <string name="issue_dex2oat_title">Wrapper de dex2oat no disponible</string>
     <string name="issue_dex2oat_summary">Se eliminaron o cambiaron algunas propiedades del sistema. Los módulos pueden dejar de aplicarse cuando una app se actualice.</string>
-
     <string name="system_status">Estado del sistema</string>
     <string name="info_api_version">API de Xposed</string>
     <string name="info_framework_version">Framework</string>
@@ -64,16 +60,13 @@
     <string name="home_open_issue">Informar de un problema</string>
     <string name="home_discussions">Debates</string>
     <string name="home_review_prs">Revisar un cambio</string>
-
     <string name="home_with_coauthor">%1$s y %2$s</string>
     <string name="home_with_coauthors">%1$s y %2$d más</string>
-
     <string name="home_month_stats">%1$s · %2$s</string>
     <plurals name="home_people_count_plain">
         <item quantity="one">%1$d persona</item>
         <item quantity="other">%1$d personas</item>
     </plurals>
-
     <plurals name="home_commits_ahead">
         <item quantity="one">%1$d commit más nuevo que el tuyo</item>
         <item quantity="other">%1$d commits más nuevos que el tuyo</item>
@@ -83,7 +76,6 @@
         <item quantity="one">%1$d día en calma</item>
         <item quantity="other">%1$d días en calma</item>
     </plurals>
-
     <string name="appearance_title">Apariencia</string>
     <string name="appearance_theme">Tema</string>
     <string name="appearance_theme_system">Seguir al sistema</string>
@@ -94,7 +86,6 @@
     <string name="appearance_amoled_summary">Ahorra batería en pantallas OLED.</string>
     <string name="egg_two_more">Dos veces más…</string>
     <string name="egg_one_more">Una vez más…</string>
-
     <string name="modules_empty">No hay módulos instalados.</string>
     <string name="modules_active_of">%1$d de %2$d activos</string>
     <string name="modules_no_match">Ningún módulo coincide con esa búsqueda o ese filtro.</string>
@@ -121,22 +112,18 @@
     <string name="modules_incompatible_legacy">Necesita la API %1$d de Xposed, que este framework no proporciona.</string>
     <string name="modules_api_behind">Compilado para la API %1$d de libxposed. La API %2$d cambió la interfaz, así que este módulo podría no funcionar del todo.</string>
     <string name="modules_no_daemon">Vector no está en marcha, así que la lista de módulos no está disponible. Abre el estado del sistema desde Inicio para ver por qué.</string>
-
     <string name="web_open_external">Abrir en el navegador</string>
-
     <string name="settings_ambience">Superficie de la cabecera</string>
     <string name="ambience_snow">Nieve</string>
     <string name="ambience_maze">Laberinto</string>
     <string name="ambience_circuit">Circuito</string>
     <string name="ambience_matrix">Lluvia de código</string>
     <string name="ambience_none">Quieta</string>
-
     <string name="settings_navigation">Navegación</string>
     <string name="settings_floating_nav">Navegación flotante</string>
     <string name="settings_floating_nav_summary">Sustituye la barra por una pequeña bola que puedes arrastrar a donde quieras. Mantenla pulsada para desplegar las secciones, o tócala para dejarlas abiertas.</string>
     <string name="settings_rearrange_panels">Reordenar las secciones</string>
     <string name="settings_rearrange_panels_summary">Cambia su orden, u oculta las que nunca abres.</string>
-
     <string name="settings_activity">Actividad</string>
     <plurals name="settings_window_months">
         <item quantity="one">Último %1$d mes</item>
@@ -144,7 +131,6 @@
     </plurals>
     <string name="settings_open_externally">Abrir los enlaces en un navegador</string>
     <string name="settings_open_externally_summary">Desactivado: las páginas de GitHub se abren dentro de Vector.</string>
-
     <string name="scope_use_recommended">Usar lo que el módulo pide</string>
     <string name="scope_select_visible">Seleccionar todo lo que se muestra</string>
     <string name="scope_clear_visible">Deseleccionar todo lo que se muestra</string>
@@ -178,7 +164,6 @@
     <string name="scope_empty_message">Este módulo está activado pero no tiene apps seleccionadas, así que no hará nada. Desactívalo o elige algunas apps.</string>
     <string name="scope_empty_disable">Desactivar el módulo</string>
     <string name="scope_empty_keep">Dejarlo activado</string>
-
     <string name="action_launch">Abrir</string>
     <string name="action_app_info">Información de la app</string>
     <string name="action_force_stop">Forzar detención</string>
@@ -193,10 +178,9 @@
     <string name="action_optimize_failed">No se pudo reoptimizar %1$s.</string>
     <string name="action_uninstalled">%1$s desinstalada.</string>
     <string name="action_uninstall_failed">No se pudo desinstalar %1$s.</string>
-
     <string name="back">Atrás</string>
     <string name="retry">Reintentar</string>
-
+    <string name="cancel">Cancelar</string>
     <string name="appearance_color">Color</string>
     <string name="appearance_custom_color">Elegir un color</string>
     <string name="modules_expand">Mostrar la descripción completa</string>
@@ -248,24 +232,14 @@
     <string name="report_step_canary_body">Puede que ya esté arreglado, y una compilación de depuración es lo que los mantenedores necesitan para ayudarte. Quédate en master: las compilaciones de pull request son inestables.</string>
     <string name="report_step_zygisk">¿No usas Magisk? Actualiza Zygisk</string>
     <string name="report_step_zygisk_body">Flashea la última implementación de Zygisk, en su compilación de depuración si existe.</string>
-    <string name="report_step_logs">Adjunta los registros</string>
-    <string name="report_step_logs_body">Un informe sin registros es una conversación que empieza de cero. Esto escribe ambos registros en un zip que puedes adjuntar.</string>
-    <string name="report_step_crashed">Si Zygisk se ha caído</string>
-    <string name="report_step_crashed_body">Ya no se le puede pedir el zip al daemon, pero los archivos sí los escribió. Root puede leerlos aunque no pueda nada más.</string>
     <string name="report_open_tracker">Abrir el gestor de incidencias</string>
-    <string name="report_save_with_root">Guardar la carpeta de registros (requiere root)</string>
-    <string name="report_saved_to">Guardado en %1$s</string>
-    <string name="report_see_guide">Guía completa en la incidencia</string>
-    <string name="report_root_refused">Root denegado. Autoriza a Vector en tu gestor de root y vuelve a intentarlo%1$s</string>
     <string name="home_custom_build">Compilación propia: por delante de master</string>
     <string name="language_title">Idioma</string>
     <string name="language_system">El del sistema</string>
     <string name="language_system_summary">Seguir el idioma configurado en el teléfono</string>
-
     <string name="language_translated_by">Traducido por %1$s</string>
     <string name="language_help_short">Traducir</string>
     <string name="language_help">Ayuda a traducir Vector</string>
-
     <string name="update_title">Actualización del framework</string>
     <string name="update_channel_canary">Compilación canary</string>
     <string name="update_channel_release">Versión estable</string>
@@ -371,23 +345,10 @@
     <string name="info_section_build">Qué se está ejecutando</string>
     <string name="info_section_health">Si está funcionando</string>
     <string name="info_section_device">Este dispositivo</string>
-    <string name="crash_recorded_title">El gestor se cerró de forma inesperada</string>
-    <string name="crash_recorded_summary">La traza completa va en el zip de registros, en la carpeta crash_manager.</string>
-    <string name="crash_recorded_clear">Descartar</string>
-    <string name="crash_what">Qué</string>
-    <string name="crash_message">Mensaje</string>
-    <string name="crash_where">Dónde</string>
-    <string name="crash_when">Cuándo</string>
-    <string name="crash_where_unknown">En ningún punto del código de Vector</string>
-    <string name="crash_when_value">%1$s en %2$s</string>
-    <string name="crash_open_trace">Ver la traza</string>
-    <string name="crash_trace">Fallo</string>
-    <string name="crash_caused_by">Causado por</string>
     <plurals name="crash_frames_elided">
         <item quantity="one">%1$d marco más, igual que arriba</item>
         <item quantity="other">%1$d marcos más, iguales que arriba</item>
     </plurals>
-    <string name="crash_unreadable">No se ha podido leer este fallo. Cópialo y adjúntalo al informe tal cual.</string>
     <string name="force_launcher_icons">Impedir que las apps oculten su icono del launcher</string>
     <string name="force_launcher_icons_summary">Desde Android 10, a una app que oculta su propio icono del launcher se le devuelve uno que abre su página de información de la app. Desactiva esta opción para que pueda seguir oculta: puede que tu launcher no se dé cuenta hasta que se reinicie. Las apps que nunca tuvieron icono en el launcher, incluida la mayoría de los módulos, no se ven afectadas.</string>
     <string name="action_force_stop_failed">No se pudo detener %1$s.</string>
@@ -410,7 +371,6 @@
     <string name="settings_doh_working">Funciona: %1$s se resolvió a través de Cloudflare.</string>
     <string name="settings_doh_fell_back">No se pudo contactar con Cloudflare (%1$s), así que se usará el resolutor de la red durante el resto de esta sesión.</string>
     <string name="settings_doh_retry">Reintentar</string>
-
     <string name="launcher_title">Cómo abrir Vector</string>
     <string name="launcher_body">Vector no está instalado como app, así que tu launcher no tiene nada que mostrar. Estas son las formas de volver.</string>
     <string name="launcher_shortcut">Acceso directo en la pantalla de inicio</string>

@@ -17,8 +17,6 @@ import org.matrix.vector.ipc.IManagerService
 import org.matrix.vector.manager.data.repository.FlashStep
 import org.matrix.vector.manager.data.repository.FrameworkUpdateState
 import org.matrix.vector.manager.di.ServiceLocator
-import org.matrix.vector.manager.logE
-import org.matrix.vector.manager.logW
 
 /** Which root implementation is in charge, and whether it can be flashed through. */
 data class RootState(val code: Int = IManagerService.ROOT_UNKNOWN) {
@@ -171,22 +169,11 @@ class FrameworkUpdateViewModel : ViewModel() {
 
     init {
         viewModelScope.launch {
-            // One log for the requests these blocks make. They all fail from the same unreachable
-            // binder, so only the one that decides what the screen says is recorded; the build
-            // stamp takes its default in silence.
-            val code =
-                daemon.getRootImplementation().getOrElse { e ->
-                    logW("update: root implementation unreadable, screen will say it is unknown", e)
-                    IManagerService.ROOT_UNKNOWN
-                }
+            val code = daemon.getRootImplementation().getOrDefault(IManagerService.ROOT_UNKNOWN)
             _root.value = RootState(code)
         }
         viewModelScope.launch {
-            val installed =
-                daemon.getFrameworkVersionCode().getOrElse { e ->
-                    logW("update: installed framework version unavailable, update check skipped", e)
-                    0L
-                }
+            val installed = daemon.getFrameworkVersionCode().getOrDefault(0L)
             updates.refresh(installed, daemon.getBuildStamp().getOrNull())
         }
     }
@@ -200,21 +187,8 @@ class FrameworkUpdateViewModel : ViewModel() {
      * the daemon had quietly finished.
      */
     fun flash() {
-        val zip =
-            chosenZip.value
-                ?: run {
-                    logE(
-                        "update: flash pressed with no zip selected, " +
-                            "release=${selected.value?.tag}",
-                    )
-                    return
-                }
-        val url =
-            zip.downloadUrl
-                ?: run {
-                    logE("update: flash pressed but zip ${zip.name} has no download url")
-                    return
-                }
+        val zip = chosenZip.value ?: return
+        val url = zip.downloadUrl ?: return
         installer.start(url, zip.sizeInBytes, zip.name)
     }
 
@@ -239,6 +213,6 @@ class FrameworkUpdateViewModel : ViewModel() {
     fun acknowledge() = installer.acknowledge()
 
     suspend fun reboot() {
-        daemon.reboot().onFailure { logE("update: reboot request failed", it) }
+        daemon.reboot()
     }
 }

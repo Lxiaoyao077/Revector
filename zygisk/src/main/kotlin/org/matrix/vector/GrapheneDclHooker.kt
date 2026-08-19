@@ -4,7 +4,6 @@ import android.content.pm.ApplicationInfo
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedBridge
 import de.robv.android.xposed.XposedHelpers
-import org.matrix.vector.util.Utils
 
 /**
  * Exempts the parasitic manager's host package from GrapheneOS's "Restrict dynamic code loading"
@@ -67,8 +66,7 @@ object GrapheneDclHooker {
 
             try {
                 XposedBridge.hookAllMethods(aswClass, "getImmutableValue", exempt)
-            } catch (e: Throwable) {
-                Utils.logE("Failed to patch GrapheneOS DCL restriction ($className)", e)
+            } catch (_: Throwable) {
             }
         }
     }

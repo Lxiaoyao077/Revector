@@ -2,7 +2,6 @@
 <resources>
     <string name="nav_home">Головна</string>
     <string name="nav_modules">Модулі</string>
-    <string name="nav_logs">Журнали</string>
     <string name="panels_ball_close">Закрити навігацію</string>
     <string name="panels_ball_open">Відкрити навігацію</string>
     <string name="panels_done">Готово</string>

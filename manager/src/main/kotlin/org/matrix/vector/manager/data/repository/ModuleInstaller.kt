@@ -17,7 +17,6 @@ import org.matrix.vector.ui.store.InstallStep
 import org.matrix.vector.ui.store.ReleaseAsset
 import org.matrix.vector.manager.ipc.commitForResult
 import org.matrix.vector.manager.ipc.requestReplaceExisting
-import org.matrix.vector.manager.logW
 
 /**
  * Downloads a release asset straight into a `PackageInstaller` session.
@@ -92,12 +91,6 @@ class ModuleInstaller(private val context: Context, private val client: OkHttpCl
                     _state.value = InstallStep.Installing(packageName)
                     val result = commit(session, sessionId, packageName)
                     succeeded = result.first == PackageInstaller.STATUS_SUCCESS
-                    if (!succeeded) {
-                        logW(
-                            "store: install of $packageName failed, status ${result.first}: " +
-                                "${result.second}"
-                        )
-                    }
                     _state.value =
                         if (succeeded) InstallStep.Done(packageName)
                         else InstallStep.Failed(packageName, result.second)
@@ -107,7 +100,6 @@ class ModuleInstaller(private val context: Context, private val client: OkHttpCl
                 // failed install: reporting it as one would put an error on a screen the reader
                 // has already left, and would race the acknowledge() that cancelled it.
                 if (e is CancellationException) throw e
-                logW("store: install of $packageName failed", e)
                 _state.value = InstallStep.Failed(packageName, e.message)
             } finally {
                 // Without this, a cancelled download leaves a staged session behind — and staged
@@ -170,11 +162,7 @@ class ModuleInstaller(private val context: Context, private val client: OkHttpCl
         sessionId: Int,
         packageName: String,
     ): Pair<Int, String?> =
-        context.commitForResult(
-            session,
-            sessionId,
-            promptFailure = "store: install prompt for $packageName could not be started",
-        ) {
+        context.commitForResult(session, sessionId) {
             _state.value = InstallStep.Confirming(packageName)
         }
 

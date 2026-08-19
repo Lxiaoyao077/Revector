@@ -21,8 +21,6 @@ import org.matrix.vector.manager.data.repository.ModuleRepository
 import org.matrix.vector.manager.di.ServiceLocator
 import org.matrix.vector.manager.data.repository.SettingsRepository
 import org.matrix.vector.manager.ipc.DaemonClient
-import org.matrix.vector.manager.logE
-import org.matrix.vector.manager.logW
 
 /**
  * A package/user pair, as a value type so set arithmetic is correct.
@@ -482,8 +480,8 @@ class ScopeViewModel(
                 withContext(Dispatchers.IO) { daemonClient.getUsers().getOrNull()?.size ?: 1 }
 
             // A scope the daemon will not hand over shows as none rather than keeping the screen
-            // shut; [readSavedScope] logs why, and keeps that case apart from the empty list a
-            // module with nothing ticked legitimately has.
+            // shut; [readSavedScope] keeps that case apart from the empty list a module with
+            // nothing ticked legitimately has.
             val saved = readSavedScope() ?: emptySet()
             savedScope.value = saved
             draftScope.value = saved
@@ -494,13 +492,6 @@ class ScopeViewModel(
                             packageManager.getApplicationInfo(
                                 modulePackageName,
                                 android.content.pm.PackageManager.GET_META_DATA,
-                            )
-                        }
-                        .onFailure { e ->
-                            logW(
-                                "scope: package info for $modulePackageName (user $userId) " +
-                                    "unavailable, no recommended scope",
-                                e,
                             )
                         }
                         .getOrNull()
@@ -542,11 +533,7 @@ class ScopeViewModel(
      * as "no rows" would turn a broken connection into an erased scope.
      */
     private suspend fun readSavedScope(): Set<ScopeTarget>? {
-        val result = daemonClient.getModuleScope(modulePackageName)
-        result.exceptionOrNull()?.let { e ->
-            logE("scope: reading the saved scope of $modulePackageName failed", e)
-        }
-        val rows = result.getOrNull() ?: return null
+        val rows = daemonClient.getModuleScope(modulePackageName).getOrNull() ?: return null
         return rows.map { ScopeTarget(it.packageName, it.userId) }.toSet().asStored()
     }
 
@@ -703,20 +690,10 @@ class ScopeViewModel(
                     if (stored) {
                         _uiState.value = _uiState.value.copy(includeNewApps = enabled)
                     } else {
-                        logE(
-                            "scope: daemon refused include-new-apps=$enabled for " +
-                                modulePackageName,
-                        )
                         _message.value = ScopeMessage.IncludeNewAppsFailed
                     }
                 }
-                .onFailure { e ->
-                    logE(
-                        "scope: setting include-new-apps=$enabled for $modulePackageName failed",
-                        e,
-                    )
-                    _message.value = ScopeMessage.IncludeNewAppsFailed
-                }
+                .onFailure { _message.value = ScopeMessage.IncludeNewAppsFailed }
         }
     }
 
@@ -743,11 +720,7 @@ class ScopeViewModel(
      */
     fun softRebootForFramework() {
         _frameworkRestartNeeded.value = false
-        viewModelScope.launch {
-            daemonClient.softReboot().onFailure { e ->
-                logE("scope: soft reboot after a framework scope change failed", e)
-            }
-        }
+        viewModelScope.launch { daemonClient.softReboot() }
     }
 
     /** Fills [hasCompanion], which is declared next to [init] for the reason given there. */
@@ -756,12 +729,6 @@ class ScopeViewModel(
             _companion.value =
                 daemonClient
                     .findAppUi(modulePackageName, userId, companionFirst = true)
-                    .onFailure { e ->
-                        logW(
-                            "scope: companion lookup for $modulePackageName user $userId failed",
-                            e,
-                        )
-                    }
                     .getOrNull() != null
         }
     }
@@ -782,12 +749,6 @@ class ScopeViewModel(
             val opened =
                 daemonClient
                     .openAppUi(modulePackageName, userId, companionFirst = true)
-                    .onFailure { e ->
-                        logE(
-                            "scope: companion open of $modulePackageName for user $userId failed",
-                            e,
-                        )
-                    }
                     .getOrDefault(false)
             if (!opened) _message.value = ScopeMessage.NothingToOpen
         }
@@ -834,12 +795,6 @@ class ScopeViewModel(
             val baseline = savedScope.value.asStored()
             val draft = draftScope.value.asStored()
             val current = readSavedScope()
-            if (current == null) {
-                logW(
-                    "scope: could not re-read the scope of $modulePackageName before writing; " +
-                        "applying the draft as it stands"
-                )
-            }
             val before = current ?: baseline
             val merged = before + (draft - baseline) - (baseline - draft)
             val aidl =
@@ -856,7 +811,6 @@ class ScopeViewModel(
                     // that reaches beyond a scope the module fixes for itself, and moving the saved
                     // set on a refusal would show a scope the framework never took.
                     if (!stored) {
-                        logE("scope: daemon refused ${merged.size} targets for $modulePackageName")
                         _message.value = ScopeMessage.ApplyFailed
                     } else {
                         // Whether the framework itself just joined or left this scope. Compared
@@ -894,10 +848,7 @@ class ScopeViewModel(
                         ServiceLocator.modules.noteScopeChanged()
                     }
                 }
-                .onFailure { e ->
-                    logE("scope: apply of ${merged.size} targets to $modulePackageName failed", e)
-                    _message.value = ScopeMessage.ApplyFailed
-                }
+                .onFailure { _message.value = ScopeMessage.ApplyFailed }
             _applying.value = false
         }
     }
@@ -930,9 +881,6 @@ class ScopeViewModel(
                                 it.write("[\n  $payload\n]".toByteArray())
                             } ?: error("could not open the file")
                         }
-                        .onFailure { e ->
-                            logE("scope: backup of $modulePackageName failed", e)
-                        }
                         .isSuccess
                 }
             onDone(ok)
@@ -953,10 +901,7 @@ class ScopeViewModel(
                                 .map { ScopeTarget(it.groupValues[1], it.groupValues[2].toInt()) }
                                 .toSet()
                         }
-                        .onFailure { e ->
-                            if (e is CancellationException) throw e
-                            logE("scope: restore for $modulePackageName failed", e)
-                        }
+                        .onFailure { e -> if (e is CancellationException) throw e }
                         .getOrNull()
                 }
             if (targets == null) {

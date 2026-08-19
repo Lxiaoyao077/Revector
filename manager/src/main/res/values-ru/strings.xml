@@ -2,8 +2,6 @@
 <resources>
     <string name="nav_home">Главная</string>
     <string name="nav_modules">Модули</string>
-    <string name="nav_logs">Журнал</string>
-
     <string name="panels_done">Готово</string>
     <string name="panels_hide">Скрыть «%1$s»</string>
     <string name="panels_show">Показать «%1$s»</string>
@@ -17,6 +15,8 @@
     <string name="status_mismatched">Несовпадение версий</string>
     <string name="status_checking">Проверка…</string>
     <string name="status_open_details">Открыть состояние системы</string>
+    <string name="copied">Скопировано в буфер обмена</string>
+    <string name="action_copy_all">Скопировать всё</string>
     <string name="issue_sepolicy_title">Политика SELinux не загружена</string>
     <string name="issue_sepolicy_summary">Часть возможностей не будет работать. Обычно это значит, что root-решение не применило правила Vector.</string>
     <string name="issue_system_server_title">Не удалось внедриться в системный фреймворк</string>
@@ -134,7 +134,6 @@
     <string name="settings_floating_nav_summary">Заменяет панель навигации маленьким шариком, который можно перетащить куда угодно. Удерживайте его, чтобы развернуть разделы веером, или коснитесь, чтобы они остались открытыми.</string>
     <string name="settings_rearrange_panels">Изменить порядок разделов</string>
     <string name="settings_rearrange_panels_summary">Измените их порядок или скройте те, которые никогда не открываете.</string>
-
     <string name="settings_activity">Лента активности</string>
     <plurals name="settings_window_months">
         <item quantity="one">Последний %1$d месяц</item>
@@ -193,6 +192,7 @@
     <string name="action_uninstall_failed">Не удалось удалить %1$s.</string>
     <string name="back">Назад</string>
     <string name="retry">Повторить</string>
+    <string name="cancel">Отмена</string>
     <string name="appearance_color">Цвет</string>
     <string name="appearance_custom_color">Выбрать цвет</string>
     <string name="modules_expand">Показать описание целиком</string>
@@ -250,25 +250,14 @@
     <string name="report_step_canary_body">Возможно, это уже исправлено, а сопровождающим для помощи нужна отладочная сборка. Берите сборки из master — сборки из pull request нестабильны.</string>
     <string name="report_step_zygisk">Не Magisk? Обновите Zygisk</string>
     <string name="report_step_zygisk_body">Прошейте свежую реализацию Zygisk, по возможности отладочную.</string>
-    <string name="report_step_logs">Приложите журналы</string>
-    <string name="report_step_logs_body">Отчёт без журналов — это разговор с начала. Здесь оба журнала записываются в zip, который можно приложить.</string>
-    <string name="report_step_crashed">Если Zygisk упал</string>
-    <string name="report_step_crashed_body">Запросить zip у службы уже нельзя, но файлы она записала. Прочитать их может только root.</string>
     <string name="report_open_tracker">Открыть трекер задач</string>
-    <string name="report_save_with_root">Сохранить папку журналов (нужен root)</string>
-    <string name="report_saved_to">Сохранено в %1$s</string>
-    <string name="report_see_guide">Полное руководство в issue</string>
-    <string name="report_root_refused">В root отказано. Разрешите Vector в вашем root-менеджере и повторите%1$s</string>
     <string name="home_custom_build">Своя сборка — новее master</string>
-
     <string name="language_title">Язык</string>
     <string name="language_system">Как в системе</string>
     <string name="language_system_summary">Использовать язык, выбранный на телефоне</string>
-
     <string name="language_translated_by">Перевод: %1$s</string>
     <string name="language_help_short">Перевести</string>
     <string name="language_help">Помочь с переводом Vector</string>
-
     <string name="update_title">Обновление фреймворка</string>
     <string name="update_channel_canary">Сборка canary</string>
     <string name="update_channel_release">Релиз</string>
@@ -374,25 +363,12 @@
     <string name="info_section_build">Что запущено</string>
     <string name="info_section_health">Работает ли это</string>
     <string name="info_section_device">Это устройство</string>
-    <string name="crash_recorded_title">Менеджер неожиданно завершил работу</string>
-    <string name="crash_recorded_summary">Полная трассировка стека попадает в экспорт журналов, в папку crash_manager.</string>
-    <string name="crash_recorded_clear">Убрать</string>
-    <string name="crash_what">Что</string>
-    <string name="crash_message">Сообщение</string>
-    <string name="crash_where">Где</string>
-    <string name="crash_when">Когда</string>
-    <string name="crash_where_unknown">Нигде в коде самого Vector</string>
-    <string name="crash_when_value">%1$s в потоке %2$s</string>
-    <string name="crash_open_trace">Посмотреть трассировку</string>
-    <string name="crash_trace">Сбой</string>
-    <string name="crash_caused_by">Причина</string>
     <plurals name="crash_frames_elided">
         <item quantity="one">ещё %1$d кадр стека, такой же, как выше</item>
         <item quantity="few">ещё %1$d кадра стека, такие же, как выше</item>
         <item quantity="many">ещё %1$d кадров стека, таких же, как выше</item>
         <item quantity="other">ещё %1$d кадров стека, таких же, как выше</item>
     </plurals>
-    <string name="crash_unreadable">Этот сбой не удалось прочитать. Скопируйте его и приложите к отчёту как есть.</string>
     <string name="force_launcher_icons">Не давать приложениям скрывать значок в лаунчере</string>
     <string name="force_launcher_icons_summary">Начиная с Android 10, приложение, которое скрывает свой значок в лаунчере, получает его обратно, и этот значок открывает страницу сведений о приложении. Выключите это, чтобы значок оставался скрытым — лаунчер может обновить свой список только после перезапуска. Приложений, у которых значка в лаунчере никогда не было, включая большинство модулей, это не касается.</string>
     <string name="action_force_stop_failed">Не удалось остановить %1$s.</string>
@@ -415,7 +391,6 @@
     <string name="settings_doh_working">Работает — %1$s разрешено через Cloudflare.</string>
     <string name="settings_doh_fell_back">Cloudflare недоступен (%1$s), поэтому до конца этого сеанса используется резолвер сети.</string>
     <string name="settings_doh_retry">Повторить</string>
-
     <string name="launcher_title">Как открыть Vector</string>
     <string name="launcher_body">Vector не установлен как приложение, поэтому лаунчеру нечего показывать. Вот как в него вернуться.</string>
     <string name="launcher_shortcut">Ярлык на главном экране</string>

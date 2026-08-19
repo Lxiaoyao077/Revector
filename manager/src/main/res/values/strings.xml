@@ -1,19 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   Strings for the Compose manager.
-
   These are new keys, kept separate from the legacy :app string set while both modules
   exist. When :app is retired, app/src/main/res/values*/strings.xml moves here and
   crowdin.yml is repointed so the ~40 existing translations carry over rather than
   being rewritten. Nothing user-visible may be hard-coded in a composable.
 -->
 <resources>
-
     <!-- Navigation -->
     <string name="nav_home">Home</string>
     <string name="nav_modules">Modules</string>
-    <string name="nav_logs">Logs</string>
-
     <!-- Rearranging the panels, and the ball that can stand in for the bar -->
     <string name="panels_done">Done</string>
     <!-- Example: "Hide Store". The name is one of the four panels above. -->
@@ -24,7 +20,6 @@
     <string name="panels_move_later">Move later</string>
     <string name="panels_ball_open">Open navigation</string>
     <string name="panels_ball_close">Close navigation</string>
-
     <!-- Framework status -->
     <string name="status_active">Active</string>
     <string name="status_degraded">Needs attention</string>
@@ -33,7 +28,8 @@
     <string name="status_mismatched">Version mismatch</string>
     <string name="status_checking">Checking…</string>
     <string name="status_open_details">Open system status</string>
-
+    <string name="copied">Copied to clipboard</string>
+    <string name="action_copy_all">Copy all</string>
     <!-- Degraded causes, in the priority order the daemon reports them -->
     <string name="issue_sepolicy_title">SELinux policy not loaded</string>
     <string name="issue_sepolicy_summary">Some features will not work. This usually means the root implementation did not apply Vector\'s policy rules.</string>
@@ -41,27 +37,13 @@
     <string name="issue_system_server_summary">Modules cannot hook system services. This is rare, and is usually caused by another root module interfering.</string>
     <string name="issue_dex2oat_title">Dex optimizer wrapper unavailable</string>
     <string name="issue_dex2oat_summary">Some system properties were removed or changed. Modules may stop applying after an app updates.</string>
-    <string name="crash_recorded_title">The manager closed unexpectedly</string>
-    <string name="crash_recorded_summary">The full trace travels in the log export, under crash_manager.</string>
-    <string name="crash_recorded_clear">Discard</string>
-    <string name="crash_what">What</string>
-    <string name="crash_message">Message</string>
-    <string name="crash_where">Where</string>
-    <string name="crash_when">When</string>
     <!-- Shown for "Where" when no frame in the trace belongs to Vector's own code. -->
-    <string name="crash_where_unknown">Nowhere in Vector\'s own code</string>
     <!-- %1$s is a timestamp, %2$s a thread name, e.g. "2026-07-29 11:42:03 +0200 on main". -->
-    <string name="crash_when_value">%1$s on %2$s</string>
-    <string name="crash_open_trace">See the trace</string>
-    <string name="crash_trace">Crash</string>
-    <string name="crash_caused_by">Caused by</string>
     <!-- The frames printStackTrace replaced with "... N more" because it had printed them already. -->
     <plurals name="crash_frames_elided">
         <item quantity="one">%1$d more frame, the same as above</item>
         <item quantity="other">%1$d more frames, the same as above</item>
     </plurals>
-    <string name="crash_unreadable">This crash could not be read. Copy it and attach it to the report as it is.</string>
-
     <!-- System status detail -->
     <string name="system_status">System status</string>
     <string name="info_manager_version">Manager</string>
@@ -122,17 +104,14 @@
     <string name="home_open_issue">Report a problem</string>
     <string name="home_discussions">Discussions</string>
     <string name="home_review_prs">Review a change</string>
-
     <!-- Joins a commit's author with its co-authors, e.g. "Leaf-lsgtky &amp; Qing" -->
     <string name="home_with_coauthor">%1$s &amp; %2$s</string>
     <string name="home_with_coauthors">%1$s &amp; %2$d others</string>
-
     <string name="home_month_stats">%1$s · %2$s</string>
     <plurals name="home_people_count_plain">
         <item quantity="one">%1$d person</item>
         <item quantity="other">%1$d people</item>
     </plurals>
-
     <!-- The rail's "you are here" marker -->
     <plurals name="home_commits_ahead">
         <item quantity="one">%1$d commit newer than yours</item>
@@ -143,7 +122,6 @@
         <item quantity="one">%1$d day quiet</item>
         <item quantity="other">%1$d days quiet</item>
     </plurals>
-
     <!-- Home appearance sheet. Settings live beside what they change, not in one heap. -->
     <string name="appearance_title">Appearance</string>
     <string name="appearance_theme">Theme</string>
@@ -155,7 +133,6 @@
     <string name="appearance_amoled_summary">Saves power on OLED screens.</string>
     <string name="egg_two_more">Two more times…</string>
     <string name="egg_one_more">One more time…</string>
-
     <!-- Modules -->
     <string name="modules_empty">No modules installed.</string>
     <plurals name="modules_updates">
@@ -206,10 +183,8 @@
     <string name="modules_incompatible_legacy">Needs Xposed API %1$d, which this framework does not provide.</string>
     <string name="modules_api_behind">Built for libxposed API %1$d. API %2$d changed the interface, so this module may not work fully.</string>
     <string name="modules_no_daemon">Vector is not running, so the module list is unavailable. Open system status from Home to see why.</string>
-
     <!-- Built-in web viewer -->
     <string name="web_open_external">Open in browser</string>
-
     <!-- The status header's living surface -->
     <string name="settings_ambience">Header surface</string>
     <string name="ambience_snow">Snow</string>
@@ -217,14 +192,12 @@
     <string name="ambience_circuit">Circuit</string>
     <string name="ambience_matrix">Code rain</string>
     <string name="ambience_none">Still</string>
-
     <!-- Settings: where the panels live. Nothing on Android teaches a long press on a bar. -->
     <string name="settings_navigation">Navigation</string>
     <string name="settings_floating_nav">Floating navigation</string>
     <string name="settings_floating_nav_summary">Replaces the bar with a small ball you can drag anywhere. Hold it to fan the panels out, or tap it to keep them open.</string>
     <string name="settings_rearrange_panels">Rearrange panels</string>
     <string name="settings_rearrange_panels_summary">Change their order, or hide the ones you never open.</string>
-
     <!-- Settings: activity feed -->
     <string name="settings_activity">Activity feed</string>
     <plurals name="settings_window_months">
@@ -233,7 +206,6 @@
     </plurals>
     <string name="settings_open_externally">Open links in a browser</string>
     <string name="settings_open_externally_summary">Off: GitHub pages open inside Vector.</string>
-
     <!-- Scope editor -->
     <string name="scope_use_recommended">Use what the module asks for</string>
     <string name="scope_select_visible">Select everything shown</string>
@@ -271,7 +243,6 @@
     <string name="scope_empty_message">This module is enabled but has no apps selected, so it will not do anything. Disable it, or choose some apps.</string>
     <string name="scope_empty_disable">Disable the module</string>
     <string name="scope_empty_keep">Leave it enabled</string>
-
     <!-- Long-press actions on a package -->
     <string name="action_not_in_store">Not in the store</string>
     <string name="action_not_in_store_summary">Updates for this module cannot be checked</string>
@@ -303,12 +274,11 @@
     <string name="action_optimize_failed">Could not re-optimize %1$s.</string>
     <string name="action_uninstalled">Uninstalled %1$s.</string>
     <string name="action_uninstall_failed">Could not uninstall %1$s.</string>
-
     <!-- Generic -->
     <string name="back">Back</string>
     <string name="retry">Retry</string>
+    <string name="cancel">Cancel</string>
     <string name="app_name" translatable="false">Vector</string>
-
     <string name="appearance_color">Colour</string>
     <string name="appearance_custom_color">Pick a colour</string>
     <string name="modules_expand">Show the full description</string>
@@ -394,24 +364,14 @@
     <string name="report_step_canary_body">It may already be fixed, and a debug build is what maintainers need to help you. Stay on master — pull-request builds are unstable.</string>
     <string name="report_step_zygisk">Not on Magisk? Update Zygisk</string>
     <string name="report_step_zygisk_body">Flash the latest Zygisk implementation, in its debug build if one exists.</string>
-    <string name="report_step_logs">Attach logs</string>
-    <string name="report_step_logs_body">A report without logs is a conversation that starts over. This writes both logs to a zip you can attach.</string>
-    <string name="report_step_crashed">If Zygisk crashed</string>
-    <string name="report_step_crashed_body">The daemon can no longer be asked for the zip, but it still wrote the files. Root can read them even when nothing else can.</string>
     <string name="report_open_tracker">Open the issue tracker</string>
-    <string name="report_save_with_root">Save the log folder (needs root)</string>
-    <string name="report_saved_to">Saved to %1$s</string>
-    <string name="report_see_guide">Full guide in issue</string>
-    <string name="report_root_refused">Root refused. Allow Vector in your root manager, then try again%1$s</string>
     <string name="home_custom_build">Custom build — ahead of master</string>
     <string name="language_title">Language</string>
     <string name="language_system">System default</string>
     <string name="language_system_summary">Follow the language your phone is set to</string>
-
     <string name="language_translated_by">Translated by %1$s</string>
     <string name="language_help_short">Translate</string>
     <string name="language_help">Help translate Vector</string>
-
     <string name="update_title">Framework update</string>
     <string name="update_channel_canary">Canary build</string>
     <string name="update_channel_release">Release</string>
@@ -453,7 +413,6 @@
     <string name="settings_doh_working">Working — %1$s was resolved through Cloudflare.</string>
     <string name="settings_doh_fell_back">Cloudflare could not be reached (%1$s), so the network\'s resolver is being used for the rest of this session.</string>
     <string name="settings_doh_retry">Try again</string>
-
     <!-- Getting back into Vector, which parasitically has no launcher icon of its own -->
     <string name="launcher_title">How to open Vector</string>
     <string name="launcher_body">Vector is not installed as an app, so your launcher has nothing to show. These are the ways back in.</string>

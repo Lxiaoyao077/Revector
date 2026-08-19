@@ -387,7 +387,7 @@ private fun BoxScope.PanelBadge(hidden: Boolean, name: String, onClick: () -> Un
  *
  * `combinedClickable` on the slot is the obvious way and it does not work. The item inside carries
  * its own `selectable`, which is the nearer node and therefore handles the release first, so a long
- * press on Logs would open edit mode *and* switch to Logs. Watching the pointer on
+ * press on Store would open edit mode *and* switch to Store. Watching the pointer on
  * [PointerEventPass.Initial] gets ahead of it: nothing is consumed while the press might still turn
  * out to be a tap — in which case the item's own click handles it, ripple and indicator and all —
  * and everything from the moment the press has been held long enough is consumed, which is what

@@ -6,21 +6,16 @@ import androidx.annotation.RequiresApi
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface.*
 import java.util.concurrent.ConcurrentHashMap
-import org.matrix.vector.util.Log
 
 /** Manages the dispatching of modern lifecycle events to loaded modules. */
 object VectorLifecycleManager {
-
-    private const val TAG = "VectorLifecycle"
 
     // The framework's only strong reference to entry instances, and what detach() removes. Any
     // dispatch added later, hot reload included, must iterate this rather than keep its own list.
     val activeModules: MutableSet<XposedModule> = ConcurrentHashMap.newKeySet()
 
     fun detach(module: XposedModule) {
-        if (activeModules.remove(module)) {
-            Log.d(TAG, "Detached entry ${module.javaClass.name}")
-        }
+        activeModules.remove(module)
     }
 
     fun isActive(module: XposedModule): Boolean = activeModules.contains(module)
@@ -50,13 +45,6 @@ object VectorLifecycleManager {
 
         activeModules.forEach { module ->
             runCatching { module.onPackageLoaded(param) }
-                .onFailure {
-                    Log.e(
-                        TAG,
-                        "Error in onPackageLoaded for ${module.moduleApplicationInfo.packageName}",
-                        it,
-                    )
-                }
         }
     }
 
@@ -100,17 +88,7 @@ object VectorLifecycleManager {
             }
 
         activeModules.forEach { module ->
-            runCatching {
-                    Log.d(TAG, "dispatchPackageReady $param")
-                    module.onPackageReady(param)
-                }
-                .onFailure {
-                    Log.e(
-                        TAG,
-                        "Error in onPackageReady for ${module.moduleApplicationInfo.packageName}",
-                        it,
-                    )
-                }
+            runCatching { module.onPackageReady(param) }
         }
     }
 
@@ -122,13 +100,6 @@ object VectorLifecycleManager {
 
         activeModules.forEach { module ->
             runCatching { module.onSystemServerStarting(param) }
-                .onFailure {
-                    Log.e(
-                        TAG,
-                        "Error in onSystemServerStarting for ${module.moduleApplicationInfo.packageName}",
-                        it,
-                    )
-                }
         }
     }
 }

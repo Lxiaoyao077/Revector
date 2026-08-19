@@ -25,7 +25,6 @@ import org.matrix.vector.impl.utils.VectorModuleClassLoader;
 import org.matrix.vector.nativebridge.NativeAPI;
 import org.matrix.vector.nativebridge.ResourcesHook;
 import org.matrix.vector.ipc.ModuleCode;
-import org.matrix.vector.util.Log;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -43,7 +42,6 @@ import de.robv.android.xposed.callbacks.XCallback;
 import hidden.HiddenApiBridge;
 
 public final class XposedInit {
-    private static final String TAG = XposedBridge.TAG;
     public static boolean startsSystemServer = false;
 
     public static volatile boolean disableResources = false;
@@ -57,7 +55,6 @@ public final class XposedInit {
         VectorDeopter.deoptResourceMethods();
 
         if (!ResourcesHook.initXResourcesNative()) {
-            Log.e(TAG, "Cannot hook resources");
             disableResources = true;
             return;
         }
@@ -247,12 +244,9 @@ public final class XposedInit {
         var count = 0;
         for (var moduleClassName : moduleClassNames) {
             try {
-                Log.v(TAG, "  Loading class " + moduleClassName);
-
                 Class<?> moduleClass = mcl.loadClass(moduleClassName);
 
                 if (!IXposedMod.class.isAssignableFrom(moduleClass)) {
-                    Log.e(TAG, "    This class doesn't implement any sub-interface of IXposedMod, skipping it");
                     continue;
                 }
 
@@ -276,8 +270,7 @@ public final class XposedInit {
                     XposedBridge.hookInitPackageResources(new IXposedHookInitPackageResources.Wrapper((IXposedHookInitPackageResources) moduleInstance));
                     count++;
                 }
-            } catch (Throwable t) {
-                Log.e(TAG, "    Failed to load class " + moduleClassName, t);
+            } catch (Throwable ignored) {
             }
         }
         return count > 0;
@@ -288,8 +281,6 @@ public final class XposedInit {
      * in <code>assets/xposed_init</code>.
      */
     private static boolean loadModule(String name, String apk, ModuleCode file) {
-        Log.v(TAG, "Loading legacy module " + name + " from " + apk);
-
         var sb = new StringBuilder();
         // In system_server the in-APK entries below can only ever be refused: /data/app is
         // apk_data_file, which that domain may read and map but never execute. The daemon stages a
@@ -309,10 +300,6 @@ public final class XposedInit {
 
         try {
             if (mcl.loadClass(XposedBridge.class.getName()).getClassLoader() != initLoader) {
-                Log.e(TAG, "  Cannot load module: " + name);
-                Log.e(TAG, "  The Xposed API classes are compiled into the module's APK.");
-                Log.e(TAG, "  This may cause strange issues and must be fixed by the module developer.");
-                Log.e(TAG, "  For details, see: https://api.xposed.info/using.html");
                 return false;
             }
         } catch (ClassNotFoundException ignored) {

@@ -2,7 +2,6 @@
 <resources>
     <string name="nav_home">Accueil</string>
     <string name="nav_modules">Modules</string>
-    <string name="nav_logs">Journaux</string>
     <string name="panels_ball_close">Fermer la navigation</string>
     <string name="panels_ball_open">Ouvrir la navigation</string>
     <string name="panels_done">Terminé</string>

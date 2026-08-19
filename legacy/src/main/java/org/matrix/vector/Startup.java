@@ -1,7 +1,6 @@
 package org.matrix.vector;
 
 import org.matrix.vector.ipc.IFrameworkService;
-import org.matrix.vector.util.Utils;
 import org.matrix.vector.impl.core.VectorStartup;
 import org.matrix.vector.impl.di.VectorBootstrap;
 import org.matrix.vector.legacy.LegacyDelegateImpl;
@@ -15,9 +14,7 @@ public class Startup {
         try {
             VectorStartup.bootstrap(XposedInit.startsSystemServer, systemServerStarted);
             XposedInit.loadLegacyModules();
-        } catch (Throwable t) {
-            Utils.logE("Error during framework initialization", t);
-        }
+        } catch (Throwable ignored) { }
     }
 
     /**

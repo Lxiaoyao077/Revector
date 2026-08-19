@@ -14,13 +14,10 @@ import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import java.util.concurrent.ConcurrentHashMap
 import org.matrix.vector.ipc.IModuleService
-import org.matrix.vector.util.Log
 import org.matrix.vector.impl.hooks.VectorCtorInvoker
 import org.matrix.vector.impl.hooks.VectorHookBuilder
 import org.matrix.vector.impl.hooks.VectorMethodInvoker
 import org.matrix.vector.nativebridge.HookBridge
-
-private const val TAG = "VectorContext"
 
 /** Smallest positive gap between the sorted addresses, i.e. one ArtMethod. */
 private fun strideOf(addresses: LongArray): Long {
@@ -118,11 +115,6 @@ class VectorContext(
                 }
                 method as Executable
             }
-            .onFailure {
-                // Falling back keeps the hook working, at the cost of handing the hooker the type
-                // ART produced instead of the one the interface promises.
-                Log.w(TAG, "Cannot present <clinit> of ${'$'}{clinit.declaringClass.name} as a Method", it)
-            }
             .getOrDefault(clinit)
     }
 
@@ -145,7 +137,6 @@ class VectorContext(
                 val stride = strideOf(addresses).takeIf { it > 0 } ?: artMethodSize
                 HookBridge.findStaticInitializer(origin, addresses, stride)
             }
-            .onFailure { Log.w(TAG, "Static initializer lookup failed for ${origin.name}", it) }
             .getOrNull()
 
     override fun deoptimize(executable: Executable): Boolean {
@@ -175,27 +166,7 @@ class VectorContext(
             ?: throw FileNotFoundException("Cannot open remote file: $name")
     }
 
-    override fun log(priority: Int, tag: String?, msg: String) {
-        log(priority, tag, msg, null)
-    }
+    override fun log(priority: Int, tag: String?, msg: String) {}
 
-    /**
-     * A module's own logging, which is the only channel it has for saying what went wrong.
-     *
-     * The trace comes from [Log.getStackTraceString], our own, not `android.util.Log`'s — that one
-     * discards the trace outright for any [java.net.UnknownHostException] cause chain, so a module
-     * reporting a failed request got its message and a blank line after it, with nothing to say
-     * whose code the request was made from.
-     */
-    override fun log(priority: Int, tag: String?, msg: String, tr: Throwable?) {
-        val finalTag = tag ?: "VectorContext"
-        val prefix = if (packageName.isNotEmpty()) "$packageName: " else ""
-        val fullMsg = buildString {
-            append(prefix).append(msg)
-            if (tr != null) {
-                append("\n").append(Log.getStackTraceString(tr))
-            }
-        }
-        Log.println(priority, finalTag, fullMsg)
-    }
+    override fun log(priority: Int, tag: String?, msg: String, tr: Throwable?) {}
 }

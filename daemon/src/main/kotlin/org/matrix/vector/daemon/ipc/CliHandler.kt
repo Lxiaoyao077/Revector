@@ -27,7 +27,6 @@ object CliHandler {
             "scope" -> handleScope(request)
             "config" -> handleConfig(request)
             "db" -> handleDatabase(request)
-            "log" -> handleLog(request)
             else -> throw IllegalArgumentException("Unknown command: ${request.command}")
           }
       CliResponse(success = true, data = responseData)
@@ -185,7 +184,6 @@ object CliHandler {
         val value =
             when (key) {
               "status-notification" -> ManagerService.isStatusNotificationEnabled()
-              "verbose-log" -> ManagerService.isVerboseLogEnabled()
               else -> throw IllegalArgumentException("Unknown config key: $key")
             }
         mapOf("KEY" to key, "VALUE" to value)
@@ -199,7 +197,6 @@ object CliHandler {
 
         when (key) {
           "status-notification" -> ManagerService.setStatusNotificationEnabled(value)
-          "verbose-log" -> ManagerService.setVerboseLogEnabled(value)
           else -> throw IllegalArgumentException("Unknown config key: $key")
         }
         "Successfully set $key to $value."
@@ -264,18 +261,6 @@ object CliHandler {
         "Database reset successfully. Schema recreated."
       }
       else -> throw IllegalArgumentException("Unknown database action: ${request.action}")
-    }
-  }
-
-  private fun handleLog(request: CliRequest): Any {
-    return when (request.action) {
-      "clear" -> {
-        val verbose = request.options["verbose"] as? Boolean ?: false
-        ManagerService.startNewLogPart(verbose)
-        "Logs cleared successfully."
-      }
-      // "stream" is handled in SystemServerService.kt to attach the FileDescriptor
-      else -> throw IllegalArgumentException("Unknown log action: ${request.action}")
     }
   }
 }

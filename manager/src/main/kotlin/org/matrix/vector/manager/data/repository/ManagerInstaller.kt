@@ -19,8 +19,6 @@ import org.matrix.vector.ipc.IManagerService
 import org.matrix.vector.manager.BuildConfig
 import org.matrix.vector.manager.data.model.ManagerCopy
 import org.matrix.vector.manager.data.model.versionCodeCompat
-import org.matrix.vector.manager.logE
-import org.matrix.vector.manager.logW
 import org.matrix.vector.manager.ipc.DaemonClient
 import org.matrix.vector.manager.ipc.commitForResult
 import org.matrix.vector.manager.ipc.requestReplaceExisting
@@ -116,7 +114,6 @@ class ManagerInstaller(private val context: Context, private val daemon: DaemonC
                 .uninstallPackage(BuildConfig.MANAGER_PACKAGE_NAME, IManagerService.ALL_USERS)
                 .getOrDefault(false)
         if (removed) _state.value = ManagerInstallStep.Idle
-        else logW("actions: could not remove the conflicting manager")
         return removed
     }
 
@@ -196,7 +193,6 @@ class ManagerInstaller(private val context: Context, private val daemon: DaemonC
             // megabytes of reads, on every arrival at the screen, to arrive at the same nothing.
             val ours = canonicalDigest()
             if (ours == null) {
-                logW("actions: the daemon served no manager APK to compare against")
                 return@withContext ManagerCopy.Present
             }
             // `sourceDir` is the whole of the installed copy — this installer stages one APK and
@@ -204,7 +200,6 @@ class ManagerInstaller(private val context: Context, private val daemon: DaemonC
             val source = installed.applicationInfo?.sourceDir
             val theirs = source?.let { path -> sha256 { FileInputStream(path) } }
             if (theirs == null) {
-                logW("actions: the installed manager could not be read, so it cannot be compared")
                 return@withContext ManagerCopy.Present
             }
 
@@ -274,7 +269,6 @@ class ManagerInstaller(private val context: Context, private val daemon: DaemonC
             if (apk == null) {
                 // Either the daemon is gone, or it refused: the APK is missing from the module
                 // directory or its signature is not the one this framework was built to accept.
-                logE("actions: the daemon served no manager APK to install")
                 _state.value = ManagerInstallStep.Failed(null)
                 return@withContext false
             }
@@ -305,9 +299,6 @@ class ManagerInstaller(private val context: Context, private val daemon: DaemonC
                     }
                     val (status, message) = commit(session, sessionId)
                     succeeded = status == PackageInstaller.STATUS_SUCCESS
-                    if (!succeeded) {
-                        logW("actions: manager install failed, status $status: $message")
-                    }
                     _state.value =
                         if (succeeded) ManagerInstallStep.Done
                         else
@@ -315,7 +306,7 @@ class ManagerInstaller(private val context: Context, private val daemon: DaemonC
                                 message,
                                 // STATUS_FAILURE_CONFLICT covers more than a signature clash, so
                                 // the platform's own reason decides. It is not localised and is
-                                // never shown; it is only matched on here and logged above.
+                                // never shown; it is only matched on here.
                                 signatureConflict =
                                     status == PackageInstaller.STATUS_FAILURE_CONFLICT &&
                                         message?.contains(SIGNATURE_CONFLICT) == true,
@@ -323,7 +314,6 @@ class ManagerInstaller(private val context: Context, private val daemon: DaemonC
                 }
             } catch (e: Exception) {
                 if (e is CancellationException) throw e
-                logE("actions: manager install failed", e)
                 _state.value = ManagerInstallStep.Failed(e.message)
             } finally {
                 runCatching { apk.close() }
@@ -348,12 +338,7 @@ class ManagerInstaller(private val context: Context, private val daemon: DaemonC
     private suspend fun commit(
         session: PackageInstaller.Session,
         sessionId: Int,
-    ): Pair<Int, String?> =
-        context.commitForResult(
-            session,
-            sessionId,
-            promptFailure = "actions: manager install prompt could not be started",
-        )
+    ): Pair<Int, String?> = context.commitForResult(session, sessionId)
 
     /**
      * A completed comparison, and the copy it was made against.

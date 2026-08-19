@@ -3,11 +3,9 @@ package org.matrix.vector.daemon.data
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.util.Log
 import java.io.File
 import org.matrix.vector.daemon.utils.FakeContext
 
-private const val TAG = "VectorDatabase"
 private const val DB_VERSION = 4
 
 class Database(context: Context? = FakeContext()) :
@@ -22,7 +20,6 @@ class Database(context: Context? = FakeContext()) :
   }
 
   override fun onCreate(db: SQLiteDatabase) {
-    Log.i(TAG, "Creating new Vector database")
     db.execSQL(
         """
         CREATE TABLE IF NOT EXISTS modules (
@@ -76,23 +73,17 @@ class Database(context: Context? = FakeContext()) :
   }
 
   override fun onDowngrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-    Log.w(TAG, "Downgrading database from $oldVersion to $newVersion")
-
     // If it's not the known LSPosed version, wipe and start fresh
     if (oldVersion < 101) {
-      Log.i(TAG, "Unknown high version ($oldVersion). Resetting database from scratch.")
       wipeDatabase(db)
       onCreate(db)
       return
     }
 
-    Log.i(TAG, "Detected LSPosed database (v$oldVersion). Starting data migration.")
-
     // Backup existing database file
     runCatching {
       val backupFile = File(FileSystem.dbPath.parent, "modules_config_lsposed.db")
       FileSystem.dbPath.copyTo(backupFile, overwrite = true)
-      Log.i(TAG, "LSPosed backup created: ${backupFile.absolutePath}")
     }
 
     // Prepare migration by renaming LSPosed tables to avoid name collisions
@@ -133,9 +124,7 @@ class Database(context: Context? = FakeContext()) :
             FROM lsp_module_configs;
         """)
 
-      Log.i(TAG, "Migration from LSPosed successful.")
-    } catch (e: Exception) {
-      Log.e(TAG, "Migration failed, resetting to clean state.", e)
+    } catch (_: Exception) {
       wipeDatabase(db)
       onCreate(db)
     } finally {
@@ -160,7 +149,6 @@ class Database(context: Context? = FakeContext()) :
   }
 
   override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-    Log.i(TAG, "Upgrading database from $oldVersion to $newVersion")
     if (oldVersion < 2) {
       db.execSQL("DROP INDEX IF EXISTS configs_idx;")
       db.execSQL("ALTER TABLE scope RENAME TO old_scope;")

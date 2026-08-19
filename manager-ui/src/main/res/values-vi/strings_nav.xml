@@ -2,7 +2,6 @@
 <resources>
     <string name="nav_home">Trang chính</string>
     <string name="nav_modules">Mô-đun</string>
-    <string name="nav_logs">Nhật ký</string>
     <string name="panels_ball_close">Đóng điều hướng</string>
     <string name="panels_ball_open">Mở điều hướng</string>
     <string name="panels_done">Xong</string>

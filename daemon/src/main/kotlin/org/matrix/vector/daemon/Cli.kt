@@ -8,8 +8,6 @@ import com.google.gson.GsonBuilder
 import com.google.gson.ToNumberPolicy
 import java.io.DataInputStream
 import java.io.DataOutputStream
-import java.io.FileDescriptor
-import java.io.FileInputStream
 import java.util.concurrent.Callable
 import kotlin.system.exitProcess
 import org.matrix.vector.daemon.data.FileSystem
@@ -27,8 +25,7 @@ data class CliRequest(
 data class CliResponse(
     val success: Boolean,
     val data: Any? = null,
-    val error: String? = null,
-    val isFdAttached: Boolean = false
+    val error: String? = null
 )
 
 // --- IPC Client Logic ---
@@ -64,54 +61,12 @@ object VectorIPC {
 
       // Read Response
       val responseJson = input.readUTF()
-      val response = gson.fromJson(responseJson, CliResponse::class.java)
-
-      // Handle Log Streaming
-      if (response.isFdAttached) {
-        val hasFd = input.readByte()
-        if (hasFd.toInt() == 1) {
-          val fds = socket.getAncillaryFileDescriptors()
-          if (!fds.isNullOrEmpty()) {
-            streamLog(fds[0], request.options["follow"] as? Boolean ?: false)
-          }
-        }
-      }
-      response
+      return gson.fromJson(responseJson, CliResponse::class.java)
     } catch (e: Exception) {
       CliResponse(success = false, error = "Socket Failure: ${e.message}")
     } finally {
       socket.close()
     }
-  }
-
-  private fun streamLog(fd: java.io.FileDescriptor, follow: Boolean) {
-    // Wrap the raw FileDescriptor in a FileInputStream.
-    // 'use' ensures that fis.close() (and thus the FD) is called
-    // when the block finishes or if an exception is thrown.
-    FileInputStream(fd).use { fis ->
-      val reader = fis.bufferedReader()
-
-      try {
-        while (true) {
-          val line = reader.readLine()
-          if (line != null) {
-            println(line)
-          } else {
-            if (!follow) break // EOF reached, exit
-
-            // In follow mode, wait for new data to be written to the log
-            Thread.sleep(100)
-          }
-
-          // Check if thread was interrupted (e.g. by a shutdown hook)
-          if (Thread.interrupted()) break
-        }
-      } catch (e: Exception) {
-        if (e !is InterruptedException) {
-          System.err.println("Log streaming error: ${e.message}")
-        }
-      }
-    } // FD is closed here automatically
   }
 }
 
@@ -198,8 +153,7 @@ object OutputFormatter {
             ModulesCommand::class,
             ScopeCommand::class,
             ConfigCommand::class,
-            DatabaseCommand::class,
-            LogCommand::class])
+            DatabaseCommand::class])
 class Cli : Callable<Int> {
 
   @Option(
@@ -221,12 +175,6 @@ class Cli : Callable<Int> {
         System.err.println("Permission denied: Vector CLI must run as root.")
         exitProcess(1)
       }
-      val mainThread = Thread.currentThread()
-      Runtime.getRuntime()
-          .addShutdownHook(
-              Thread {
-                mainThread.interrupt() // Signal the loop to stop and close the stream
-              })
       val exitCode = CommandLine(Cli()).execute(*args)
       exitProcess(exitCode)
     }
@@ -365,45 +313,6 @@ class DatabaseCommand {
     }
 
     val req = CliRequest(command = "db", action = "reset")
-    return OutputFormatter.print(VectorIPC.transmit(req), parent.json)
-  }
-}
-
-@Command(name = "log", description = ["Stream or clear framework logs"])
-class LogCommand {
-  @ParentCommand lateinit var parent: Cli
-
-  @Command(name = "cat", description = ["Dump logs and exit"])
-  fun cat(
-      @Option(names = ["-v", "--verbose"], description = ["Read verbose daemon log"])
-      verbose: Boolean
-  ): Int {
-    val req =
-        CliRequest(
-            command = "log",
-            action = "stream",
-            options = mapOf("verbose" to verbose, "follow" to false))
-    VectorIPC.transmit(req)
-    return 0
-  }
-
-  @Command(name = "tail", description = ["Follow logs in real-time"])
-  fun tail(
-      @Option(names = ["-v", "--verbose"], description = ["Follow verbose daemon log"])
-      verbose: Boolean
-  ): Int {
-    val req =
-        CliRequest(
-            command = "log",
-            action = "stream",
-            options = mapOf("verbose" to verbose, "follow" to true))
-    VectorIPC.transmit(req)
-    return 0
-  }
-
-  @Command(name = "clear", description = ["Clear log buffers"])
-  fun clear(@Option(names = ["-v", "--verbose"]) verbose: Boolean): Int {
-    val req = CliRequest(command = "log", action = "clear", options = mapOf("verbose" to verbose))
     return OutputFormatter.print(VectorIPC.transmit(req), parent.json)
   }
 }

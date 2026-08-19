@@ -20,8 +20,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.matrix.vector.ipc.IFrameworkInstallReceiver
 import org.matrix.vector.manager.ipc.DaemonClient
-import org.matrix.vector.manager.logE
-import org.matrix.vector.manager.logW
 
 /** Where a framework flash has got to. */
 sealed interface FlashStep {
@@ -132,7 +130,6 @@ class FrameworkInstaller(
         val call =
             runCatching { client.newCall(Request.Builder().url(url).build()) }
                 .getOrElse { e ->
-                    logW("update: unusable download url $url", e)
                     append("Download failed: ${e.message}")
                     _state.value = FlashStep.Failed(IFrameworkInstallReceiver.INSTALL_NO_SUCH_FILE)
                     return
@@ -224,7 +221,6 @@ class FrameworkInstaller(
                 // through its call, which arrives above — but a cancellation is a coroutine ending,
                 // not a file that could not be fetched, and it must never be recorded as one.
                 if (e is CancellationException) throw e
-                logW("update: download failed", e)
                 append("Download failed: ${e.message}")
                 _state.value = FlashStep.Failed(IFrameworkInstallReceiver.INSTALL_NO_SUCH_FILE)
                 return
@@ -312,7 +308,6 @@ class FrameworkInstaller(
         val started = daemon.installFrameworkZip(path, receiver)
         if (started.isFailure) {
             val cause = started.exceptionOrNull()
-            logE("update: daemon did not start the install of $path", cause)
             append("The daemon refused the install: ${cause?.message}")
             _state.value = FlashStep.Failed(IFrameworkInstallReceiver.INSTALL_NOT_EXECUTED)
             return

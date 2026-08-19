@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="nav_home">Trang chính</string>
     <string name="nav_modules">Mô-đun</string>
-    <string name="nav_logs">Nhật ký</string>
-
     <string name="panels_done">Xong</string>
     <string name="panels_hide">Ẩn %1$s</string>
     <string name="panels_show">Hiện %1$s</string>
@@ -12,21 +9,20 @@
     <string name="panels_move_later">Chuyển ra sau</string>
     <string name="panels_ball_open">Mở điều hướng</string>
     <string name="panels_ball_close">Đóng điều hướng</string>
-
     <string name="status_active">Đang hoạt động</string>
     <string name="status_degraded">Cần kiểm tra</string>
     <string name="status_inactive">Chưa kích hoạt</string>
     <string name="status_mismatched">Phiên bản không khớp</string>
     <string name="status_checking">Đang kiểm tra…</string>
     <string name="status_open_details">Mở trạng thái hệ thống</string>
-
+    <string name="copied">Đã sao chép vào bộ nhớ tạm</string>
+    <string name="action_copy_all">Sao chép tất cả</string>
     <string name="issue_sepolicy_title">Chưa nạp chính sách SELinux</string>
     <string name="issue_sepolicy_summary">Một số tính năng sẽ không chạy. Thường là do bản root không áp dụng các quy tắc chính sách của Vector.</string>
     <string name="issue_system_server_title">Tiêm vào framework hệ thống thất bại</string>
     <string name="issue_system_server_summary">Mô-đun không thể hook các dịch vụ hệ thống. Hiếm gặp, và thường do một mô-đun root khác gây nhiễu.</string>
     <string name="issue_dex2oat_title">Không dùng được lớp bọc dex2oat</string>
     <string name="issue_dex2oat_summary">Một số thuộc tính hệ thống đã bị xoá hoặc thay đổi. Mô-đun có thể ngừng tác dụng sau khi một ứng dụng cập nhật.</string>
-
     <string name="system_status">Trạng thái hệ thống</string>
     <string name="info_api_version">API Xposed</string>
     <string name="info_framework_version">Framework</string>
@@ -62,15 +58,12 @@
     <string name="home_open_issue">Báo lỗi</string>
     <string name="home_discussions">Thảo luận</string>
     <string name="home_review_prs">Xem lại một thay đổi</string>
-
     <string name="home_with_coauthor">%1$s và %2$s</string>
     <string name="home_with_coauthors">%1$s và %2$d người khác</string>
-
     <string name="home_month_stats">%1$s · %2$s</string>
     <plurals name="home_people_count_plain">
         <item quantity="other">%1$d người</item>
     </plurals>
-
     <plurals name="home_commits_ahead">
         <item quantity="other">%1$d commit mới hơn bản của bạn</item>
     </plurals>
@@ -78,7 +71,6 @@
     <plurals name="home_quiet_days">
         <item quantity="other">%1$d ngày yên ắng</item>
     </plurals>
-
     <string name="appearance_title">Giao diện</string>
     <string name="appearance_theme">Chủ đề</string>
     <string name="appearance_theme_system">Theo hệ thống</string>
@@ -89,7 +81,6 @@
     <string name="appearance_amoled_summary">Tiết kiệm pin trên màn hình OLED.</string>
     <string name="egg_two_more">Hai lần nữa…</string>
     <string name="egg_one_more">Một lần nữa…</string>
-
     <string name="modules_empty">Chưa cài mô-đun nào.</string>
     <string name="modules_active_of">%1$d trong %2$d đang bật</string>
     <string name="modules_no_match">Không có mô-đun nào khớp với tìm kiếm hoặc bộ lọc đó.</string>
@@ -116,29 +107,24 @@
     <string name="modules_incompatible_legacy">Cần API Xposed %1$d, framework này không cung cấp.</string>
     <string name="modules_api_behind">Được dựng cho libxposed API %1$d. API %2$d đã đổi giao diện nên mô-đun này có thể không chạy đầy đủ.</string>
     <string name="modules_no_daemon">Vector không chạy nên không lấy được danh sách mô-đun. Mở trạng thái hệ thống ở trang chính để xem vì sao.</string>
-
     <string name="web_open_external">Mở bằng trình duyệt</string>
-
     <string name="settings_ambience">Nền phần đầu</string>
     <string name="ambience_snow">Tuyết</string>
     <string name="ambience_maze">Mê cung</string>
     <string name="ambience_circuit">Mạch điện</string>
     <string name="ambience_matrix">Mưa mã</string>
     <string name="ambience_none">Đứng yên</string>
-
     <string name="settings_navigation">Điều hướng</string>
     <string name="settings_floating_nav">Điều hướng nổi</string>
     <string name="settings_floating_nav_summary">Thay thanh điều hướng bằng một quả bóng nhỏ có thể kéo tới bất kỳ đâu. Giữ để xòe các mục ra, hoặc chạm để giữ chúng mở.</string>
     <string name="settings_rearrange_panels">Sắp xếp lại các mục</string>
     <string name="settings_rearrange_panels_summary">Đổi thứ tự, hoặc ẩn những mục bạn không bao giờ mở.</string>
-
     <string name="settings_activity">Dòng hoạt động</string>
     <plurals name="settings_window_months">
         <item quantity="other">%1$d tháng gần nhất</item>
     </plurals>
     <string name="settings_open_externally">Mở liên kết bằng trình duyệt</string>
     <string name="settings_open_externally_summary">Tắt: các trang GitHub mở ngay trong Vector.</string>
-
     <string name="scope_use_recommended">Dùng đúng những gì mô-đun yêu cầu</string>
     <string name="scope_select_visible">Chọn hết những mục đang hiện</string>
     <string name="scope_clear_visible">Bỏ chọn hết những mục đang hiện</string>
@@ -172,7 +158,6 @@
     <string name="scope_empty_message">Mô-đun này đang bật nhưng chưa chọn ứng dụng nào, nên sẽ chẳng làm gì. Hãy tắt nó, hoặc chọn vài ứng dụng.</string>
     <string name="scope_empty_disable">Tắt mô-đun</string>
     <string name="scope_empty_keep">Cứ để bật</string>
-
     <string name="action_launch">Mở</string>
     <string name="action_app_info">Thông tin ứng dụng</string>
     <string name="action_force_stop">Buộc dừng</string>
@@ -187,10 +172,9 @@
     <string name="action_optimize_failed">Không tối ưu lại được %1$s.</string>
     <string name="action_uninstalled">Đã gỡ %1$s.</string>
     <string name="action_uninstall_failed">Không gỡ được %1$s.</string>
-
     <string name="back">Quay lại</string>
     <string name="retry">Thử lại</string>
-
+    <string name="cancel">Huỷ</string>
     <string name="appearance_color">Màu</string>
     <string name="appearance_custom_color">Chọn một màu</string>
     <string name="modules_expand">Xem mô tả đầy đủ</string>
@@ -238,24 +222,14 @@
     <string name="report_step_canary_body">Có thể lỗi đã được sửa rồi, và người bảo trì cần bản gỡ lỗi mới giúp được bạn. Hãy dùng bản từ master — bản dựng của pull request không ổn định.</string>
     <string name="report_step_zygisk">Không dùng Magisk? Cập nhật Zygisk</string>
     <string name="report_step_zygisk_body">Nạp bản Zygisk mới nhất, chọn bản gỡ lỗi nếu có.</string>
-    <string name="report_step_logs">Đính kèm nhật ký</string>
-    <string name="report_step_logs_body">Một báo cáo không có nhật ký là cuộc trò chuyện bắt đầu lại từ đầu. Thao tác này ghi cả hai nhật ký vào một tệp zip để bạn đính kèm.</string>
-    <string name="report_step_crashed">Nếu Zygisk đã sập</string>
-    <string name="report_step_crashed_body">Không thể xin tệp zip từ tiến trình nền nữa, nhưng nó vẫn đã ghi các tệp. Quyền root đọc được chúng ngay cả khi không còn cách nào khác.</string>
     <string name="report_open_tracker">Mở trang theo dõi lỗi</string>
-    <string name="report_save_with_root">Lưu thư mục nhật ký (cần root)</string>
-    <string name="report_saved_to">Đã lưu vào %1$s</string>
-    <string name="report_see_guide">Hướng dẫn đầy đủ ở issue</string>
-    <string name="report_root_refused">Root bị từ chối. Hãy cho phép Vector trong trình quản lý root rồi thử lại%1$s</string>
     <string name="home_custom_build">Bản dựng riêng — mới hơn master</string>
     <string name="language_title">Ngôn ngữ</string>
     <string name="language_system">Theo hệ thống</string>
     <string name="language_system_summary">Dùng ngôn ngữ đã đặt trên điện thoại</string>
-
     <string name="language_translated_by">Dịch bởi %1$s</string>
     <string name="language_help_short">Dịch</string>
     <string name="language_help">Giúp dịch Vector</string>
-
     <string name="update_title">Cập nhật framework</string>
     <string name="update_channel_canary">Bản canary</string>
     <string name="update_channel_release">Bản chính thức</string>
@@ -361,22 +335,9 @@
     <string name="info_section_build">Đang chạy những gì</string>
     <string name="info_section_health">Có hoạt động không</string>
     <string name="info_section_device">Thiết bị này</string>
-    <string name="crash_recorded_title">Trình quản lý đã đóng đột ngột</string>
-    <string name="crash_recorded_summary">Toàn bộ vết lỗi nằm trong bản xuất nhật ký, ở thư mục crash_manager.</string>
-    <string name="crash_recorded_clear">Xoá</string>
-    <string name="crash_what">Cái gì</string>
-    <string name="crash_message">Thông báo</string>
-    <string name="crash_where">Ở đâu</string>
-    <string name="crash_when">Khi nào</string>
-    <string name="crash_where_unknown">Không ở đâu trong mã của chính Vector</string>
-    <string name="crash_when_value">%1$s trên %2$s</string>
-    <string name="crash_open_trace">Xem vết lỗi</string>
-    <string name="crash_trace">Sự cố</string>
-    <string name="crash_caused_by">Nguyên nhân</string>
     <plurals name="crash_frames_elided">
         <item quantity="other">thêm %1$d khung nữa, giống như trên</item>
     </plurals>
-    <string name="crash_unreadable">Không đọc được sự cố này. Hãy sao chép và đính kèm nguyên trạng vào báo cáo.</string>
     <string name="force_launcher_icons">Không cho ứng dụng ẩn biểu tượng trên trình khởi chạy</string>
     <string name="force_launcher_icons_summary">Từ Android 10, ứng dụng tự ẩn biểu tượng của mình trên trình khởi chạy sẽ được cấp lại một biểu tượng mở trang thông tin ứng dụng. Tắt mục này để nó vẫn được ẩn — trình khởi chạy có thể chưa cập nhật cho tới khi nó khởi động lại. Những ứng dụng vốn không có biểu tượng khởi chạy, gồm hầu hết mô-đun, không bị ảnh hưởng.</string>
     <string name="action_force_stop_failed">Không dừng được %1$s.</string>
@@ -399,7 +360,6 @@
     <string name="settings_doh_working">Đang hoạt động — %1$s được phân giải qua Cloudflare.</string>
     <string name="settings_doh_fell_back">Không kết nối được tới Cloudflare (%1$s), nên trình phân giải của mạng sẽ được dùng trong phần còn lại của phiên này.</string>
     <string name="settings_doh_retry">Thử lại</string>
-
     <string name="launcher_title">Cách mở Vector</string>
     <string name="launcher_body">Vector không được cài như một ứng dụng, nên trình khởi chạy không có gì để hiển thị. Đây là những cách quay lại.</string>
     <string name="launcher_shortcut">Lối tắt trên màn hình chính</string>

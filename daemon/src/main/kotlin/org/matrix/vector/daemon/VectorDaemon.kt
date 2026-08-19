@@ -13,8 +13,6 @@ import android.os.Process
 import android.os.ServiceManager
 import android.os.SystemProperties
 import android.system.Os
-import android.util.Log
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -25,23 +23,17 @@ import org.matrix.vector.daemon.data.ConfigCache
 import org.matrix.vector.daemon.data.FileSystem
 import org.matrix.vector.daemon.env.CliSocketServer
 import org.matrix.vector.daemon.env.Dex2OatServer
-import org.matrix.vector.daemon.env.LogcatMonitor
 import org.matrix.vector.daemon.ipc.BRIDGE_TRANSACTION_CODE
 import org.matrix.vector.daemon.ipc.ManagerService
 import org.matrix.vector.daemon.ipc.SystemServerService
 import org.matrix.vector.daemon.utils.applyNotificationWorkaround
 
-private const val TAG = "VectorDaemon"
 private const val ACTION_SEND_BINDER = 1
 
 object VectorDaemon {
-  private val exceptionHandler = CoroutineExceptionHandler { context, throwable ->
-    Log.e(TAG, "Caught fatal coroutine exception in background task!", throwable)
-  }
-
   // Dispatchers.IO: Uses the shared background thread pool.
   // SupervisorJob(): Ensures one failing task doesn't kill the whole daemon.
-  val scope = CoroutineScope(Dispatchers.IO + SupervisorJob() + exceptionHandler)
+  val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
   val bridgeServiceName = "activity"
 
   var isLateInject = false
@@ -61,18 +53,7 @@ object VectorDaemon {
       }
     }
 
-    Log.i(TAG, "Vector daemon started: lateInject=$isLateInject, proxy=$proxyServiceName")
-    // The hash is here rather than in the version the manager prints: Home should stay readable,
-    // but every saved bug report should say exactly which commit produced the daemon that wrote it.
-    Log.i(
-        TAG,
-        "Version ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE}) " +
-            "commit ${BuildConfig.VERSION_HASH}")
-
-    Thread.setDefaultUncaughtExceptionHandler { _, e ->
-      Log.e(TAG, "Uncaught exception in Daemon", e)
-      kotlin.system.exitProcess(1)
-    }
+    Thread.setDefaultUncaughtExceptionHandler { _, _ -> kotlin.system.exitProcess(1) }
 
     // Setup Main Looper
     Process.setThreadPriority(Process.THREAD_PRIORITY_FOREGROUND)
@@ -83,7 +64,6 @@ object VectorDaemon {
     SystemServerService.registerProxyService(proxyServiceName)
 
     // Start Environmental Daemons
-    LogcatMonitor.start()
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) Dex2OatServer.start()
     CliSocketServer.start()
 
@@ -102,19 +82,8 @@ object VectorDaemon {
 
     applyNotificationWorkaround()
 
-    // Read this before `sendToBridge`, which leaves the main thread at euid 1000: the config
-    // database lives under a directory only root can enter, so the first process to open it has
-    // to do so while we still have root. On a successful injection a binder thread opens it for
-    // us during specialization, but when the injection fails nothing else has, and the daemon
-    // used to die here on an unreadable preference.
-    val isVerboseLog = ManagerService.isVerboseLogEnabled()
-
     // Setup IPC channel for applications by injecting DaemonService binder
     sendToBridge(VectorService.asBinder(), false, systemServerMaxRetry)
-
-    if (!isVerboseLog) {
-      LogcatMonitor.stopVerbose()
-    }
 
     Looper.loop()
     throw RuntimeException("Main thread loop unexpectedly exited")
@@ -122,7 +91,6 @@ object VectorDaemon {
 
   private fun waitForSystemService(name: String) = runBlocking {
     while (ServiceManager.getService(name) == null) {
-      Log.i(TAG, "Waiting system service: $name for 1s")
       delay(1000)
     }
   }
@@ -142,12 +110,10 @@ object VectorDaemon {
 
     runCatching {
           var bridgeService: IBinder?
-          if (isRestart) Log.w(TAG, "system_server restarted...")
 
           while (true) {
             bridgeService = ServiceManager.getService(bridgeServiceName)
             if (bridgeService?.pingBinder() == true) break
-            Log.i(TAG, "`$bridgeServiceName` service not ready, waiting 1s...")
             Thread.sleep(1000)
           }
 
@@ -155,7 +121,6 @@ object VectorDaemon {
           val deathRecipient =
               object : IBinder.DeathRecipient {
                 override fun binderDied() {
-                  Log.w(TAG, "System Server died! Clearing caches and re-injecting...")
                   bridgeService.unlinkToDeath(this, 0)
                   clearSystemCaches()
                   SystemServerService.binderDied() // Cleanup old references
@@ -185,23 +150,15 @@ object VectorDaemon {
               data.recycle()
               reply.recycle()
             }
-            Log.w(TAG, "No response from bridge, retrying...")
             Thread.sleep(1000)
           }
 
-          if (success) {
-            Log.i(TAG, "Successfully injected Vector IPC binder for applications.")
-          } else {
-            Log.e(TAG, "Failed to inject VectorService into system_server")
-            if (restartRetry > 0) restartSystemServer()
-          }
+          if (!success && restartRetry > 0) restartSystemServer()
         }
-        .onFailure { Log.e(TAG, "Error during injecting DaemonService", it) }
     Os.seteuid(1000)
   }
 
   private fun clearSystemCaches() {
-    Log.i(TAG, "Clearing ServiceManager and ActivityManager caches...")
     runCatching {
           // Clear ServiceManager.sServiceManager
           var field = ServiceManager::class.java.getDeclaredField("sServiceManager")
@@ -227,7 +184,6 @@ object VectorDaemon {
             synchronized(singleton) { mInstanceField.set(singleton, null) }
           }
         }
-        .onFailure { Log.w(TAG, "Failed to clear system caches via reflection", it) }
   }
 
   /**
@@ -242,12 +198,10 @@ object VectorDaemon {
    * Everything on screen dies with it. The caller is expected to have said so first.
    */
   fun softReboot() {
-    Log.w(TAG, "Soft reboot: restarting the primary zygote")
     SystemProperties.set("ctl.restart", "zygote")
   }
 
   fun restartSystemServer() {
-    Log.w(TAG, "Restarting system_server...")
     val restartTarget =
         if (Build.SUPPORTED_64_BIT_ABIS.isNotEmpty() && Build.SUPPORTED_32_BIT_ABIS.isNotEmpty()) {
           "zygote_secondary"

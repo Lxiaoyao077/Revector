@@ -2,7 +2,6 @@
 <resources>
     <string name="nav_home">홈</string>
     <string name="nav_modules">모듈</string>
-    <string name="nav_logs">로그</string>
     <string name="panels_ball_close">탐색 닫기</string>
     <string name="panels_ball_open">탐색 열기</string>
     <string name="panels_done">완료</string>

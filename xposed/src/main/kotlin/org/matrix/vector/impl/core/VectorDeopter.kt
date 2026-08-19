@@ -1,7 +1,6 @@
 package org.matrix.vector.impl.core
 
 import java.lang.reflect.Executable
-import org.matrix.vector.util.Log
 import org.matrix.vector.util.Utils
 import org.matrix.vector.nativebridge.HookBridge
 
@@ -10,8 +9,6 @@ import org.matrix.vector.nativebridge.HookBridge
  * placed on heavily inlined methods are respected by the ART runtime.
  */
 object VectorDeopter {
-
-    private const val TAG = "VectorDeopter"
 
     @JvmStatic
     fun deoptMethods(where: String, cl: ClassLoader?) {
@@ -33,12 +30,6 @@ object VectorDeopter {
                     // Allow access if restricted and pass to the native bridge
                     executable.isAccessible = true
                     HookBridge.deoptimizeMethod(executable)
-                }
-                .onFailure {
-                    Log.v(
-                        TAG,
-                        "Skipping deopt for ${target.className}#${target.methodName}: ${it.message}",
-                    )
                 }
         }
     }

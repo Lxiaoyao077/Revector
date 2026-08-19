@@ -12,13 +12,11 @@ import android.content.pm.ResolveInfo
 import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IUserManager
-import android.util.Log
 import java.io.File
 import java.lang.reflect.Method
 import java.util.stream.Collectors
 import org.matrix.vector.daemon.utils.getRealUsers
 
-private const val TAG = "VectorSystem"
 const val PER_USER_RANGE = 100000
 
 /**
@@ -177,7 +175,6 @@ fun IPackageManager.queryIntentActivitiesCompat(
         slice?.list ?: emptyList()
       }
       .getOrElse {
-        Log.e(TAG, "queryIntentActivitiesCompat failed", it)
         emptyList()
       }
 }
@@ -207,7 +204,6 @@ private fun IPackageManager.getInstalledPackagesReflect(
         val result = method.invoke(this, flags, userId)
         @Suppress("UNCHECKED_CAST") (result as? ParceledListSlice<PackageInfo>)?.list
       }
-      .onFailure { Log.e(TAG, "Reflection call failed", it.cause ?: it) }
       .getOrNull() ?: emptyList()
 }
 
@@ -282,7 +278,6 @@ fun IActivityManager.registerReceiverCompat(
               appThread, "android", receiver, filter, requiredPermission, userId, flags)
         }
       }
-      .onFailure { Log.e(TAG, "registerReceiver failed", it) }
       .getOrNull()
 }
 
@@ -315,7 +310,6 @@ fun IActivityManager.broadcastIntentCompat(intent: Intent) {
               appThread, intent, null, null, 0, null, null, null, -1, null, true, false, 0)
         }
       }
-      .onFailure { Log.e(TAG, "broadcastIntent failed", it) }
 }
 
 // `startActivityAsUserWithFeature` only arrived in Android R: on older platforms the same call
@@ -342,7 +336,6 @@ fun IActivityManager.startActivityAsUserCompat(intent: Intent, userId: Int): Int
               appThread, "android", intent, intent.type, null, null, 0, 0, null, null, userId)
         }
       }
-      .onFailure { Log.e(TAG, "startActivityAsUser failed", it) }
       .getOrDefault(-1)
 }
 

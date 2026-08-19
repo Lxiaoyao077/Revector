@@ -8,8 +8,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.matrix.vector.manager.di.ServiceLocator
 import org.matrix.vector.manager.ipc.DaemonClient
-import org.matrix.vector.manager.logE
-import org.matrix.vector.manager.logW
 
 /**
  * The single source of truth for which modules are enabled.
@@ -74,9 +72,6 @@ class ModuleRepository(
             daemonClient
                 .getEnabledModules()
                 .onSuccess { enabled -> _enabledModulesState.update { enabled.toSet() } }
-                .onFailure { e ->
-                    logW("modules: enabled list unavailable, showing none enabled", e)
-                }
         }
     }
 
@@ -88,18 +83,9 @@ class ModuleRepository(
      * control back leaves the user with no idea what happened.
      */
     suspend fun toggleModule(packageName: String, enable: Boolean): Boolean {
-        val verb = if (enable) "enable" else "disable"
         val result = daemonClient.setModuleEnabled(packageName, enable)
         val accepted = result.getOrDefault(false)
-        if (!accepted) {
-            val cause = result.exceptionOrNull()
-            if (cause != null) {
-                logE("modules: $verb of $packageName failed", cause)
-            } else {
-                logE("modules: daemon refused to $verb $packageName")
-            }
-            return false
-        }
+        if (!accepted) return false
 
         _enabledModulesState.update { current ->
             if (enable) current + packageName else current - packageName

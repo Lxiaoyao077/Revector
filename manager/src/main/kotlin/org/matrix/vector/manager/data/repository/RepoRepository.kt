@@ -23,8 +23,6 @@ import org.matrix.vector.ui.store.StoreCatalog
 import org.matrix.vector.manager.data.model.versionCodeCompat
 import org.matrix.vector.manager.di.ServiceLocator
 import org.matrix.vector.manager.ipc.DaemonClient
-import org.matrix.vector.manager.logI
-import org.matrix.vector.manager.logW
 
 /**
  * The Store's data: the online catalogue, and what this device already has of it.
@@ -173,12 +171,7 @@ class RepoRepository(
 
     private suspend fun loadInstalled() {
         val packages =
-            daemon
-                .getInstalledPackagesFromAllUsers(0, false)
-                .onFailure { e ->
-                    logW("store: installed versions unavailable", e)
-                }
-                .getOrNull() ?: return
+            daemon.getInstalledPackagesFromAllUsers(0, false).getOrNull() ?: return
         val versions = HashMap<String, RepoVersion>(packages.size)
         for (info in packages) {
             val version = RepoVersion(info.versionCodeCompat, info.versionName.orEmpty())
@@ -199,16 +192,10 @@ class RepoRepository(
             // the one that runs whenever a mirror is down.
             client.newCall(request(url, cacheControl)).execute().use { response ->
                 if (!response.isSuccessful) {
-                    // The FORCE_CACHE replay synthesises 504 without contacting the mirror, so
-                    // only report a status the network actually produced.
-                    if (response.networkResponse != null) {
-                        logW("store: $url returned HTTP ${response.code}")
-                    }
                     return null
                 }
                 val parsed = parseCatalog(response)
                 if (parsed.isEmpty()) return null
-                logI("store: ${parsed.size} modules from $url")
                 // `fromCache` is deliberately *not* derived from `response.networkResponse`. A hit
                 // inside the ten-minute freshness window is served from disk without touching the
                 // network, and calling that "the saved catalogue" would put an offline notice on
@@ -220,8 +207,7 @@ class RepoRepository(
                     loadedAtMillis = response.receivedResponseAtMillis,
                 )
             }
-        } catch (e: Exception) {
-            logW("store: $url unavailable", e)
+        } catch (_: Exception) {
             null
         }
     }
@@ -237,8 +223,7 @@ class RepoRepository(
                 if (!response.isSuccessful) return null
                 gson.fromJson(response.body.string(), OnlineModule::class.java)
             }
-        } catch (e: Exception) {
-            logW("store: $url unavailable", e)
+        } catch (_: Exception) {
             null
         }
     }
@@ -259,19 +244,18 @@ class RepoRepository(
      */
     private fun parseCatalog(response: Response): List<OnlineModule> {
         val modules = ArrayList<OnlineModule>(1024)
-        var rejected = 0
         JsonReader(response.body.charStream()).use { reader ->
             reader.beginArray()
             while (reader.hasNext()) {
                 // Parsing to a JsonElement first cannot fail on well-formed JSON, so a binding
                 // failure below leaves the reader cleanly positioned on the next entry.
                 val element = JsonParser.parseReader(reader)
-                val module = runCatching { gson.fromJson(element, OnlineModule::class.java) }
-                if (module.isSuccess) module.getOrNull()?.let(modules::add) else rejected++
+                runCatching { gson.fromJson(element, OnlineModule::class.java) }
+                    .getOrNull()
+                    ?.let(modules::add)
             }
             reader.endArray()
         }
-        if (rejected > 0) logW("store: skipped $rejected unreadable entries")
         return modules
     }
 

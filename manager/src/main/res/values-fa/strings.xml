@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="nav_home">خانه</string>
     <string name="nav_modules">ماژول‌ها</string>
-    <string name="nav_logs">گزارش‌ها</string>
-
     <string name="panels_done">انجام شد</string>
     <string name="panels_hide">پنهان کردن %1$s</string>
     <string name="panels_show">نمایش %1$s</string>
@@ -12,21 +9,20 @@
     <string name="panels_move_later">انتقال به عقب</string>
     <string name="panels_ball_open">باز کردن ناوبری</string>
     <string name="panels_ball_close">بستن ناوبری</string>
-
     <string name="status_active">فعال</string>
     <string name="status_degraded">نیازمند توجه</string>
     <string name="status_inactive">فعال نشده</string>
     <string name="status_mismatched">ناسازگاری نسخه</string>
     <string name="status_checking">در حال بررسی…</string>
     <string name="status_open_details">باز کردن وضعیت سامانه</string>
-
+    <string name="copied">در بریده‌دان رونوشت شد</string>
+    <string name="action_copy_all">رونوشت همه</string>
     <string name="issue_sepolicy_title">سیاست SELinux بارگذاری نشده است</string>
     <string name="issue_sepolicy_summary">برخی قابلیت‌ها کار نخواهند کرد. معمولاً یعنی پیاده‌سازی روت قواعد Vector را اعمال نکرده است.</string>
     <string name="issue_system_server_title">تزریق به چارچوب سامانه ناموفق بود</string>
     <string name="issue_system_server_summary">ماژول‌ها نمی‌توانند به سرویس‌های سامانه قلاب بزنند. این کمیاب است و معمولاً ماژول روت دیگری مزاحمت ایجاد می‌کند.</string>
     <string name="issue_dex2oat_title">پوشش dex2oat در دسترس نیست</string>
     <string name="issue_dex2oat_summary">برخی ویژگی‌های سامانه حذف یا تغییر کرده‌اند. ممکن است پس از به‌روزرسانی یک برنامه، ماژول‌ها دیگر اثر نکنند.</string>
-
     <string name="system_status">وضعیت سامانه</string>
     <string name="info_api_version">واسط Xposed</string>
     <string name="info_framework_version">چارچوب</string>
@@ -64,16 +60,13 @@
     <string name="home_open_issue">گزارش مشکل</string>
     <string name="home_discussions">گفتگوها</string>
     <string name="home_review_prs">بازبینی یک تغییر</string>
-
     <string name="home_with_coauthor">%1$s و %2$s</string>
     <string name="home_with_coauthors">%1$s و %2$d نفر دیگر</string>
-
     <string name="home_month_stats">%1$s · %2$s</string>
     <plurals name="home_people_count_plain">
         <item quantity="one">%1$d نفر</item>
         <item quantity="other">%1$d نفر</item>
     </plurals>
-
     <plurals name="home_commits_ahead">
         <item quantity="one">%1$d کامیت تازه‌تر از ساخت شما</item>
         <item quantity="other">%1$d کامیت تازه‌تر از ساخت شما</item>
@@ -83,7 +76,6 @@
         <item quantity="one">%1$d روز آرامش</item>
         <item quantity="other">%1$d روز آرامش</item>
     </plurals>
-
     <string name="appearance_title">ظاهر</string>
     <string name="appearance_theme">پوسته</string>
     <string name="appearance_theme_system">هماهنگ با سامانه</string>
@@ -94,7 +86,6 @@
     <string name="appearance_amoled_summary">در نمایشگرهای OLED مصرف را کم می‌کند.</string>
     <string name="egg_two_more">دو بار دیگر…</string>
     <string name="egg_one_more">یک بار دیگر…</string>
-
     <string name="modules_empty">هیچ ماژولی نصب نشده است.</string>
     <string name="modules_active_of">%1$d از %2$d فعال</string>
     <string name="modules_no_match">ماژولی با این جستجو یا پالایه هم‌خوان نیست.</string>
@@ -121,22 +112,18 @@
     <string name="modules_incompatible_legacy">به واسط Xposed %1$d نیاز دارد که این چارچوب فراهم نمی‌کند.</string>
     <string name="modules_api_behind">برای libxposed API %1$d ساخته شده است. API %2$d رابط را تغییر داد، پس ممکن است این ماژول کامل کار نکند.</string>
     <string name="modules_no_daemon">‏Vector در حال اجرا نیست، پس فهرست ماژول‌ها در دسترس نیست. برای دیدن علت، وضعیت سامانه را از خانه باز کنید.</string>
-
     <string name="web_open_external">باز کردن در مرورگر</string>
-
     <string name="settings_ambience">سطح سربرگ</string>
     <string name="ambience_snow">برف</string>
     <string name="ambience_maze">هزارتو</string>
     <string name="ambience_circuit">مدار</string>
     <string name="ambience_matrix">باران کد</string>
     <string name="ambience_none">ساکن</string>
-
     <string name="settings_navigation">ناوبری</string>
     <string name="settings_floating_nav">ناوبری شناور</string>
     <string name="settings_floating_nav_summary">نوار را با توپ کوچکی جایگزین می‌کند که می‌توانید هرجا بکشید. برای بادبزنی شدن بخش‌ها آن را نگه دارید، یا برای باز ماندنشان ضربه بزنید.</string>
     <string name="settings_rearrange_panels">چیدمان دوبارهٔ بخش‌ها</string>
     <string name="settings_rearrange_panels_summary">ترتیبشان را تغییر دهید، یا آن‌هایی را که هرگز باز نمی‌کنید پنهان کنید.</string>
-
     <string name="settings_activity">جریان فعالیت</string>
     <plurals name="settings_window_months">
         <item quantity="one">%1$d ماه اخیر</item>
@@ -144,7 +131,6 @@
     </plurals>
     <string name="settings_open_externally">باز کردن پیوندها در مرورگر</string>
     <string name="settings_open_externally_summary">خاموش: صفحه‌های GitHub درون Vector باز می‌شوند.</string>
-
     <string name="scope_use_recommended">همان چیزی که ماژول می‌خواهد</string>
     <string name="scope_select_visible">گزینش همهٔ موارد نمایان</string>
     <string name="scope_clear_visible">برداشتن گزینش همهٔ موارد نمایان</string>
@@ -178,7 +164,6 @@
     <string name="scope_empty_message">این ماژول فعال است اما هیچ برنامه‌ای برایش گزیده نشده، پس کاری نخواهد کرد. یا خاموشش کنید یا چند برنامه برگزینید.</string>
     <string name="scope_empty_disable">خاموش کردن ماژول</string>
     <string name="scope_empty_keep">روشن بماند</string>
-
     <string name="action_launch">باز کردن</string>
     <string name="action_app_info">اطلاعات برنامه</string>
     <string name="action_force_stop">توقف اجباری</string>
@@ -193,10 +178,9 @@
     <string name="action_optimize_failed">بهینه‌سازی دوبارهٔ %1$s ممکن نشد.</string>
     <string name="action_uninstalled">‏%1$s حذف شد.</string>
     <string name="action_uninstall_failed">حذف %1$s ممکن نشد.</string>
-
     <string name="back">بازگشت</string>
     <string name="retry">تلاش دوباره</string>
-
+    <string name="cancel">انصراف</string>
     <string name="appearance_color">رنگ</string>
     <string name="appearance_custom_color">یک رنگ برگزینید</string>
     <string name="modules_expand">نمایش توضیح کامل</string>
@@ -248,24 +232,14 @@
     <string name="report_step_canary_body">شاید همین حالا درست شده باشد، و نگه‌دارندگان برای کمک به شما به ساخت اشکال‌زدایی نیاز دارند. روی master بمانید — ساخت‌های pull request ناپایدارند.</string>
     <string name="report_step_zygisk">‏Magisk ندارید؟ Zygisk را به‌روز کنید</string>
     <string name="report_step_zygisk_body">تازه‌ترین پیاده‌سازی Zygisk را نصب کنید؛ اگر ساخت اشکال‌زدایی دارد، همان را.</string>
-    <string name="report_step_logs">گزارش‌ها را پیوست کنید</string>
-    <string name="report_step_logs_body">گزارشی بدون لاگ، گفتگویی است که از صفر آغاز می‌شود. اینجا هر دو گزارش در یک zip نوشته می‌شود که می‌توانید پیوست کنید.</string>
-    <string name="report_step_crashed">اگر Zygisk فروپاشیده است</string>
-    <string name="report_step_crashed_body">دیگر نمی‌توان zip را از سرویس خواست، اما پرونده‌ها به‌هر‌حال نوشته شده‌اند. روت می‌تواند آن‌ها را بخواند، حتی وقتی هیچ راه دیگری نمانده است.</string>
     <string name="report_open_tracker">باز کردن پی‌گیر مشکلات</string>
-    <string name="report_save_with_root">ذخیرهٔ پوشهٔ گزارش‌ها (نیازمند روت)</string>
-    <string name="report_saved_to">در %1$s ذخیره شد</string>
-    <string name="report_see_guide">راهنمای کامل در همان مسئله</string>
-    <string name="report_root_refused">روت رد شد. در مدیر روت خود به Vector اجازه دهید و دوباره تلاش کنید%1$s</string>
     <string name="home_custom_build">ساخت شخصی — جلوتر از master</string>
     <string name="language_title">زبان</string>
     <string name="language_system">پیش‌فرض سامانه</string>
     <string name="language_system_summary">هماهنگ با زبانی که روی گوشی تنظیم شده است</string>
-
     <string name="language_translated_by">ترجمه: %1$s</string>
     <string name="language_help_short">ترجمه</string>
     <string name="language_help">در ترجمهٔ Vector کمک کنید</string>
-
     <string name="update_title">به‌روزرسانی چارچوب</string>
     <string name="update_channel_canary">ساخت canary</string>
     <string name="update_channel_release">نسخهٔ پایدار</string>
@@ -371,23 +345,10 @@
     <string name="info_section_build">چه چیزی در حال اجراست</string>
     <string name="info_section_health">آیا کار می‌کند</string>
     <string name="info_section_device">این دستگاه</string>
-    <string name="crash_recorded_title">مدیر به‌طور غیرمنتظره بسته شد</string>
-    <string name="crash_recorded_summary">رد کامل خطا در خروجی گزارش‌ها، درون پوشهٔ crash_manager، گنجانده می‌شود.</string>
-    <string name="crash_recorded_clear">دور انداختن</string>
-    <string name="crash_what">چه</string>
-    <string name="crash_message">پیام</string>
-    <string name="crash_where">کجا</string>
-    <string name="crash_when">چه زمانی</string>
-    <string name="crash_where_unknown">در هیچ‌جای کد خود Vector</string>
-    <string name="crash_when_value">%1$s در %2$s</string>
-    <string name="crash_open_trace">دیدن رد خطا</string>
-    <string name="crash_trace">خرابی</string>
-    <string name="crash_caused_by">ناشی از</string>
     <plurals name="crash_frames_elided">
         <item quantity="one">%1$d قاب دیگر، مانند بالا</item>
         <item quantity="other">%1$d قاب دیگر، مانند بالا</item>
     </plurals>
-    <string name="crash_unreadable">این خرابی خوانده نشد. آن را همان‌گونه که هست رونوشت کنید و به گزارش پیوست کنید.</string>
     <string name="force_launcher_icons">جلوگیری از پنهان کردن نماد برنامه‌ها در لانچر</string>
     <string name="force_launcher_icons_summary">از Android 10 به بعد، برنامه‌ای که نماد خود را در لانچر پنهان می‌کند، نمادی جایگزین می‌گیرد که صفحهٔ اطلاعات برنامه را باز می‌کند. این را خاموش کنید تا پنهان بماند — شاید لانچر شما تا راه‌اندازی دوبارهٔ خودش به‌روز نشود. برنامه‌هایی که هرگز نماد لانچر نداشته‌اند، از جمله بیشتر ماژول‌ها، تحت تأثیر قرار نمی‌گیرند.</string>
     <string name="action_force_stop_failed">توقف %1$s ممکن نشد.</string>
@@ -410,7 +371,6 @@
     <string name="settings_doh_working">کار می‌کند — %1$s از راه Cloudflare تحلیل شد.</string>
     <string name="settings_doh_fell_back">دسترسی به Cloudflare ممکن نشد (%1$s)، بنابراین تا پایان این نشست از تحلیل‌گر شبکه استفاده می‌شود.</string>
     <string name="settings_doh_retry">تلاش دوباره</string>
-
     <string name="launcher_title">چگونه Vector را باز کنیم</string>
     <string name="launcher_body">Vector به‌عنوان برنامه نصب نشده است، پس لانچر چیزی برای نشان دادن ندارد. اینها راه‌های بازگشت به آن هستند.</string>
     <string name="launcher_shortcut">میان‌بر در صفحهٔ اصلی</string>

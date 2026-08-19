@@ -28,7 +28,6 @@ import kotlinx.coroutines.withTimeoutOrNull
 import org.matrix.vector.manager.R
 import org.matrix.vector.manager.di.ServiceLocator
 import kotlinx.coroutines.flow.first
-import org.matrix.vector.manager.logW
 
 /** How long the animation itself needs, so the statue is never cut off mid-fade. */
 private const val ANIMATION_MS = 800L
@@ -52,11 +51,7 @@ fun SplashGate(content: @Composable () -> Unit) {
 
     LaunchedEffect(Unit) {
         // The handshake first, under a ceiling; then the artwork's own duration.
-        val bound =
-            withTimeoutOrNull(DAEMON_TIMEOUT_MS) { ServiceLocator.service.first { it != null } }
-        if (bound == null) {
-            logW("splash: no daemon binder after ${DAEMON_TIMEOUT_MS}ms, continuing unactivated")
-        }
+        withTimeoutOrNull(DAEMON_TIMEOUT_MS) { ServiceLocator.service.first { it != null } }
         delay(ANIMATION_MS)
         ready = true
     }

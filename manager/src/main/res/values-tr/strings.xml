@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="nav_home">Ana sayfa</string>
     <string name="nav_modules">Modüller</string>
-    <string name="nav_logs">Günlükler</string>
-
     <string name="panels_done">Bitti</string>
     <string name="panels_hide">%1$s öğesini gizle</string>
     <string name="panels_show">%1$s öğesini göster</string>
@@ -12,21 +9,20 @@
     <string name="panels_move_later">Arkaya taşı</string>
     <string name="panels_ball_open">Gezinmeyi aç</string>
     <string name="panels_ball_close">Gezinmeyi kapat</string>
-
     <string name="status_active">Etkin</string>
     <string name="status_degraded">Sorun var</string>
     <string name="status_inactive">Etkinleştirilmedi</string>
     <string name="status_mismatched">Sürüm uyuşmazlığı</string>
     <string name="status_checking">Denetleniyor…</string>
     <string name="status_open_details">Sistem durumunu aç</string>
-
+    <string name="copied">Panoya kopyalandı</string>
+    <string name="action_copy_all">Tümünü kopyala</string>
     <string name="issue_sepolicy_title">SELinux ilkesi yüklenmedi</string>
     <string name="issue_sepolicy_summary">Bazı özellikler çalışmayacak. Bu genellikle root uygulamasının Vector\'ün ilke kurallarını uygulamadığı anlamına gelir.</string>
     <string name="issue_system_server_title">Sistem çatısına enjeksiyon başarısız</string>
     <string name="issue_system_server_summary">Modüller sistem servislerine hook takamıyor. Nadirdir; genellikle araya giren başka bir root modülünden kaynaklanır.</string>
     <string name="issue_dex2oat_title">dex2oat sarmalayıcısı kullanılamıyor</string>
     <string name="issue_dex2oat_summary">Bazı sistem özellikleri kaldırılmış ya da değiştirilmiş. Bir uygulama güncellendikten sonra modüller etkisini yitirebilir.</string>
-
     <string name="system_status">Sistem durumu</string>
     <string name="info_api_version">Xposed API\'si</string>
     <string name="info_framework_version">Çatı</string>
@@ -64,16 +60,13 @@
     <string name="home_open_issue">Sorun bildir</string>
     <string name="home_discussions">Tartışmalar</string>
     <string name="home_review_prs">Bir değişikliği incele</string>
-
     <string name="home_with_coauthor">%1$s ve %2$s</string>
     <string name="home_with_coauthors">%1$s ve %2$d kişi daha</string>
-
     <string name="home_month_stats">%1$s · %2$s</string>
     <plurals name="home_people_count_plain">
         <item quantity="one">%1$d kişi</item>
         <item quantity="other">%1$d kişi</item>
     </plurals>
-
     <plurals name="home_commits_ahead">
         <item quantity="one">sizinkinden %1$d commit yeni</item>
         <item quantity="other">sizinkinden %1$d commit yeni</item>
@@ -83,7 +76,6 @@
         <item quantity="one">%1$d gün sessizlik</item>
         <item quantity="other">%1$d gün sessizlik</item>
     </plurals>
-
     <string name="appearance_title">Görünüm</string>
     <string name="appearance_theme">Tema</string>
     <string name="appearance_theme_system">Sistemi izle</string>
@@ -94,7 +86,6 @@
     <string name="appearance_amoled_summary">OLED ekranlarda güç tasarrufu sağlar.</string>
     <string name="egg_two_more">İki kez daha…</string>
     <string name="egg_one_more">Bir kez daha…</string>
-
     <string name="modules_empty">Kurulu modül yok.</string>
     <string name="modules_active_of">%2$d modülden %1$d tanesi etkin</string>
     <string name="modules_no_match">Bu arama veya süzgeçle eşleşen modül yok.</string>
@@ -121,22 +112,18 @@
     <string name="modules_incompatible_legacy">Xposed API %1$d gerekiyor; bu çatı onu sağlamıyor.</string>
     <string name="modules_api_behind">libxposed API %1$d için derlendi. API %2$d arayüzü değiştirdi; bu modül tam çalışmayabilir.</string>
     <string name="modules_no_daemon">Vector çalışmıyor, bu yüzden modül listesi alınamıyor. Nedenini görmek için Ana sayfadan sistem durumunu açın.</string>
-
     <string name="web_open_external">Tarayıcıda aç</string>
-
     <string name="settings_ambience">Başlık yüzeyi</string>
     <string name="ambience_snow">Kar</string>
     <string name="ambience_maze">Labirent</string>
     <string name="ambience_circuit">Devre</string>
     <string name="ambience_matrix">Kod yağmuru</string>
     <string name="ambience_none">Durgun</string>
-
     <string name="settings_navigation">Gezinme</string>
     <string name="settings_floating_nav">Yüzen gezinme</string>
     <string name="settings_floating_nav_summary">Çubuğu, istediğiniz yere sürükleyebileceğiniz küçük bir topla değiştirir. Panelleri yelpaze gibi açmak için basılı tutun, açık kalmaları için dokunun.</string>
     <string name="settings_rearrange_panels">Panelleri yeniden düzenle</string>
     <string name="settings_rearrange_panels_summary">Sıralarını değiştirin ya da hiç açmadıklarınızı gizleyin.</string>
-
     <string name="settings_activity">Hareket akışı</string>
     <plurals name="settings_window_months">
         <item quantity="one">Son %1$d ay</item>
@@ -144,7 +131,6 @@
     </plurals>
     <string name="settings_open_externally">Bağlantıları tarayıcıda aç</string>
     <string name="settings_open_externally_summary">Kapalı: GitHub sayfaları Vector içinde açılır.</string>
-
     <string name="scope_use_recommended">Modülün istediğini kullan</string>
     <string name="scope_select_visible">Görünenlerin tümünü seç</string>
     <string name="scope_clear_visible">Görünenlerin seçimini kaldır</string>
@@ -178,7 +164,6 @@
     <string name="scope_empty_message">Bu modül etkin ama hiçbir uygulama seçilmemiş, dolayısıyla hiçbir şey yapmayacak. Ya devre dışı bırakın ya da birkaç uygulama seçin.</string>
     <string name="scope_empty_disable">Modülü devre dışı bırak</string>
     <string name="scope_empty_keep">Etkin bırak</string>
-
     <string name="action_launch">Aç</string>
     <string name="action_app_info">Uygulama bilgisi</string>
     <string name="action_force_stop">Zorla durdur</string>
@@ -193,10 +178,9 @@
     <string name="action_optimize_failed">%1$s yeniden iyileştirilemedi.</string>
     <string name="action_uninstalled">%1$s kaldırıldı.</string>
     <string name="action_uninstall_failed">%1$s kaldırılamadı.</string>
-
     <string name="back">Geri</string>
     <string name="retry">Yeniden dene</string>
-
+    <string name="cancel">Vazgeç</string>
     <string name="appearance_color">Renk</string>
     <string name="appearance_custom_color">Bir renk seç</string>
     <string name="modules_expand">Açıklamanın tamamını göster</string>
@@ -248,24 +232,14 @@
     <string name="report_step_canary_body">Sorun çoktan giderilmiş olabilir; ayrıca bakımcıların size yardım edebilmesi için hata ayıklama sürümü gerekir. master\'da kalın — pull request derlemeleri kararsızdır.</string>
     <string name="report_step_zygisk">Magisk kullanmıyor musunuz? Zygisk\'i güncelleyin</string>
     <string name="report_step_zygisk_body">En son Zygisk uygulamasını, varsa hata ayıklama sürümüyle yükleyin.</string>
-    <string name="report_step_logs">Günlükleri ekleyin</string>
-    <string name="report_step_logs_body">Günlüksüz bir bildirim, baştan başlayan bir konuşmadır. Bu işlem iki günlüğü de ekleyebileceğiniz bir zip dosyasına yazar.</string>
-    <string name="report_step_crashed">Zygisk çöktüyse</string>
-    <string name="report_step_crashed_body">Artık zip\'i art alan sürecinden isteyemezsiniz ama dosyalar yine de yazıldı. Başka hiçbir şey okuyamazken root okuyabilir.</string>
     <string name="report_open_tracker">Sorun takipçisini aç</string>
-    <string name="report_save_with_root">Günlük klasörünü kaydet (root gerekir)</string>
-    <string name="report_saved_to">%1$s konumuna kaydedildi</string>
-    <string name="report_see_guide">Tam kılavuz sorunda</string>
-    <string name="report_root_refused">Root reddedildi. Root yöneticinizde Vector\'e izin verip yeniden deneyin%1$s</string>
     <string name="home_custom_build">Özel derleme — master\'ın ilerisinde</string>
     <string name="language_title">Dil</string>
     <string name="language_system">Sistem varsayılanı</string>
     <string name="language_system_summary">Telefonda ayarlı dili izle</string>
-
     <string name="language_translated_by">Çeviren: %1$s</string>
     <string name="language_help_short">Çevir</string>
     <string name="language_help">Vector\'ü çevirmeye yardım edin</string>
-
     <string name="update_title">Çatı güncellemesi</string>
     <string name="update_channel_canary">canary derlemesi</string>
     <string name="update_channel_release">Kararlı sürüm</string>
@@ -371,23 +345,10 @@
     <string name="info_section_build">Ne çalışıyor</string>
     <string name="info_section_health">Çalışıyor mu</string>
     <string name="info_section_device">Bu cihaz</string>
-    <string name="crash_recorded_title">Yönetici beklenmedik biçimde kapandı</string>
-    <string name="crash_recorded_summary">Yığın izinin tamamı, günlük dışa aktarımında crash_manager altında yer alır.</string>
-    <string name="crash_recorded_clear">Sil</string>
-    <string name="crash_what">Ne</string>
-    <string name="crash_message">İleti</string>
-    <string name="crash_where">Nerede</string>
-    <string name="crash_when">Ne zaman</string>
-    <string name="crash_where_unknown">Vector\'ün kendi kodunun hiçbir yerinde</string>
-    <string name="crash_when_value">%1$s, %2$s iş parçacığında</string>
-    <string name="crash_open_trace">Yığın izini gör</string>
-    <string name="crash_trace">Çökme</string>
-    <string name="crash_caused_by">Nedeni</string>
     <plurals name="crash_frames_elided">
         <item quantity="one">yukarıdakinin aynısı %1$d çerçeve daha</item>
         <item quantity="other">yukarıdakilerin aynısı %1$d çerçeve daha</item>
     </plurals>
-    <string name="crash_unreadable">Bu çökme okunamadı. Olduğu gibi kopyalayıp bildirime ekleyin.</string>
     <string name="force_launcher_icons">Uygulamaların başlatıcı simgesini gizlemesini engelle</string>
     <string name="force_launcher_icons_summary">Android 10\'dan beri, kendi başlatıcı simgesini gizleyen bir uygulamaya, uygulama bilgisi sayfasını açan bir simge geri verilir. Gizli kalabilmesi için bunu kapatın — başlatıcınız yeniden başlatılana kadar durumu yansıtmayabilir. Hiçbir zaman başlatıcı simgesi olmamış uygulamalar, çoğu modül dahil, bundan etkilenmez.</string>
     <string name="action_force_stop_failed">%1$s durdurulamadı.</string>
@@ -410,7 +371,6 @@
     <string name="settings_doh_working">Çalışıyor — %1$s Cloudflare üzerinden çözümlendi.</string>
     <string name="settings_doh_fell_back">Cloudflare\'a ulaşılamadı (%1$s), bu oturumun kalanında ağın çözümleyicisi kullanılacak.</string>
     <string name="settings_doh_retry">Yeniden dene</string>
-
     <string name="launcher_title">Vector nasıl açılır</string>
     <string name="launcher_body">Vector uygulama olarak kurulu değil, bu yüzden başlatıcınızın gösterecek bir şeyi yok. Geri dönmenin yolları şunlar.</string>
     <string name="launcher_shortcut">Ana ekran kısayolu</string>

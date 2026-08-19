@@ -28,9 +28,9 @@ import org.matrix.vector.manager.data.model.versionCodeCompat
  * the pipeline, not the screen.
  *
  * Anything the scenario does not have an opinion about is delegated to the real daemon when one is
- * connected, so the module list, the app list and the logs stay real while the framework's health
- * is a lie. With no daemon present the delegating calls return empties rather than throwing, so the
- * demo is still usable on a device with no Vector installed.
+ * connected, so the module list and the app list stay real while the framework's health is a lie.
+ * With no daemon present the delegating calls return empties rather than throwing, so the demo is
+ * still usable on a device with no Vector installed.
  *
  * Subclassing `Stub()` rather than proxying the interface is deliberate on both counts: DaemonClient
  * checks `asBinder().isBinderAlive`, which only a real Binder answers — and a new AIDL method breaks
@@ -218,21 +218,6 @@ class FakeManagerService(
     override fun getModuleScope(packageName: String?): MutableList<ScopeEntry>? =
         if (real == null) mutableListOf() else real.getModuleScope(packageName)
 
-    override fun isVerboseLogEnabled(): Boolean = real?.isVerboseLogEnabled ?: false
-
-    override fun setVerboseLogEnabled(enabled: Boolean) {
-        real?.setVerboseLogEnabled(enabled)
-    }
-
-    override fun getLiveLogPart(verbose: Boolean): ParcelFileDescriptor? =
-        real?.getLiveLogPart(verbose)
-
-    override fun getLogParts(verbose: Boolean): MutableList<String> =
-        real?.getLogParts(verbose) ?: mutableListOf()
-
-    override fun getLogPart(verbose: Boolean, name: String?): ParcelFileDescriptor? =
-        real?.getLogPart(verbose, name)
-
     /**
      * Delegated, so the offer to install the manager is live or dead exactly as it really is.
      *
@@ -242,10 +227,6 @@ class FakeManagerService(
     override fun getManagerApk(): ParcelFileDescriptor? = real?.managerApk
 
     override fun getFrameworkVersionName(): String? = real?.frameworkVersionName
-
-    override fun startNewLogPart(verbose: Boolean) {
-        real?.startNewLogPart(verbose)
-    }
 
     override fun forceStopPackage(packageName: String?, userId: Int) {
         real?.forceStopPackage(packageName, userId)
@@ -280,10 +261,6 @@ class FakeManagerService(
 
     override fun setForcedLauncherIcons(force: Boolean) {
         real?.setForcedLauncherIcons(force)
-    }
-
-    override fun writeBugReport(zipFd: ParcelFileDescriptor?) {
-        real?.writeBugReport(zipFd)
     }
 
     override fun optimizePackage(packageName: String?): Boolean =

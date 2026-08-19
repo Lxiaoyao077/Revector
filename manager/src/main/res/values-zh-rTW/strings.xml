@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="nav_home">主畫面</string>
     <string name="nav_modules">模組</string>
-    <string name="nav_logs">日誌</string>
-
     <string name="panels_done">完成</string>
     <string name="panels_hide">隱藏%1$s</string>
     <string name="panels_show">顯示%1$s</string>
@@ -12,21 +9,20 @@
     <string name="panels_move_later">向後移動</string>
     <string name="panels_ball_open">開啟導覽</string>
     <string name="panels_ball_close">關閉導覽</string>
-
     <string name="status_active">已啟用</string>
     <string name="status_degraded">異常</string>
     <string name="status_inactive">未啟用</string>
     <string name="status_mismatched">版本不符</string>
     <string name="status_checking">正在檢查…</string>
     <string name="status_open_details">檢視系統狀態</string>
-
+    <string name="copied">已複製到剪貼簿</string>
+    <string name="action_copy_all">全部複製</string>
     <string name="issue_sepolicy_title">SELinux 政策未載入</string>
     <string name="issue_sepolicy_summary">部分功能將無法運作。這通常代表 Root 方案沒有套用 Vector 的政策規則。</string>
     <string name="issue_system_server_title">系統框架注入失敗</string>
     <string name="issue_system_server_summary">模組無法掛鉤系統服務。這種情況很少見，通常是其他 Root 模組干擾所致。</string>
     <string name="issue_dex2oat_title">Dex 最佳化器包裝無法使用</string>
     <string name="issue_dex2oat_summary">部分系統屬性遭移除或變更。應用程式更新後，模組可能不再生效。</string>
-
     <string name="system_status">系統狀態</string>
     <string name="info_api_version">Xposed API</string>
     <string name="info_framework_version">框架</string>
@@ -62,15 +58,12 @@
     <string name="home_open_issue">回報問題</string>
     <string name="home_discussions">討論區</string>
     <string name="home_review_prs">審閱變更</string>
-
     <string name="home_with_coauthor">%1$s 與 %2$s</string>
     <string name="home_with_coauthors">%1$s 等 %2$d 人</string>
-
     <string name="home_month_stats">%1$s · %2$s</string>
     <plurals name="home_people_count_plain">
         <item quantity="other">%1$d 人</item>
     </plurals>
-
     <plurals name="home_commits_ahead">
         <item quantity="other">有 %1$d 次提交比你的版本更新</item>
     </plurals>
@@ -78,7 +71,6 @@
     <plurals name="home_quiet_days">
         <item quantity="other">靜默 %1$d 天</item>
     </plurals>
-
     <string name="appearance_title">外觀</string>
     <string name="appearance_theme">主題</string>
     <string name="appearance_theme_system">跟隨系統</string>
@@ -89,7 +81,6 @@
     <string name="appearance_amoled_summary">在 OLED 螢幕上更省電。</string>
     <string name="egg_two_more">還差兩次…</string>
     <string name="egg_one_more">還差一次…</string>
-
     <string name="modules_empty">尚未安裝任何模組。</string>
     <string name="modules_active_of">%2$d 個模組中有 %1$d 個已啟用</string>
     <string name="modules_no_match">沒有符合該搜尋或篩選條件的模組。</string>
@@ -116,29 +107,24 @@
     <string name="modules_incompatible_legacy">需要 Xposed API %1$d，本框架未提供該版本。</string>
     <string name="modules_api_behind">針對 libxposed API %1$d 建置。API %2$d 變更了介面，此模組可能無法完全運作。</string>
     <string name="modules_no_daemon">Vector 未執行，因此無法列出模組。請從主畫面開啟系統狀態以查看原因。</string>
-
     <string name="web_open_external">在瀏覽器中開啟</string>
-
     <string name="settings_ambience">頁首動態效果</string>
     <string name="ambience_snow">雪花</string>
     <string name="ambience_maze">迷宮</string>
     <string name="ambience_circuit">電路</string>
     <string name="ambience_matrix">程式碼雨</string>
     <string name="ambience_none">靜止</string>
-
     <string name="settings_navigation">導覽</string>
     <string name="settings_floating_nav">懸浮導覽</string>
     <string name="settings_floating_nav_summary">用一顆可以拖到任意位置的小球取代導覽列。按住小球會將面板呈扇形展開，輕觸則讓它們保持展開。</string>
     <string name="settings_rearrange_panels">重新排列面板</string>
     <string name="settings_rearrange_panels_summary">調整順序，或隱藏從不開啟的面板。</string>
-
     <string name="settings_activity">動態</string>
     <plurals name="settings_window_months">
         <item quantity="other">最近 %1$d 個月</item>
     </plurals>
     <string name="settings_open_externally">以瀏覽器開啟連結</string>
     <string name="settings_open_externally_summary">關閉時：GitHub 頁面在 Vector 內開啟。</string>
-
     <string name="scope_use_recommended">使用模組建議的範圍</string>
     <string name="scope_select_visible">選取目前顯示的全部</string>
     <string name="scope_clear_visible">取消目前顯示的全部</string>
@@ -172,7 +158,6 @@
     <string name="scope_empty_message">此模組已啟用，但沒有選取任何應用程式，因此不會產生任何作用。請停用它，或選擇一些應用程式。</string>
     <string name="scope_empty_disable">停用此模組</string>
     <string name="scope_empty_keep">維持啟用</string>
-
     <string name="action_launch">開啟</string>
     <string name="action_app_info">應用程式資訊</string>
     <string name="action_force_stop">強制停止</string>
@@ -187,10 +172,9 @@
     <string name="action_optimize_failed">無法重新最佳化 %1$s。</string>
     <string name="action_uninstalled">已解除安裝 %1$s。</string>
     <string name="action_uninstall_failed">無法解除安裝 %1$s。</string>
-
     <string name="back">返回</string>
     <string name="retry">重試</string>
-
+    <string name="cancel">取消</string>
     <string name="appearance_color">配色</string>
     <string name="appearance_custom_color">自選顏色</string>
     <string name="modules_expand">顯示完整說明</string>
@@ -238,25 +222,14 @@
     <string name="report_step_canary_body">問題可能已經修正，而且維護者需要 Debug 版本才能協助你。請使用 master 分支的建置——來自 Pull Request 的建置並不穩定。</string>
     <string name="report_step_zygisk">沒有使用 Magisk？請更新 Zygisk</string>
     <string name="report_step_zygisk_body">刷入最新的 Zygisk 實作，若有 Debug 版本請優先使用。</string>
-    <string name="report_step_logs">附上日誌</string>
-    <string name="report_step_logs_body">沒有日誌的回報只能從頭問起。此操作會把兩份日誌寫入一個可供附加的 zip 檔案。</string>
-    <string name="report_step_crashed">如果 Zygisk 當掉了</string>
-    <string name="report_step_crashed_body">此時已無法向常駐程式索取 zip，但它仍然寫下了日誌檔案。只有 Root 才能讀取它們。</string>
     <string name="report_open_tracker">開啟問題追蹤頁</string>
-    <string name="report_save_with_root">儲存日誌資料夾（需要 Root）</string>
-    <string name="report_saved_to">已儲存至 %1$s</string>
-    <string name="report_see_guide">完整指南見 issue</string>
-    <string name="report_root_refused">Root 要求遭拒。請在你的 Root 管理器中允許 Vector，然後重試%1$s</string>
     <string name="home_custom_build">自訂建置——領先於 master</string>
-
     <string name="language_title">語言</string>
     <string name="language_system">跟隨系統</string>
     <string name="language_system_summary">使用手機設定的語言</string>
-
     <string name="language_translated_by">翻譯：%1$s</string>
     <string name="language_help_short">翻譯</string>
     <string name="language_help">協助翻譯 Vector</string>
-
     <string name="update_title">框架更新</string>
     <string name="update_channel_canary">Canary 版本</string>
     <string name="update_channel_release">正式版</string>
@@ -362,22 +335,9 @@
     <string name="info_section_build">正在執行</string>
     <string name="info_section_health">是否正常</string>
     <string name="info_section_device">本裝置</string>
-    <string name="crash_recorded_title">管理器意外結束</string>
-    <string name="crash_recorded_summary">完整的堆疊追蹤會隨日誌匯出一起保存，位於其中的 crash_manager 資料夾。</string>
-    <string name="crash_recorded_clear">捨棄</string>
-    <string name="crash_what">什麼</string>
-    <string name="crash_message">訊息</string>
-    <string name="crash_where">在哪裡</string>
-    <string name="crash_when">何時</string>
-    <string name="crash_where_unknown">不在 Vector 自己的程式碼中</string>
-    <string name="crash_when_value">%1$s，執行緒 %2$s</string>
-    <string name="crash_open_trace">查看呼叫堆疊</string>
-    <string name="crash_trace">當機</string>
-    <string name="crash_caused_by">起因</string>
     <plurals name="crash_frames_elided">
         <item quantity="other">還有 %1$d 層呼叫堆疊，與上面相同</item>
     </plurals>
-    <string name="crash_unreadable">無法讀取這次當機。請原樣複製並附在回報中。</string>
     <string name="force_launcher_icons">阻止應用程式隱藏自己的啟動器圖示</string>
     <string name="force_launcher_icons_summary">自 Android 10 起，隱藏了自己啟動器圖示的應用程式會被補上一個圖示，點按它會開啟該應用程式的應用程式資訊頁面。關閉此項可讓它維持隱藏——你的啟動器可能要等重新啟動之後才會更新。本來就沒有啟動器圖示的應用程式不受影響，大多數模組都屬於此類。</string>
     <string name="action_force_stop_failed">無法停止 %1$s。</string>
@@ -400,7 +360,6 @@
     <string name="settings_doh_working">正常 — 已透過 Cloudflare 解析 %1$s。</string>
     <string name="settings_doh_fell_back">無法連線至 Cloudflare（%1$s），本次工作階段的其餘時間將使用網路自帶的解析器。</string>
     <string name="settings_doh_retry">重試</string>
-
     <string name="launcher_title">如何開啟 Vector</string>
     <string name="launcher_body">Vector 並未以應用程式的形式安裝，啟動器因此沒有可顯示的圖示。以下是回到它的幾種方式。</string>
     <string name="launcher_shortcut">主畫面捷徑</string>

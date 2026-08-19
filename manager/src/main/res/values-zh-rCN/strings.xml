@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="nav_home">主页</string>
     <string name="nav_modules">模块</string>
-    <string name="nav_logs">日志</string>
-
     <string name="panels_done">完成</string>
     <string name="panels_hide">隐藏%1$s</string>
     <string name="panels_show">显示%1$s</string>
@@ -12,21 +9,20 @@
     <string name="panels_move_later">向后移动</string>
     <string name="panels_ball_open">打开导航</string>
     <string name="panels_ball_close">关闭导航</string>
-
     <string name="status_active">已激活</string>
     <string name="status_degraded">异常</string>
     <string name="status_inactive">未激活</string>
     <string name="status_mismatched">版本不匹配</string>
     <string name="status_checking">正在检查…</string>
     <string name="status_open_details">查看系统状态</string>
-
+    <string name="copied">已复制到剪贴板</string>
+    <string name="action_copy_all">全部复制</string>
     <string name="issue_sepolicy_title">SELinux 策略未加载</string>
     <string name="issue_sepolicy_summary">部分功能将无法工作。这通常意味着 Root 方案没有应用 Vector 的策略规则。</string>
     <string name="issue_system_server_title">系统框架注入失败</string>
     <string name="issue_system_server_summary">模块无法挂钩系统服务。这种情况很少见，通常是其他 Root 模块干扰所致。</string>
     <string name="issue_dex2oat_title">Dex 优化器包装不可用</string>
     <string name="issue_dex2oat_summary">部分系统属性被移除或修改。应用更新后，模块可能不再生效。</string>
-
     <string name="system_status">系统状态</string>
     <string name="info_api_version">Xposed API</string>
     <string name="info_framework_version">框架</string>
@@ -62,15 +58,12 @@
     <string name="home_open_issue">反馈问题</string>
     <string name="home_discussions">讨论区</string>
     <string name="home_review_prs">审阅代码</string>
-
     <string name="home_with_coauthor">%1$s 与 %2$s</string>
     <string name="home_with_coauthors">%1$s 等 %2$d 人</string>
-
     <string name="home_month_stats">%1$s · %2$s</string>
     <plurals name="home_people_count_plain">
         <item quantity="other">%1$d 人</item>
     </plurals>
-
     <plurals name="home_commits_ahead">
         <item quantity="other">有 %1$d 次提交比你的版本更新</item>
     </plurals>
@@ -78,7 +71,6 @@
     <plurals name="home_quiet_days">
         <item quantity="other">静默 %1$d 天</item>
     </plurals>
-
     <string name="appearance_title">外观</string>
     <string name="appearance_theme">主题</string>
     <string name="appearance_theme_system">跟随系统</string>
@@ -89,7 +81,6 @@
     <string name="appearance_amoled_summary">在 OLED 屏幕上更省电。</string>
     <string name="egg_two_more">还差两次…</string>
     <string name="egg_one_more">还差一次…</string>
-
     <string name="modules_empty">尚未安装任何模块。</string>
     <string name="modules_active_of">%2$d 个模块中有 %1$d 个已启用</string>
     <string name="modules_no_match">没有符合该搜索或筛选条件的模块。</string>
@@ -116,29 +107,24 @@
     <string name="modules_incompatible_legacy">需要 Xposed API %1$d，本框架未提供该版本。</string>
     <string name="modules_api_behind">针对 libxposed API %1$d 构建。API %2$d 更改了接口，此模块可能无法完全工作。</string>
     <string name="modules_no_daemon">Vector 未运行，因此无法列出模块。请从主页打开系统状态查看原因。</string>
-
     <string name="web_open_external">在浏览器中打开</string>
-
     <string name="settings_ambience">页头动效</string>
     <string name="ambience_snow">雪花</string>
     <string name="ambience_maze">迷宫</string>
     <string name="ambience_circuit">电路</string>
     <string name="ambience_matrix">代码雨</string>
     <string name="ambience_none">静止</string>
-
     <string name="settings_navigation">导航</string>
     <string name="settings_floating_nav">悬浮导航</string>
     <string name="settings_floating_nav_summary">用一颗可以拖到任意位置的小球代替导航栏。按住小球会将面板扇形展开，轻点则让它们保持展开。</string>
     <string name="settings_rearrange_panels">重新排列面板</string>
     <string name="settings_rearrange_panels_summary">调整顺序，或隐藏从不打开的面板。</string>
-
     <string name="settings_activity">动态</string>
     <plurals name="settings_window_months">
         <item quantity="other">最近 %1$d 个月</item>
     </plurals>
     <string name="settings_open_externally">用浏览器打开链接</string>
     <string name="settings_open_externally_summary">关闭时：GitHub 页面在 Vector 内打开。</string>
-
     <string name="scope_use_recommended">使用模块建议的范围</string>
     <string name="scope_select_visible">选中当前显示的全部</string>
     <string name="scope_clear_visible">取消当前显示的全部</string>
@@ -172,7 +158,6 @@
     <string name="scope_empty_message">此模块已启用，但没有选择任何应用，因此不会产生任何作用。请停用它，或选择一些应用。</string>
     <string name="scope_empty_disable">停用此模块</string>
     <string name="scope_empty_keep">保持启用</string>
-
     <string name="action_launch">打开</string>
     <string name="action_app_info">应用信息</string>
     <string name="action_force_stop">强行停止</string>
@@ -187,10 +172,9 @@
     <string name="action_optimize_failed">无法重新优化 %1$s。</string>
     <string name="action_uninstalled">已卸载 %1$s。</string>
     <string name="action_uninstall_failed">无法卸载 %1$s。</string>
-
     <string name="back">返回</string>
     <string name="retry">重试</string>
-
+    <string name="cancel">取消</string>
     <string name="appearance_color">配色</string>
     <string name="appearance_custom_color">自选颜色</string>
     <string name="modules_expand">显示完整说明</string>
@@ -238,25 +222,14 @@
     <string name="report_step_canary_body">问题可能已经修复，而且维护者需要 Debug 版本才能帮你排查。请使用 master 分支的构建——来自 Pull Request 的构建并不稳定。</string>
     <string name="report_step_zygisk">不用 Magisk？请更新 Zygisk</string>
     <string name="report_step_zygisk_body">刷入最新的 Zygisk 实现，如果有 Debug 版本请优先使用。</string>
-    <string name="report_step_logs">附上日志</string>
-    <string name="report_step_logs_body">没有日志的反馈只能从头问起。此操作会把两份日志写入一个可供附加的 zip 文件。</string>
-    <string name="report_step_crashed">如果 Zygisk 崩溃了</string>
-    <string name="report_step_crashed_body">此时已无法向守护进程索取 zip，但它仍然写下了日志文件。只有 Root 才能读取它们。</string>
     <string name="report_open_tracker">打开问题追踪页</string>
-    <string name="report_save_with_root">保存日志文件夹（需要 Root）</string>
-    <string name="report_saved_to">已保存至 %1$s</string>
-    <string name="report_see_guide">完整指南见 issue</string>
-    <string name="report_root_refused">Root 请求被拒绝。请在你的 Root 管理器中允许 Vector，然后重试%1$s</string>
     <string name="home_custom_build">自定义构建——领先于 master</string>
-
     <string name="language_title">语言</string>
     <string name="language_system">跟随系统</string>
     <string name="language_system_summary">使用手机设置的语言</string>
-
     <string name="language_translated_by">翻译：%1$s</string>
     <string name="language_help_short">翻译</string>
     <string name="language_help">帮助翻译 Vector</string>
-
     <string name="update_title">框架更新</string>
     <string name="update_channel_canary">Canary 版本</string>
     <string name="update_channel_release">正式版</string>
@@ -362,22 +335,9 @@
     <string name="info_section_build">正在运行</string>
     <string name="info_section_health">是否正常</string>
     <string name="info_section_device">本设备</string>
-    <string name="crash_recorded_title">管理器意外退出</string>
-    <string name="crash_recorded_summary">完整的堆栈信息会随日志导出一起保存，位于其中的 crash_manager 文件夹。</string>
-    <string name="crash_recorded_clear">丢弃</string>
-    <string name="crash_what">什么</string>
-    <string name="crash_message">消息</string>
-    <string name="crash_where">在哪里</string>
-    <string name="crash_when">何时</string>
-    <string name="crash_where_unknown">不在 Vector 自己的代码中</string>
-    <string name="crash_when_value">%1$s，线程 %2$s</string>
-    <string name="crash_open_trace">查看调用栈</string>
-    <string name="crash_trace">崩溃</string>
-    <string name="crash_caused_by">起因</string>
     <plurals name="crash_frames_elided">
         <item quantity="other">还有 %1$d 层调用栈，与上面相同</item>
     </plurals>
-    <string name="crash_unreadable">无法读取这次崩溃。请原样复制并附在报告里。</string>
     <string name="force_launcher_icons">阻止应用隐藏自己的桌面图标</string>
     <string name="force_launcher_icons_summary">从 Android 10 起，隐藏了自己桌面图标的应用会被补上一个图标，点击它会打开该应用的应用信息页面。关闭此项可以让它继续保持隐藏——桌面可能要等重启之后才会更新。本来就没有桌面图标的应用不受影响，大多数模块都属于此类。</string>
     <string name="action_force_stop_failed">无法停止 %1$s。</string>
@@ -400,7 +360,6 @@
     <string name="settings_doh_working">正常 — 已通过 Cloudflare 解析 %1$s。</string>
     <string name="settings_doh_fell_back">无法连接 Cloudflare（%1$s），本次会话的剩余时间将使用网络自带的解析器。</string>
     <string name="settings_doh_retry">重试</string>
-
     <string name="launcher_title">如何打开 Vector</string>
     <string name="launcher_body">Vector 并未作为应用安装，桌面因此没有可显示的图标。以下是回到它的几种方式。</string>
     <string name="launcher_shortcut">桌面快捷方式</string>

@@ -4,7 +4,6 @@ import org.matrix.vector.ui.R as UiR
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Extension
 import androidx.compose.material.icons.rounded.Home
-import androidx.compose.material.icons.automirrored.rounded.ReceiptLong
 import androidx.compose.material.icons.rounded.CloudDownload
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation3.runtime.NavKey
@@ -40,8 +39,6 @@ sealed interface TopLevelRoute : Route {
     @Serializable data object Modules : TopLevelRoute
 
     @Serializable data object Store : TopLevelRoute
-
-    @Serializable data object Logs : TopLevelRoute
 }
 
 @Serializable data class Scope(val packageName: String, val userId: Int) : Route
@@ -49,24 +46,6 @@ sealed interface TopLevelRoute : Route {
 @Serializable data class StoreDetail(val packageName: String) : Route
 
 @Serializable data object SystemStatus : Route
-
-/**
- * The newest recorded crash, frame by frame.
- *
- * Carries no argument: there is only ever one crash worth opening — the newest — and the screen
- * reads it from disk itself, so the route survives the process death that following a crash report
- * is unusually likely to involve.
- */
-@Serializable data object CrashTrace : Route
-
-/**
- * A stack trace found in the log, on a screen of its own.
- *
- * Carries the text rather than a line number, because the log window it came from is paged and
- * filtered and may have moved on by the time this is opened — and because the text is the whole of
- * what the screen needs. A trace is a few kilobytes at worst, which the back stack can hold.
- */
-@Serializable data class LogTrace(val text: String) : Route
 
 /** CI builds, as prereleases anyone can download. */
 @Serializable data object Canary : Route
@@ -115,11 +94,5 @@ val TOP_LEVEL_DESTINATIONS: List<TopLevelDestination> =
             TopLevelRoute.Store,
             Icons.Rounded.CloudDownload,
             UiR.string.nav_store,
-        ),
-        TopLevelDestination(
-            "logs",
-            TopLevelRoute.Logs,
-            Icons.AutoMirrored.Rounded.ReceiptLong,
-            R.string.nav_logs,
         ),
     )

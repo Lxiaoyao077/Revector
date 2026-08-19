@@ -6,7 +6,6 @@ import androidx.annotation.RequiresApi
 import io.github.libxposed.api.XposedInterface
 import java.util.Collections
 import java.util.WeakHashMap
-import org.matrix.vector.util.Utils
 import org.matrix.vector.impl.VectorLifecycleManager
 import org.matrix.vector.impl.di.LegacyPackageInfo
 import org.matrix.vector.impl.di.VectorBootstrap
@@ -198,8 +197,7 @@ object LoadedApkCreateCLHooker : XposedInterface.Hooker {
                     }
                 }
             }
-        } catch (t: Throwable) {
-            Utils.logE("LoadedApkCreateCLHooker failed in post-proceed phase", t)
+        } catch (_: Throwable) {
         } finally {
             // Cleanup: Once the initial load is done, we remove it from activeApks.
             // Subsequent calls (Split APKs) will now be recognized as non-initial loads.

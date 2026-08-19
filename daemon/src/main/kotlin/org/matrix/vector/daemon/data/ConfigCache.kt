@@ -3,7 +3,6 @@ package org.matrix.vector.daemon.data
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageParser
 import android.system.Os
-import android.util.Log
 import hidden.HiddenApiBridge
 import java.io.File
 import java.nio.file.Files
@@ -23,8 +22,6 @@ import org.matrix.vector.daemon.system.*
 import org.matrix.vector.daemon.utils.InstallerVerifier
 import org.matrix.vector.daemon.utils.applySqliteHelperWorkaround
 import org.matrix.vector.daemon.utils.getRealUsers
-
-private const val TAG = "VectorConfigCache"
 
 object ConfigCache {
   // Module preference operations are delegated to PreferenceStore
@@ -59,7 +56,6 @@ object ConfigCache {
         // of the daemon, with one stack trace hours earlier as the only evidence. One bad APK
         // reaching the parser is enough to cause it.
         runCatching { performCacheUpdate() }
-            .onFailure { Log.e(TAG, "Cache update failed; the next request will try again", it) }
       }
     }
     applySqliteHelperWorkaround()
@@ -72,7 +68,6 @@ object ConfigCache {
       // merely behind the short swaps that publish one.
       synchronized(rebuildLock) {
         if (!state.isCacheReady) {
-          Log.i(TAG, "System services are ready. Mapping modules and scopes.")
           updateManager(false)
           setupMiscPath()
           performCacheUpdate()
@@ -97,12 +92,10 @@ object ConfigCache {
                   val uid = info?.applicationInfo?.uid
                   val installedApkPath = info?.applicationInfo?.sourceDir
                   if (uid == null || installedApkPath == null) {
-                    Log.i(TAG, "Manager is not installed")
                     return@runCatching null
                   }
 
                   InstallerVerifier.verifyInstallerSignature(installedApkPath)
-                  Log.i(TAG, "Manager verified and found at UID: $uid")
                   uid
                 }
                 .getOrNull()
@@ -130,7 +123,6 @@ object ConfigCache {
           Files.createDirectories(state.miscPath!!, perms)
           FileSystem.setSelinuxContextRecursive(state.miscPath!!, "u:object_r:xposed_data:s0")
         }
-        .onFailure { Log.e(TAG, "Failed to create misc directory", it) }
   }
 
   fun isManager(uid: Int): Boolean {
@@ -147,7 +139,6 @@ object ConfigCache {
     synchronized(rebuildLock) {
       if (packageManager == null) return
 
-      Log.d(TAG, "Executing Cache Update...")
       val oldState = state
 
       val newModules = mutableMapOf<String, LoadedModule>()
@@ -185,8 +176,6 @@ object ConfigCache {
         // deletes its row, its scope and its preferences. A transient failure to reach the user
         // service would wipe the configuration of every module on the device.
         if (users.isEmpty()) {
-          Log.w(
-              TAG, "No users available; skipping this rebuild rather than assuming nothing exists")
           return
         }
         // Every user, not the first one that answers, because which users hold the module is what
@@ -227,7 +216,6 @@ object ConfigCache {
         // Gone, not broken. No user has this package any more, so the configuration for it is
         // meaningless and is cleaned up. This is the only case that deletes anything.
         if (pkgInfo?.applicationInfo == null) {
-          Log.w(TAG, "Failed to find package info of $pkgName")
           obsoleteModules.add(pkgName)
           return@forEach
         }
@@ -262,7 +250,6 @@ object ConfigCache {
           // Installed, enabled, and not loadable. Deleting the row here would silently un-enable a
           // module the user did enable, and they would find the switch off with no reason given.
           // The configuration stands; what could not be done is recorded and reported instead.
-          Log.w(TAG, "Failed to find path of $pkgName")
           unloadable[pkgName] = IManagerService.MODULE_LOAD_NO_APK
           return@forEach
         }
@@ -300,11 +287,9 @@ object ConfigCache {
           // needs its author to rebuild it. That one the loader names, so it is passed on rather
           // than reported as "the framework could not load it" alongside a zip that will not parse.
           ModuleLoad.UnsupportedApi -> {
-            Log.w(TAG, "Could not load $pkgName: it targets libxposed API 100; skipping.")
             unloadable[pkgName] = IManagerService.MODULE_LOAD_UNSUPPORTED_API
           }
           ModuleLoad.Unusable -> {
-            Log.w(TAG, "Could not load $pkgName; skipping.")
             unloadable[pkgName] = IManagerService.MODULE_LOAD_UNUSABLE
           }
         }
@@ -319,10 +304,7 @@ object ConfigCache {
       // them in. Dropping them here is what makes the scope actually fixed rather than merely
       // unreachable through the manager, and it runs before the scope table is read below.
       newStaticScopes.forEach { (modulePkg, claimed) ->
-        val dropped = ModuleDatabase.pruneScopeToClaimed(modulePkg, claimed)
-        if (dropped > 0) {
-          Log.i(TAG, "Dropped $dropped app(s) outside the static scope of $modulePkg")
-        }
+        ModuleDatabase.pruneScopeToClaimed(modulePkg, claimed)
       }
 
       val newScopes = mutableMapOf<ProcessScope, MutableList<LoadedModule>>()
@@ -430,8 +412,6 @@ object ConfigCache {
         staticScopes = newStaticScopes
       }
 
-      Log.d(TAG, "Cache Update Complete. Map Swap successful.")
-
       // Targets are removed only after the module set has been published.
       (oldState.modules.keys - newModules.keys).forEach {
         FrameworkService.forgetHotReloadTargets(it)
@@ -440,21 +420,12 @@ object ConfigCache {
 
       // Ask stale opt-in targets to load the generation that was just installed.
       newModules.values.forEach { ModuleAppService.autoHotReload(it) }
-      // Log.d(TAG, "cached modules:")
-      // newModules.forEach { (pkg, mod) -> Log.d(TAG, "$pkg ${mod.apkPath}") }
-
-      // Log.d(TAG, "cached scopes:")
-      // newScopes.forEach { (ps, modules) ->
-      //   Log.d(TAG, "${ps.processName}/${ps.uid}")
-      //   modules.forEach { mod -> Log.d(TAG, "\t${mod.packageName}") }
-      // }
     }
   }
 
   fun getModulesForProcess(processName: String, uid: Int): List<LoadedModule> {
     ensureCacheReady()
     if (processName == "system_server") {
-      Log.w(TAG, "Skip unexpected module queries for $processName")
       return emptyList()
     }
     return state.scopes[ProcessScope(processName, uid)] ?: emptyList()
@@ -486,7 +457,6 @@ object ConfigCache {
     val modules = mutableListOf<LoadedModule>()
     if (!android.os.SELinux.checkSELinuxAccess(
         "u:r:system_server:s0", "u:r:system_server:s0", "process", "execmem")) {
-      Log.e(TAG, "Skipping system_server injection: sepolicy execmem denied")
       return modules
     }
 
@@ -527,7 +497,6 @@ object ConfigCache {
                   module.applicationInfo = pkg.applicationInfo
                 }
                 .onFailure {
-                  Log.w(TAG, "PackageParser failed for $apkPath, using fallback ApplicationInfo")
                   module.applicationInfo = ApplicationInfo().apply { packageName = pkgName }
                 }
 
@@ -637,7 +606,6 @@ object ConfigCache {
               }
             }
           }
-          .onFailure { Log.e(TAG, "Failed to prepare prefs path: $path", it) }
     }
     return path.toString()
   }

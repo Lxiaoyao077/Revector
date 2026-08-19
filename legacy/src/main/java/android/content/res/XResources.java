@@ -41,7 +41,6 @@ import java.util.WeakHashMap;
 import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodHook.MethodHookParam;
-import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedBridge.CopyOnWriteSortedSet;
 import de.robv.android.xposed.XposedInit;
 import de.robv.android.xposed.callbacks.XC_LayoutInflated;
@@ -208,7 +207,6 @@ public class XResources extends XResourcesSuperClass {
 			throw new IllegalStateException("Could not determine package name for " + resDir, e);
 		}
 		if (pkgInfo != null && pkgInfo.packageName != null) {
-//			Log.w(XposedBridge.TAG, "Package name for " + resDir + " had to be retrieved via parser");
 			packageName = pkgInfo.packageName;
 			setPackageNameForResDir(packageName, resDir);
 			return packageName;
@@ -783,7 +781,7 @@ public class XResources extends XResourcesSuperClass {
 						Drawable result = ((DrawableLoader) replacement).newDrawable(this, id);
 						if (result != null)
 							return result;
-					} catch (Throwable t) { XposedBridge.log(t); }
+					} catch (Throwable ignored) { }
 				} else if (replacement instanceof Integer) {
 					return new ColorDrawable((Integer) replacement);
 				} else if (replacement instanceof XResForwarder) {
@@ -809,7 +807,7 @@ public class XResources extends XResourcesSuperClass {
 						Drawable result = ((DrawableLoader) replacement).newDrawable(this, id);
 						if (result != null)
 							return result;
-					} catch (Throwable t) { XposedBridge.log(t); }
+					} catch (Throwable ignored) { }
 				} else if (replacement instanceof Integer) {
 					return new ColorDrawable((Integer) replacement);
 				} else if (replacement instanceof XResForwarder) {
@@ -835,7 +833,7 @@ public class XResources extends XResourcesSuperClass {
 						Drawable result = ((DrawableLoader) replacement).newDrawableForDensity(this, id, density);
 						if (result != null)
 							return result;
-					} catch (Throwable t) { XposedBridge.log(t); }
+					} catch (Throwable ignored) { }
 				} else if (replacement instanceof Integer) {
 					return new ColorDrawable((Integer) replacement);
 				} else if (replacement instanceof XResForwarder) {
@@ -861,7 +859,7 @@ public class XResources extends XResourcesSuperClass {
 						Drawable result = ((DrawableLoader) replacement).newDrawableForDensity(this, id, density);
 						if (result != null)
 							return result;
-					} catch (Throwable t) { XposedBridge.log(t); }
+					} catch (Throwable ignored) { }
 				} else if (replacement instanceof Integer) {
 					return new ColorDrawable((Integer) replacement);
 				} else if (replacement instanceof XResForwarder) {
@@ -980,11 +978,6 @@ public class XResources extends XResourcesSuperClass {
 					String[] components = value.string.toString().split("/", 3);
 					if (components.length == 3)
 						variant = components[1];
-					else
-						XposedBridge.log("Unexpected resource path \"" + value.string.toString()
-								+ "\" for resource id 0x" + Integer.toHexString(id));
-				} else {
-					XposedBridge.log(new NotFoundException("Could not find file name for resource id 0x") + Integer.toHexString(id));
 				}
 
 				synchronized (sXmlInstanceDetails) {
@@ -1104,9 +1097,6 @@ public class XResources extends XResourcesSuperClass {
 			int repId = ((XResForwarder) replacement).getId();
 			repRes.getValue(repId, outValue, resolveRefs);
 		} else {
-			if (replacement != null) {
-				XposedBridge.log("Replacement of resource ID #0x" + Integer.toHexString(id) + " escaped because of deprecated replacement. Please use XResForwarder instead.");
-			}
 			super.getValue(id, outValue, resolveRefs);
 		}
 	}
@@ -1120,9 +1110,6 @@ public class XResources extends XResourcesSuperClass {
 			int repId = ((XResForwarder) replacement).getId();
 			repRes.getValueForDensity(repId, density, outValue, resolveRefs);
 		} else {
-			if (replacement != null) {
-				XposedBridge.log("Replacement of resource ID #0x" + Integer.toHexString(id) + " escaped because of deprecated replacement. Please use XResForwarder instead.");
-			}
 			super.getValueForDensity(id, density, outValue, resolveRefs);
 		}
 	}
@@ -1206,7 +1193,6 @@ public class XResources extends XResourcesSuperClass {
 			} catch (NotFoundException ignored) {}
 
 			if (!repResDefined && origResId == 0 && !entryType.equals("id")) {
-				XposedBridge.log(entryType + "/" + entryName + " is neither defined in module nor in original resources");
 				return 0;
 			}
 
@@ -1219,8 +1205,7 @@ public class XResources extends XResourcesSuperClass {
 				origRes.setReplacement(origResId, new XResForwarder(repRes, id));
 
 			return origResId;
-		} catch (Exception e) {
-			XposedBridge.log(e);
+		} catch (Exception ignored) {
 			return id;
 		}
 	}
@@ -1286,9 +1271,7 @@ public class XResources extends XResourcesSuperClass {
 		int origAttrId = 0;
 		try {
 			origAttrId = origRes.getIdentifier(attrName, "attr", origPackage);
-		} catch (NotFoundException e) {
-			XposedBridge.log("Attribute " + attrName + " not found in original resources");
-		}
+		} catch (NotFoundException ignored) { }
 		return origAttrId;
 	}
 
@@ -1404,7 +1387,7 @@ public class XResources extends XResourcesSuperClass {
 					Drawable result = ((DrawableLoader) replacement).newDrawable(xres, resId);
 					if (result != null)
 						return result;
-				} catch (Throwable t) { XposedBridge.log(t); }
+				} catch (Throwable ignored) { }
 			} else if (replacement instanceof Integer) {
 				return new ColorDrawable((Integer) replacement);
 			} else if (replacement instanceof XResForwarder) {
@@ -1549,9 +1532,6 @@ public class XResources extends XResourcesSuperClass {
 				repRes.getValue(repId, outValue, true);
 				return outValue.type != TypedValue.TYPE_NULL;
 			} else {
-				if (replacement != null) {
-					XposedBridge.log("Replacement of resource ID #0x" + Integer.toHexString(id) + " escaped because of deprecated replacement. Please use XResForwarder instead.");
-				}
 				return super.getValue(index, outValue);
 			}
 		}
@@ -1570,9 +1550,6 @@ public class XResources extends XResourcesSuperClass {
 				repRes.getValue(repId, value, true);
 				return value;
 			} else {
-				if (replacement != null) {
-					XposedBridge.log("Replacement of resource ID #0x" + Integer.toHexString(id) + " escaped because of deprecated replacement. Please use XResForwarder instead.");
-				}
 				return super.peekValue(index);
 			}
 		}

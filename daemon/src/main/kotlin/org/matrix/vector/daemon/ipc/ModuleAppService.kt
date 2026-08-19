@@ -8,7 +8,6 @@ import android.os.IBinder
 import android.os.ParcelFileDescriptor
 import android.os.RemoteException
 import android.os.SystemClock
-import android.util.Log
 import io.github.libxposed.service.HookedProcess
 import io.github.libxposed.service.IHotReloadCallback
 import io.github.libxposed.service.IXposedScopeCallback
@@ -32,8 +31,6 @@ import org.matrix.vector.daemon.system.NotificationManager
 import org.matrix.vector.daemon.system.ProcessFreezer
 import org.matrix.vector.daemon.system.PER_USER_RANGE
 import org.matrix.vector.daemon.system.activityManager
-
-private const val TAG = "VectorModuleAppService"
 
 /**
  * A module's service as its own **app** sees it — libxposed's `IXposedService`.
@@ -195,7 +192,7 @@ class ModuleAppService(private val loadedModule: LoadedModule) : IXposedService.
                   // exactly what the throttle is for, and it is also exactly what takes the
                   // ownership away. A failure dropped for being stale is one the restart loop
                   // never has to pay for.
-                  recordFailure(uid, module.packageName)
+                  recordFailure(uid)
                 }
               } finally {
                 sending.remove(uid, attempt)
@@ -204,7 +201,6 @@ class ModuleAppService(private val loadedModule: LoadedModule) : IXposedService.
           }
           .onFailure {
             sending.remove(uid, attempt)
-            Log.w(TAG, "Could not schedule the binder delivery for ${module.packageName}", it)
           }
     }
 
@@ -250,8 +246,7 @@ class ModuleAppService(private val loadedModule: LoadedModule) : IXposedService.
       return SystemClock.elapsedRealtime() - run.atElapsed < BINDER_RETRY_COOLDOWN_MS
     }
 
-    private fun recordFailure(uid: Int, modulePkg: String) {
-      var crossed = false
+    private fun recordFailure(uid: Int) {
       // Read-modify-write in one step, and not merely as a precaution: an attempt abandoned by
       // [uidGone] and the replacement that took the uid from it can both be counting here for the
       // same uid, which is the case a plain get-then-put would lose.
@@ -268,17 +263,7 @@ class ModuleAppService(private val loadedModule: LoadedModule) : IXposedService.
               // one attempt rather than another three.
               else -> minOf(previous.count + 1, MAX_CONSECUTIVE_BINDER_FAILURES)
             }
-        crossed = count == MAX_CONSECUTIVE_BINDER_FAILURES && (previous?.count ?: 0) < count
         FailureRun(count, now)
-      }
-      // Once, on the way past the ceiling. The failures themselves are already logged one by one
-      // in sendBinder; what is worth saying here is that we have stopped trying, which is the part
-      // a reader chasing a module that never receives its service cannot otherwise see.
-      if (crossed) {
-        Log.w(
-            TAG,
-            "$modulePkg/$uid failed to take its binder $MAX_CONSECUTIVE_BINDER_FAILURES times in" +
-                " a row; retrying at most once every ${BINDER_RETRY_COOLDOWN_MS / 1000}s")
       }
     }
 
@@ -303,7 +288,6 @@ class ModuleAppService(private val loadedModule: LoadedModule) : IXposedService.
       val service = serviceMap.getOrPut(module) { ModuleAppService(module) }
       FrameworkService.staleHotReloadTargets(module.packageName).forEach { target ->
         if (target.hotReloadable && FrameworkService.beginHotReload(target)) {
-          Log.d(TAG, "Auto hot reloading ${module.packageName} in ${target.processName}")
           hotReloadExecutor.execute { service.runHotReload(target, null, null) }
         }
       }
@@ -364,7 +348,6 @@ class ModuleAppService(private val loadedModule: LoadedModule) : IXposedService.
               }?.provider
 
           if (provider == null) {
-            Log.d(TAG, "No service provider for $name")
             return@runCatching null
           }
 
@@ -386,14 +369,11 @@ class ModuleAppService(private val loadedModule: LoadedModule) : IXposedService.
               }
 
           if (reply != null) {
-            Log.d(TAG, "Sent module binder to $name")
             provider.asBinder()
           } else {
-            Log.w(TAG, "Failed to send module binder to $name")
             null
           }
         }
-        .onFailure { Log.w(TAG, "Failed to send module binder for uid $uid", it) }
         // Unconditionally, and not only when a provider came back. The platform registers the
         // external client *before* it waits for the app to publish, and the two returns that
         // matter here — the app died while launching, and the wait timed out — come after that
@@ -422,7 +402,6 @@ class ModuleAppService(private val loadedModule: LoadedModule) : IXposedService.
    */
   private fun releaseProvider(authority: String, token: Binder, userId: Int) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q && userId != 0) {
-      Log.d(TAG, "Cannot release the reference for $authority in user $userId before Q")
       return
     }
     runCatching {
@@ -432,7 +411,6 @@ class ModuleAppService(private val loadedModule: LoadedModule) : IXposedService.
             activityManager?.removeContentProviderExternal(authority, token)
           }
         }
-        .onFailure { Log.w(TAG, "Failed to release the provider reference for $authority", it) }
   }
 
   private fun ensureModule(): Int {
@@ -543,7 +521,6 @@ class ModuleAppService(private val loadedModule: LoadedModule) : IXposedService.
     val userId = ensureModule()
     packages.forEach { pkg ->
       runCatching { ModuleDatabase.removeModuleScope(loadedModule.packageName, pkg, userId) }
-          .onFailure { Log.e(TAG, "Error removing scope for $pkg", it) }
     }
   }
 
@@ -679,7 +656,6 @@ class ModuleAppService(private val loadedModule: LoadedModule) : IXposedService.
       message =
           if (gone) "Process ${target.processName} died during hot reload"
           else "${t.javaClass.name}: ${t.message ?: "no message"}"
-      Log.e(TAG, "Hot reload of ${loadedModule.packageName} failed", t)
     } finally {
       refreeze?.invoke()
       FrameworkService.endHotReload(target, stateFor(status), loadedVersion)
@@ -698,7 +674,6 @@ class ModuleAppService(private val loadedModule: LoadedModule) : IXposedService.
 
   private fun report(callback: IHotReloadCallback?, status: Int, message: String?) {
     runCatching { callback?.onHotReloadResult(status, message) }
-        .onFailure { Log.w(TAG, "Cannot deliver hot reload result to ${loadedModule.packageName}", it) }
   }
 
   override fun requestRemotePreferences(group: String): Bundle {

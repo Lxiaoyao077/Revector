@@ -5,7 +5,6 @@ import android.content.pm.PackageManager
 import android.util.Base64
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
-import org.matrix.vector.manager.logW
 import org.matrix.vector.ui.module.ModuleDetection
 import org.matrix.vector.ui.module.ModuleManifest
 
@@ -49,10 +48,6 @@ class ModuleDetectionCache(private val file: File) {
 
     @Volatile private var dirty = false
 
-    /** How many packages this run actually had to open, for the scan's own log line. */
-    @Volatile var inspectedThisRun = 0
-        private set
-
     /**
      * The manifest for [info], from the cache when the APK has not changed.
      *
@@ -74,7 +69,6 @@ class ModuleDetectionCache(private val file: File) {
             return it
         }
         val manifest = ModuleDetection.inspect(info, packageManager)
-        inspectedThisRun++
         entries[key] = manifest
         dirty = true
         return manifest
@@ -115,7 +109,6 @@ class ModuleDetectionCache(private val file: File) {
                 }
             )
         }
-            .onFailure { e -> logW("modules: detection cache write failed", e) }
         dirty = false
     }
 

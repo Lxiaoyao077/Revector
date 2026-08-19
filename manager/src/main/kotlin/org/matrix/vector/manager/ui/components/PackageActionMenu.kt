@@ -41,8 +41,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.matrix.vector.manager.logE
-import org.matrix.vector.manager.logW
 import org.matrix.vector.manager.ui.theme.LocalizedOverlay
 import org.matrix.vector.manager.R
 import android.text.format.Formatter
@@ -124,9 +122,6 @@ fun PackageActionSheet(
         openable =
             ServiceLocator.daemon
                 .findAppUi(packageName, userId, companionFirst = isModule)
-                .onFailure { e ->
-                    logW("actions: launch target lookup for $packageName u$userId failed", e)
-                }
                 .getOrNull() != null
     }
     var confirmSoftReboot by remember { mutableStateOf(false) }
@@ -152,11 +147,7 @@ fun PackageActionSheet(
                     onClick = {
                         confirmSoftReboot = false
                         onDismiss()
-                        scope.launch(Dispatchers.Main) {
-                            daemon.softReboot().onFailure {
-                                logE("actions: soft reboot request failed", it)
-                            }
-                        }
+                        scope.launch(Dispatchers.Main) { daemon.softReboot() }
                     }
                 ) {
                     Text(
@@ -245,13 +236,7 @@ LocalizedOverlay {
                     PackageActionResult(R.string.action_launched)
                 } else {
                     // The row is only drawn once findAppUi resolved a target, so reaching this
-                    // branch contradicts what was rendered. One line for both shapes: a failed
-                    // transaction carries a throwable, a resolve that found nothing does not.
-                    logE(
-                        "actions: open of $packageName for user $userId did nothing, though the " +
-                            "row had resolved a target",
-                        result.exceptionOrNull(),
-                    )
+                    // branch contradicts what was rendered.
                     PackageActionResult(R.string.action_no_launcher, tone = SnackbarTone.Failure)
                 }
             }
@@ -268,20 +253,7 @@ LocalizedOverlay {
                 // and locks the screen first. That is right here: this is Settings' own details
                 // page for a package in that profile, which is not an activity that shows for
                 // whichever user is current.
-                val started = daemon.startActivityAsUser(intent, userId, noUserSwitch = false)
-                // The dominant failure is not an exception: the daemon hands back the activity
-                // manager's own start code, so a refused user switch or a screen that would not
-                // start arrives as a number rather than as a throw. Started means 0 to 99 — the
-                // band `ActivityManager.isStartResultSuccessful` tests, written out because those
-                // constants are hidden — with -100 to -1 fatal and 100 to 199 non-fatal refusals.
-                val code = started.getOrDefault(-1)
-                if (code !in 0..99) {
-                    logE(
-                        "actions: opening app info for $packageName as user $userId failed " +
-                            "(code $code)",
-                        started.exceptionOrNull(),
-                    )
-                }
+                daemon.startActivityAsUser(intent, userId, noUserSwitch = false)
                 PackageActionResult(R.string.action_opened_info)
             }
         }
@@ -306,14 +278,10 @@ LocalizedOverlay {
                 title = stringResource(R.string.action_force_stop),
             ) {
                 finish {
-                    val result =
-                        daemon.forceStopPackage(packageName, userId).onFailure { e ->
-                            logE("actions: force stop of $packageName (user $userId) failed", e)
-                        }
                     // Unlike uninstall below there is no boolean to weigh: the call answers with
                     // Unit, so the Result itself is the verdict — a failure here means the
                     // transaction never reached a live daemon and nothing was stopped.
-                    val ok = result.isSuccess
+                    val ok = daemon.forceStopPackage(packageName, userId).isSuccess
                     PackageActionResult(
                         if (ok) R.string.action_force_stopped
                         else R.string.action_force_stop_failed,
@@ -344,13 +312,7 @@ LocalizedOverlay {
                             tone = SnackbarTone.Working,
                         )
                     )
-                    val ok =
-                        daemon
-                            .optimizePackage(packageName)
-                            .onFailure { e ->
-                                logE("actions: re-optimize of $packageName failed", e)
-                            }
-                            .getOrDefault(false)
+                    val ok = daemon.optimizePackage(packageName).getOrDefault(false)
                     PackageActionResult(
                         if (ok) R.string.action_optimized else R.string.action_optimize_failed,
                         appName,
@@ -368,16 +330,7 @@ LocalizedOverlay {
                 tint = colors.error,
             ) {
                 finish {
-                    val result = daemon.uninstallPackage(packageName, userId)
-                    val ok = result.getOrDefault(false)
-                    // On `!ok`: a device-policy refusal and a missing user come back as a plain
-                    // `false`, which onFailure would never see.
-                    if (!ok) {
-                        logE(
-                            "actions: uninstall of $packageName for user $userId failed",
-                            result.exceptionOrNull(),
-                        )
-                    }
+                    val ok = daemon.uninstallPackage(packageName, userId).getOrDefault(false)
                     PackageActionResult(
                         if (ok) R.string.action_uninstalled else R.string.action_uninstall_failed,
                         appName,

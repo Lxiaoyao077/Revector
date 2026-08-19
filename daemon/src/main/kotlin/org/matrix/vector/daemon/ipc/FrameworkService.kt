@@ -5,7 +5,6 @@ import android.os.Parcel
 import android.os.ParcelFileDescriptor
 import android.os.Process
 import android.os.RemoteException
-import android.util.Log
 import io.github.libxposed.service.HookedProcess
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
@@ -19,8 +18,6 @@ import org.matrix.vector.daemon.system.FIRST_APPLICATION_UID
 import org.matrix.vector.daemon.system.PER_USER_RANGE
 import org.matrix.vector.daemon.utils.InstallerVerifier
 import org.matrix.vector.daemon.utils.ObfuscationManager
-
-private const val TAG = "VectorFrameworkService"
 
 // Hardcoded transaction code from BridgeService
 const val BRIDGE_TRANSACTION_CODE =
@@ -218,7 +215,6 @@ object FrameworkService : IFrameworkService.Stub() {
     // registry is keyed on (uid, pid). See the note on the AIDL.
     val info = ensureRegistered()
     info.hotReloadBinder = channel
-    Log.d(TAG, "Process channel attached for ${info.processName} (pid=${info.key.pid})")
   }
 
   override fun onTransact(code: Int, data: Parcel, reply: Parcel?, flags: Int): Boolean {
@@ -259,7 +255,6 @@ object FrameworkService : IFrameworkService.Stub() {
     val key = ProcessKey(getCallingUid(), getCallingPid())
     val info = processes[key]
     if (info == null) {
-      Log.w(TAG, "Unauthorized IPC call from uid=${key.uid} pid=${key.pid}")
       throw RemoteException("Not registered")
     }
     return info
@@ -281,8 +276,6 @@ object FrameworkService : IFrameworkService.Stub() {
 
   override fun getLegacyModules() = getAllModules().filter { it.code.legacy }
 
-  override fun isLogMuted(): Boolean = !ManagerService.isVerboseLogEnabled()
-
   override fun getPrefsPath(packageName: String): String {
     val info = ensureRegistered()
     return ConfigCache.getPrefsPath(packageName, info.key.uid)
@@ -296,7 +289,6 @@ object FrameworkService : IFrameworkService.Stub() {
           ParcelFileDescriptor.open(
               FileSystem.managerApkPath.toFile(), ParcelFileDescriptor.MODE_READ_ONLY)
         }
-        .onFailure { Log.e(TAG, "Failed to open or verify manager APK", it) }
         .getOrNull()
   }
 

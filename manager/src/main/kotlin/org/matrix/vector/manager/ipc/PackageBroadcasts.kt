@@ -10,7 +10,6 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import org.matrix.vector.manager.BuildConfig
-import org.matrix.vector.manager.logW
 import org.matrix.vector.ui.module.PER_USER_RANGE
 
 sealed class PackageEvent {
@@ -102,12 +101,7 @@ fun Context.daemonPackageEventsFlow(): Flow<PackageEvent> = callbackFlow {
                 // naming a class the manager does not have throws right here, on the main thread,
                 // and kills the manager rather than whoever sent it. Since the registration below
                 // has to accept strangers, reading them is guarded.
-                val event =
-                    runCatching { intent.daemonPackageEvent() }
-                        .onFailure {
-                            logW("ipc: unreadable package notification", it)
-                        }
-                        .getOrNull()
+                val event = runCatching { intent.daemonPackageEvent() }.getOrNull()
                 if (event != null) trySend(event)
             }
         }
@@ -132,7 +126,6 @@ fun Context.daemonPackageEventsFlow(): Flow<PackageEvent> = callbackFlow {
             // Throwing here would fail this flow, and the merge it is collected in would take the
             // platform source down with it — losing every user's package events, on a scope whose
             // failure ends the process, to save the one this flow adds.
-            .onFailure { logW("ipc: daemon package notifications unavailable", it) }
             .isSuccess
 
     awaitClose { if (registered) unregisterReceiver(receiver) }

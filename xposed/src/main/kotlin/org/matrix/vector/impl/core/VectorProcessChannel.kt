@@ -7,9 +7,6 @@ import java.util.concurrent.Executors
 import org.matrix.vector.ipc.LoadedModule
 import org.matrix.vector.ipc.IHotReloadOutcomeReceiver
 import org.matrix.vector.ipc.IProcessChannel
-import org.matrix.vector.util.Log
-
-private const val TAG = "VectorProcessChannel"
 
 /**
  * This process's end of the only channel the daemon has for calling in.
@@ -39,14 +36,12 @@ object VectorProcessChannel : IProcessChannel.Stub() {
         // stating rather than assuming. Nothing else may drive a module's lifecycle.
         val caller = Binder.getCallingUid()
         if (caller != Process.SYSTEM_UID && caller != 0) {
-            Log.w(TAG, "Refusing a hot reload request from uid $caller")
             return
         }
 
         worker.execute {
             val outcome = VectorModuleManager.hotReload(modulePackageName, extras, module)
             runCatching { receiver?.onOutcome(outcome) }
-                .onFailure { Log.w(TAG, "Cannot report the hot reload outcome", it) }
         }
     }
 }

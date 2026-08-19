@@ -1,9 +1,6 @@
 package org.matrix.vector.daemon.system
 
-import android.util.Log
 import java.io.File
-
-private const val TAG = "VectorFreezer"
 
 /**
  * Thaws a frozen process for the duration of a daemon-initiated transaction.
@@ -66,20 +63,15 @@ object ProcessFreezer {
 
     val thawed = runCatching { file.writeText("0") }.isSuccess
     if (!thawed) {
-      Log.w(TAG, "Cannot thaw pid=$pid through ${file.path}")
       return null
     }
 
-    Log.d(TAG, "Thawed pid=$pid for a daemon transaction")
     return {
       runCatching {
             if (file.readText().trim() == "0") {
               file.writeText("1")
-            } else {
-              Log.d(TAG, "Left pid=$pid alone: something else changed its freezer state")
             }
           }
-          .onFailure { Log.w(TAG, "Cannot re-freeze pid=$pid", it) }
     }
   }
 }

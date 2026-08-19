@@ -396,40 +396,6 @@ class SettingsRepository(context: Context) : StoreSettings {
             prefs.getInt("status_badge_opens", 0)
         else 0
 
-    // --- Logs ---
-
-    /**
-     * Whether log lines wrap rather than pan sideways.
-     *
-     * Persisted because it is a reading preference, not a transient view state: parasitically the
-     * manager lives inside `com.android.shell`, whose process is killed routinely, so anything held
-     * only in a ViewModel resets far more often than a user would expect.
-     */
-    private val _logWordWrap = MutableStateFlow(prefs.getBoolean("log_word_wrap", true))
-    val logWordWrap: StateFlow<Boolean> = _logWordWrap.asStateFlow()
-
-    fun setLogWordWrap(enabled: Boolean) {
-        prefs.edit().putBoolean("log_word_wrap", enabled).apply()
-        _logWordWrap.value = enabled
-    }
-
-    /**
-     * Whether a stack trace in the log opens where it sits, or on a screen of its own.
-     *
-     * Inline by default. The log is read with a filter applied and a scroll position worth keeping,
-     * and pushing a route for one entry costs both — which matters most when the reason you are
-     * reading the log is to compare one trace against another. The screen is the better answer for
-     * a trace long enough that having it inside the list is the thing in the way, so which one is
-     * right depends on the reader, and that is what makes it a setting rather than a decision.
-     */
-    private val _logTracesInline = MutableStateFlow(prefs.getBoolean("log_traces_inline", true))
-    val logTracesInline: StateFlow<Boolean> = _logTracesInline.asStateFlow()
-
-    fun setLogTracesInline(inline: Boolean) {
-        prefs.edit().putBoolean("log_traces_inline", inline).apply()
-        _logTracesInline.value = inline
-    }
-
     // --- Navigation panels ---
 
     /**

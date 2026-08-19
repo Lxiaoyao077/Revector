@@ -18,7 +18,6 @@ import android.os.IBinder
 import android.os.ParcelFileDescriptor
 import android.os.SELinux
 import android.os.SystemProperties
-import android.util.Log
 import android.view.IWindowManager
 import hidden.HiddenApiBridge
 import io.github.libxposed.service.IXposedService
@@ -37,7 +36,6 @@ import org.matrix.vector.daemon.data.FileSystem
 import org.matrix.vector.daemon.data.ModuleDatabase
 import org.matrix.vector.daemon.data.PreferenceStore
 import org.matrix.vector.daemon.env.Dex2OatServer
-import org.matrix.vector.daemon.env.LogcatMonitor
 import org.matrix.vector.daemon.system.*
 import org.matrix.vector.daemon.utils.InstallerVerifier
 import org.matrix.vector.daemon.utils.PackageOptimizer
@@ -45,8 +43,6 @@ import org.matrix.vector.daemon.utils.RootImplementation
 import org.matrix.vector.daemon.utils.applyXspaceWorkaround
 import org.matrix.vector.daemon.utils.getRealUsers
 import rikka.parcelablelist.ParcelableListSlice
-
-private const val TAG = "VectorManagerService"
 
 object ManagerService : IManagerService.Stub() {
 
@@ -92,10 +88,7 @@ object ManagerService : IManagerService.Stub() {
             binder.linkToDeath(this, 0)
             applyXspaceWorkaround(connection)
           }
-          .onFailure {
-            Log.e(TAG, "ManagerGuard initialization failed", it)
-            ManagerService.guard = null
-          }
+          .onFailure { ManagerService.guard = null }
     }
 
     override fun binderDied() {
@@ -109,7 +102,6 @@ object ManagerService : IManagerService.Stub() {
 
   @Synchronized
   fun preStartManager(): Boolean {
-    Log.v(TAG, "Pre-start parasitic manager.")
     pendingManager = true
     managerPid = -1
     return true
@@ -118,12 +110,7 @@ object ManagerService : IManagerService.Stub() {
   @Synchronized
   fun tryRegisterManagerProcess(pid: Int, uid: Int, processName: String): Boolean {
     if (ConfigCache.isManager(uid) && processName == BuildConfig.DEFAULT_MANAGER_PACKAGE_NAME) {
-      if (pendingManager) {
-        Log.v(TAG, "Parasitic manager registered.")
-        pendingManager = false
-      } else {
-        Log.v(TAG, "Starting user-installed manager process.")
-      }
+      pendingManager = false
       managerPid = pid
       return true
     }
@@ -170,16 +157,13 @@ object ManagerService : IManagerService.Stub() {
           intent.setPackage(BuildConfig.MANAGER_INJECTED_PKG_NAME)
           managerIntent = Intent(intent)
         }
-        .onFailure { Log.e(TAG, "Failed to build manager intent", it) }
     return managerIntent
   }
 
   fun openManager(withData: Uri?) {
     val intent = getManagerIntent() ?: return
     val launchIntent = Intent(intent).apply { data = withData }
-    // Negative results are `ActivityManager.START_*` errors, the positive ones are all successes.
-    val result = activityManager?.startActivityAsUserCompat(launchIntent, 0) ?: -1
-    if (result < 0) Log.e(TAG, "Failed to open manager: $result")
+    activityManager?.startActivityAsUserCompat(launchIntent, 0)
   }
 
   /** Fixes permissions for the WebView cache. */
@@ -191,7 +175,6 @@ object ManagerService : IManagerService.Stub() {
 
     // Change ownership to the target UID (e.g., 2000)
     runCatching { android.system.Os.chown(file.absolutePath, targetUid, targetUid) }
-        .onFailure { Log.e(TAG, "Failed to chown ${file.path}", it) }
 
     // Recurse into directories
     if (file.isDirectory) {
@@ -213,7 +196,6 @@ object ManagerService : IManagerService.Stub() {
           if (!cacheDir.exists()) cacheDir.mkdirs()
           fixWebViewPermissions(cacheDir, targetUid)
         }
-        .onFailure { Log.w(TAG, "WebView permission fix failed", it) }
   }
 
   fun obtainManagerBinder(heartbeat: IBinder, pid: Int, uid: Int): IBinder {
@@ -272,44 +254,6 @@ object ManagerService : IManagerService.Stub() {
 
   override fun getModuleScope(packageName: String) = ModuleDatabase.getModuleScope(packageName)
 
-  // Reports the setting, not the setting OR'd with the build type. It used to be
-  // `|| BuildConfig.DEBUG`, which made the value unwritable on a debug daemon: the manager could
-  // never read false, so its switch snapped back on every tap and had to be greyed out. The OR was
-  // redundant anyway — `isVerboseLogEnabled()` already defaults to true — so a debug build still
-  // logs verbosely out of the box, and now a developer can also turn it off.
-  override fun isVerboseLogEnabled() = PreferenceStore.isVerboseLogEnabled()
-
-  override fun setVerboseLogEnabled(enabled: Boolean) {
-    PreferenceStore.setVerboseLog(enabled)
-    if (isVerboseLogEnabled()) LogcatMonitor.startVerbose() else LogcatMonitor.stopVerbose()
-  }
-
-  override fun getLogParts(verbose: Boolean): List<String> = FileSystem.listLogParts(verbose)
-
-  override fun getLogPart(verbose: Boolean, name: String): ParcelFileDescriptor? =
-      FileSystem.openLogPart(verbose, name)?.let {
-        ParcelFileDescriptor.open(it, ParcelFileDescriptor.MODE_READ_ONLY)
-      }
-
-  /**
-   * The part being written on one of the two streams.
-   *
-   * The two calls this replaces were not symmetric: only the modules one asked
-   * [LogcatMonitor.checkLogFile] to re-open a descriptor the reader had lost. That asymmetry is
-   * kept exactly as it was rather than tidied away, because levelling it either way changes when a
-   * lost descriptor is repaired, and that is a decision about the log rather than about this
-   * merge.
-   */
-  override fun getLiveLogPart(verbose: Boolean): ParcelFileDescriptor? {
-    if (!verbose) LogcatMonitor.checkLogFile()
-    val file = if (verbose) LogcatMonitor.getVerboseLog() else LogcatMonitor.getModulesLog()
-    return file?.let { ParcelFileDescriptor.open(it, ParcelFileDescriptor.MODE_READ_ONLY) }
-  }
-
-  override fun startNewLogPart(verbose: Boolean) {
-    LogcatMonitor.refresh(verbose)
-  }
-
   override fun forceStopPackage(packageName: String, userId: Int) {
     activityManager?.forceStopPackage(packageName, userId)
   }
@@ -329,7 +273,6 @@ object ManagerService : IManagerService.Stub() {
             ParcelFileDescriptor.open(
                 FileSystem.managerApkPath.toFile(), ParcelFileDescriptor.MODE_READ_ONLY)
           }
-          .onFailure { Log.e(TAG, "Failed to open or verify manager APK", it) }
           .getOrNull()
 
   override fun reboot() {
@@ -403,7 +346,6 @@ object ManagerService : IManagerService.Stub() {
     // for the same reason a refusal does: the caller must not be told a package is gone on the
     // strength of a status that never arrived.
     if (!latch.await(UNINSTALL_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
-      Log.w(TAG, "No uninstall status for $packageName after ${UNINSTALL_TIMEOUT_SECONDS}s")
       return false
     }
     return result
@@ -473,7 +415,6 @@ object ManagerService : IManagerService.Stub() {
    */
   override fun setForcedLauncherIcons(force: Boolean) {
     runCatching { settingsCommand("put", if (force) "1" else "0") }
-        .onFailure { Log.w(TAG, "setForcedLauncherIcons failed", it) }
   }
 
   override fun isForcedLauncherIcons(): Boolean =
@@ -498,11 +439,6 @@ object ManagerService : IManagerService.Stub() {
     process.waitFor()
     return output.ifBlank { null }
   }
-
-  override fun writeBugReport(zipFd: ParcelFileDescriptor) {
-    FileSystem.getLogs(zipFd)
-  }
-
 
   override fun isStatusNotificationEnabled() = PreferenceStore.isStatusNotificationEnabled()
 
@@ -532,21 +468,13 @@ object ManagerService : IManagerService.Stub() {
 
   override fun installFrameworkZip(zipPath: String, receiver: IFrameworkInstallReceiver) {
     // Off the binder thread: a flash takes seconds to minutes, and holding a binder thread for its
-    // duration starves everything else the manager asks of the daemon meanwhile — including the
-    // log reads the install screen is doing to show what is happening.
+    // duration starves everything else the manager asks of the daemon meanwhile.
     Thread {
           val exit =
               RootImplementation.install(zipPath) { line ->
                 runCatching { receiver.onLine(line) }
-                    .onFailure {
-                      // The manager went away mid-flash. Keep installing — stopping now would
-                      // leave the module tree half-written — and keep logging, which is the only
-                      // record left.
-                      Log.w(TAG, "Install receiver is gone; continuing", it)
-                    }
               }
           runCatching { receiver.onFinished(exit) }
-              .onFailure { Log.w(TAG, "Could not report install result", it) }
         }
         .apply {
           name = "vector-framework-install"

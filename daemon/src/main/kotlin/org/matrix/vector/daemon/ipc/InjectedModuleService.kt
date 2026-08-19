@@ -4,7 +4,6 @@ import android.os.Binder
 import android.os.Bundle
 import android.os.ParcelFileDescriptor
 import android.os.RemoteException
-import android.util.Log
 import io.github.libxposed.service.IXposedService
 import java.io.Serializable
 import java.util.concurrent.ConcurrentHashMap
@@ -14,8 +13,6 @@ import org.matrix.vector.daemon.data.ConfigCache
 import org.matrix.vector.daemon.data.FileSystem
 import org.matrix.vector.daemon.data.PreferenceStore
 import org.matrix.vector.daemon.system.PER_USER_RANGE
-
-private const val TAG = "VectorInjectedModuleService"
 
 /**
  * A module's service as an **injected process** sees it — this project's `IModuleService`.
@@ -54,7 +51,6 @@ class InjectedModuleService(private val packageName: String) : IModuleService.St
       val subscriber = Subscriber(userId, callback)
       groupCallbacks.add(subscriber)
       runCatching { callback.asBinder().linkToDeath({ groupCallbacks.remove(subscriber) }, 0) }
-          .onFailure { Log.w(TAG, "requestRemotePreferences linkToDeath failed", it) }
     }
     return bundle
   }
@@ -69,7 +65,6 @@ class InjectedModuleService(private val packageName: String) : IModuleService.St
           val dir = FileSystem.resolveModuleDir(packageName, "files", userId, -1)
           ParcelFileDescriptor.open(dir.resolve(path).toFile(), ParcelFileDescriptor.MODE_READ_ONLY)
         }
-        .onFailure { Log.w(TAG, "Cannot open remote file $path for $packageName: ${it.message}") }
         .getOrNull()
   }
 

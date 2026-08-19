@@ -1,3 +1,4 @@
+#include <fmt/format.h>
 #include <alloca.h>
 #include <parallel_hashmap/phmap.h>
 #include <sys/mman.h>

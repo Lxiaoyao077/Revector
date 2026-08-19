@@ -1,7 +1,6 @@
 package org.matrix.vector.daemon.utils
 
 import android.os.Build
-import android.util.Log
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import org.matrix.vector.daemon.system.packageManager
@@ -20,8 +19,6 @@ import org.matrix.vector.daemon.system.packageManager
  */
 object PackageOptimizer {
 
-  private const val TAG = "VectorOptimizer"
-
   private val backend: Backend =
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
           FallbackBackend(primary = ShellBackend, fallback = BinderBackend)
@@ -37,9 +34,7 @@ object PackageOptimizer {
     // Best-effort clear: on failure the recompile merely reuses an older profile, which still beats
     // aborting the whole action.
     runCatching { backend.clearProfiles(packageName) }
-        .onFailure { Log.e(TAG, "Failed to clear profiles for $packageName", it) }
     return runCatching { backend.compile(packageName) }
-        .onFailure { Log.e(TAG, "Failed to optimize $packageName", it) }
         .getOrDefault(false)
   }
 

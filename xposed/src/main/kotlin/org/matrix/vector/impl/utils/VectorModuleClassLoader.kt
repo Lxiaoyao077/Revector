@@ -5,7 +5,6 @@ import android.os.SharedMemory
 import android.system.ErrnoException
 import android.system.Os
 import android.system.OsConstants
-import android.util.Log
 import androidx.annotation.RequiresApi
 import hidden.ByteBufferDexClassLoader
 import java.io.File
@@ -109,8 +108,7 @@ class VectorModuleClassLoader : ByteBufferDexClassLoader {
                             return "${split[0]}$ZIP_SEPARATOR$entryName"
                         }
                     }
-                } catch (e: IOException) {
-                    Log.e(TAG, "Cannot open ${split[0]}", e)
+                } catch (_: IOException) {
                 }
             } else if (file.isDirectory) {
                 val entryPath = File(file, fileName).path
@@ -144,7 +142,6 @@ class VectorModuleClassLoader : ByteBufferDexClassLoader {
     }
 
     companion object {
-        private const val TAG = "VectorModuleClassLoader"
         private const val ZIP_SEPARATOR = "!/"
 
         /**
@@ -160,7 +157,6 @@ class VectorModuleClassLoader : ByteBufferDexClassLoader {
          */
         private val LEGACY_API_PREFIXES: Array<String> by lazy {
             runCatching { HookBridge.legacyApiPrefixes() }
-                .onFailure { Log.w(TAG, "Cannot resolve the legacy API prefixes", it) }
                 .getOrElse { arrayOf("de.robv.android.xposed.") }
         }
         private val SYSTEM_NATIVE_LIBRARY_DIRS = splitPaths(System.getProperty("java.library.path"))
@@ -190,8 +186,7 @@ class VectorModuleClassLoader : ByteBufferDexClassLoader {
                     .map { dex ->
                         try {
                             dex.mapReadOnly()
-                        } catch (e: ErrnoException) {
-                            Log.w(TAG, "Cannot map $dex", e)
+                        } catch (_: ErrnoException) {
                             null
                         }
                     }

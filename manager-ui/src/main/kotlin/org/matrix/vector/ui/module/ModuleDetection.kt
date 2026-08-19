@@ -2,7 +2,6 @@ package org.matrix.vector.ui.module
 
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
-import android.util.Log
 import java.util.Properties
 import java.util.zip.ZipFile
 
@@ -50,8 +49,6 @@ data class ModuleManifest(
 
 object ModuleDetection {
 
-    private const val TAG = "ModuleDetection"
-
     private const val MODERN_ENTRY = "META-INF/xposed/java_init.list"
     private const val SCOPE_ENTRY = "META-INF/xposed/scope.list"
     private const val MODULE_PROP = "META-INF/xposed/module.prop"
@@ -93,14 +90,6 @@ object ModuleDetection {
                                             props.getProperty("targetApiVersion").toIntOrZero()
                                         static = props.getProperty("staticScope") == "true"
                                     }
-                                    .onFailure { e ->
-                                        Log.w(
-                                            TAG,
-                                            "modules: ${info.packageName} module.prop unparsable, " +
-                                                "api version and static scope unknown",
-                                            e,
-                                        )
-                                    }
                             }
 
                             val scope =
@@ -123,11 +112,6 @@ object ModuleDetection {
                             // declaration, so the two sides agree on what such a module is allowed
                             // to hook.
                             if (static && scope.isEmpty()) {
-                                Log.w(
-                                    TAG,
-                                    "modules: ${info.packageName} fixes its scope but names " +
-                                        "nothing; ignoring staticScope and leaving the scope open",
-                                )
                                 static = false
                             }
 
@@ -142,14 +126,6 @@ object ModuleDetection {
                                 description = info.loadDescription(packageManager)?.toString()?.trim().orEmpty(),
                             )
                         }
-                    }
-                    .onFailure { e ->
-                        Log.w(
-                            TAG,
-                            "modules: reading ${info.packageName} " +
-                                "${apk.substringAfterLast('/')} failed",
-                            e,
-                        )
                     }
                     .getOrNull()
             if (modern != null) return modern
@@ -217,9 +193,6 @@ object ModuleDetection {
                     } else {
                         meta.getString(LEGACY_SCOPE)?.split(';')?.map { it.trim() }
                     }
-                }
-                .onFailure { e ->
-                    Log.w(TAG, "modules: ${info.packageName} legacy xposedscope unreadable", e)
                 }
                 .getOrNull()
                 ?.filter { it.isNotEmpty() } ?: return emptyList()

@@ -24,7 +24,6 @@ import java.io.FileOutputStream
 import java.lang.reflect.Method
 import java.util.concurrent.ConcurrentHashMap
 import org.matrix.vector.ipc.IManagerService
-import org.matrix.vector.util.Utils
 import org.matrix.vector.impl.core.VectorServiceClient
 
 /** The "Parasite" logic. Injects the manager APK into a host process (shell). */
@@ -40,19 +39,6 @@ object ParasiticManagerHooker {
     // Manually track Activity states since the system is unaware of our spoofed activities
     private val states = ConcurrentHashMap<String, Bundle>()
     private val persistentStates = ConcurrentHashMap<String, PersistableBundle>()
-
-    private fun logD(msg: String) {
-        Utils.logD(
-            "ParasiticHooker: pkg=${ActivityThread.currentPackageName()}, prc=${ActivityThread.currentProcessName()} - $msg"
-        )
-    }
-
-    private fun logE(msg: String, t: Throwable) {
-        Utils.logE(
-            "ParasiticHooker: pkg=${ActivityThread.currentPackageName()}, prc=${ActivityThread.currentProcessName()} - $msg",
-            t,
-        )
-    }
 
     /** Constructs a hybrid PackageInfo. Combines the Manager's code with the Host's environment. */
     @Synchronized
@@ -82,8 +68,7 @@ object ParasiticManagerHooker {
                                 }
                                 sourcePath = dstPath
                             }
-                            .onFailure { logE("Failed to copy parasitic APK", it) }
-                    }
+                                                }
 
                     val pkgInfo =
                         ctx.packageManager.getPackageArchiveInfo(
@@ -122,8 +107,7 @@ object ParasiticManagerHooker {
                     }
                     managerPkgInfo = pkgInfo
                 }
-                .onFailure { Utils.logE("Failed to construct manager PkgInfo", it) }
-        }
+                        }
         return managerPkgInfo
     }
 
@@ -147,8 +131,7 @@ object ParasiticManagerHooker {
                     ) as Boolean
                 if (!ok) throw RuntimeException("setBinder returned false")
             }
-            .onFailure { Utils.logW("Could not send binder to the manager", it) }
-    }
+                }
 
     /**
      * Drops any [LoadedApk] the process already holds for [packageName].
@@ -160,23 +143,17 @@ object ParasiticManagerHooker {
      * which compares nothing but the resource and overlay directories, and those we copy from the
      * host in [getManagerPkgInfo]. The manager's `sourceDir` would never be picked up.
      *
-     * A freshly forked process has an empty cache, which makes this a no-op on most devices. The
-     * warning below is therefore also the only evidence that such pre-warming is real.
+     * A freshly forked process has an empty cache, which makes this a no-op on most devices.
      */
     private fun evictCachedLoadedApk(packageName: String) {
         runCatching {
                 val at = ActivityThread.currentActivityThread()
                 for (field in arrayOf("mPackages", "mResourcePackages")) {
                     val cache = XposedHelpers.getObjectField(at, field) as? ArrayMap<*, *>
-                    if (cache == null) {
-                        Utils.logW("ActivityThread#$field is not an ArrayMap, not evicting")
-                    } else if (cache.remove(packageName) != null) {
-                        Utils.logW("Evicted a pre-cached LoadedApk of $packageName from $field")
-                    }
+                    cache?.remove(packageName)
                 }
             }
-            .onFailure { logE("Failed to evict the cached LoadedApk of $packageName", it) }
-    }
+                }
 
     private fun hookForManager(managerService: IManagerService) {
         // Hook 1: Swap ApplicationInfo during host binding
@@ -186,7 +163,6 @@ object ParasiticManagerHooker {
             "android.app.ActivityThread\$AppBindData",
             object : XC_MethodHook() {
                 override fun beforeHookedMethod(param: MethodHookParam<*>) {
-                    logD("ActivityThread#handleBindApplication() starts")
                     val bindData = param.args[0]
                     val hostAppInfo =
                         XposedHelpers.getObjectField(bindData, "appInfo") as ApplicationInfo
@@ -212,12 +188,10 @@ object ParasiticManagerHooker {
                         val dexPath = managerAppInfo.sourceDir
                         val pathClassLoader = param.result as ClassLoader
 
-                        logD("Injecting DEX into LoadedApk ClassLoader: $pathClassLoader")
                         val pathList = XposedHelpers.getObjectField(pathClassLoader, "pathList")
                         val dexPaths = XposedHelpers.callMethod(pathList, "getDexPaths") as List<*>
 
                         if (!dexPaths.contains(dexPath)) {
-                            Utils.logW("Manager APK not found in ClassLoader, adding manually...")
                             XposedHelpers.callMethod(pathClassLoader, "addDexPath", dexPath)
                         }
                         sendBinderToManager(pathClassLoader, managerService.asBinder())
@@ -287,7 +261,6 @@ object ParasiticManagerHooker {
                 override fun afterHookedMethod(param: MethodHookParam<*>) {
                     if (!activityClientRecordClass.isInstance(param.thisObject)) return
                     param.args.filterIsInstance<ActivityInfo>().forEach { aInfo ->
-                        logD("Restoring state for Activity: ${aInfo.name}")
                         states[aInfo.name]?.let {
                             XposedHelpers.setObjectField(param.thisObject, "state", it)
                         }
@@ -414,10 +387,8 @@ object ParasiticManagerHooker {
                             "sProviderInstance",
                             instance,
                         )
-                        logD("WebView provider initialized: $instance")
                         instance
                     } catch (e: Exception) {
-                        logE("WebView initialization failed", e)
                         throw AndroidRuntimeException(e)
                     }
                 }
@@ -452,9 +423,7 @@ object ParasiticManagerHooker {
 
                             state?.let { states[aInfo.name] = it }
                             pState?.let { persistentStates[aInfo.name] = it }
-                            logD("Saved state for ${aInfo.name}")
                         }
-                        .onFailure { logE("Failed to save activity state", it) }
                 }
             }
         XposedBridge.hookAllMethods(
@@ -507,11 +476,9 @@ object ParasiticManagerHooker {
                         },
                     )
                 }
-                Utils.logD("Vector manager injected successfully into process.")
                 true
             }
-        } catch (e: Throwable) {
-            Utils.logE("Parasitic injection failed", e)
+        } catch (_: Throwable) {
             false
         }
     }

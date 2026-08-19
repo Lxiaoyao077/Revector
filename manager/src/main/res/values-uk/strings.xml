@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="nav_home">Головна</string>
     <string name="nav_modules">Модулі</string>
-    <string name="nav_logs">Журнали</string>
-
     <string name="panels_done">Готово</string>
     <string name="panels_hide">Сховати «%1$s»</string>
     <string name="panels_show">Показати «%1$s»</string>
@@ -12,21 +9,20 @@
     <string name="panels_move_later">Перемістити назад</string>
     <string name="panels_ball_open">Відкрити навігацію</string>
     <string name="panels_ball_close">Закрити навігацію</string>
-
     <string name="status_active">Активний</string>
     <string name="status_degraded">Проблеми</string>
     <string name="status_inactive">Не активовано</string>
     <string name="status_mismatched">Розбіжність версій</string>
     <string name="status_checking">Перевірка…</string>
     <string name="status_open_details">Відкрити стан системи</string>
-
+    <string name="copied">Скопійовано в буфер обміну</string>
+    <string name="action_copy_all">Копіювати все</string>
     <string name="issue_sepolicy_title">Політику SELinux не завантажено</string>
     <string name="issue_sepolicy_summary">Частина можливостей не працюватиме. Зазвичай це означає, що реалізація root не застосувала правила Vector.</string>
     <string name="issue_system_server_title">Не вдалося впровадитися в системний фреймворк</string>
     <string name="issue_system_server_summary">Модулі не можуть перехоплювати системні служби. Це рідкість, і причиною зазвичай є інший root-модуль, який заважає.</string>
     <string name="issue_dex2oat_title">Обгортку dex2oat недоступно</string>
     <string name="issue_dex2oat_summary">Деякі системні властивості вилучено або змінено. Після оновлення застосунку модулі можуть перестати діяти.</string>
-
     <string name="system_status">Стан системи</string>
     <string name="info_api_version">API Xposed</string>
     <string name="info_framework_version">Фреймворк</string>
@@ -68,10 +64,8 @@
     <string name="home_open_issue">Повідомити про проблему</string>
     <string name="home_discussions">Обговорення</string>
     <string name="home_review_prs">Переглянути зміну</string>
-
     <string name="home_with_coauthor">%1$s і %2$s</string>
     <string name="home_with_coauthors">%1$s і ще %2$d</string>
-
     <string name="home_month_stats">%1$s · %2$s</string>
     <plurals name="home_people_count_plain">
         <item quantity="one">%1$d людина</item>
@@ -79,7 +73,6 @@
         <item quantity="many">%1$d людей</item>
         <item quantity="other">%1$d людей</item>
     </plurals>
-
     <plurals name="home_commits_ahead">
         <item quantity="one">на %1$d коміт новіше за ваш</item>
         <item quantity="few">на %1$d коміти новіше за ваш</item>
@@ -93,7 +86,6 @@
         <item quantity="many">%1$d днів тиші</item>
         <item quantity="other">%1$d дня тиші</item>
     </plurals>
-
     <string name="appearance_title">Вигляд</string>
     <string name="appearance_theme">Тема</string>
     <string name="appearance_theme_system">Як у системі</string>
@@ -104,7 +96,6 @@
     <string name="appearance_amoled_summary">Заощаджує заряд на екранах OLED.</string>
     <string name="egg_two_more">Ще два рази…</string>
     <string name="egg_one_more">Ще раз…</string>
-
     <string name="modules_empty">Модулів не встановлено.</string>
     <string name="modules_active_of">%1$d з %2$d активні</string>
     <string name="modules_no_match">Жоден модуль не відповідає цьому запиту чи фільтру.</string>
@@ -131,22 +122,18 @@
     <string name="modules_incompatible_legacy">Потрібен Xposed API %1$d, якого цей фреймворк не надає.</string>
     <string name="modules_api_behind">Зібрано під libxposed API %1$d. В API %2$d інтерфейс змінився, тож модуль може працювати не повністю.</string>
     <string name="modules_no_daemon">Vector не працює, тож перелік модулів недоступний. Відкрийте стан системи з головної, щоб побачити причину.</string>
-
     <string name="web_open_external">Відкрити в браузері</string>
-
     <string name="settings_ambience">Поверхня заголовка</string>
     <string name="ambience_snow">Сніг</string>
     <string name="ambience_maze">Лабіринт</string>
     <string name="ambience_circuit">Схема</string>
     <string name="ambience_matrix">Дощ із коду</string>
     <string name="ambience_none">Нерухома</string>
-
     <string name="settings_navigation">Навігація</string>
     <string name="settings_floating_nav">Плаваюча навігація</string>
     <string name="settings_floating_nav_summary">Замінює панель навігації маленькою кулькою, яку можна перетягнути будь-куди. Утримуйте її, щоб розгорнути розділи віялом, або торкніться, щоб вони лишилися відкритими.</string>
     <string name="settings_rearrange_panels">Змінити порядок розділів</string>
     <string name="settings_rearrange_panels_summary">Змініть їхній порядок або сховайте ті, які ніколи не відкриваєте.</string>
-
     <string name="settings_activity">Стрічка активності</string>
     <plurals name="settings_window_months">
         <item quantity="one">Останній %1$d місяць</item>
@@ -156,7 +143,6 @@
     </plurals>
     <string name="settings_open_externally">Відкривати посилання в браузері</string>
     <string name="settings_open_externally_summary">Вимкнено: сторінки GitHub відкриваються всередині Vector.</string>
-
     <string name="scope_use_recommended">Узяти те, що просить модуль</string>
     <string name="scope_select_visible">Вибрати все показане</string>
     <string name="scope_clear_visible">Зняти вибір з усього показаного</string>
@@ -190,7 +176,6 @@
     <string name="scope_empty_message">Цей модуль увімкнено, але жодного застосунку не вибрано, тож він нічого не робитиме. Вимкніть його або виберіть застосунки.</string>
     <string name="scope_empty_disable">Вимкнути модуль</string>
     <string name="scope_empty_keep">Залишити ввімкненим</string>
-
     <string name="action_launch">Відкрити</string>
     <string name="action_app_info">Про застосунок</string>
     <string name="action_force_stop">Примусово зупинити</string>
@@ -205,10 +190,9 @@
     <string name="action_optimize_failed">Не вдалося переоптимізувати %1$s.</string>
     <string name="action_uninstalled">%1$s видалено.</string>
     <string name="action_uninstall_failed">Не вдалося видалити %1$s.</string>
-
     <string name="back">Назад</string>
     <string name="retry">Повторити</string>
-
+    <string name="cancel">Скасувати</string>
     <string name="appearance_color">Колір</string>
     <string name="appearance_custom_color">Вибрати колір</string>
     <string name="modules_expand">Показати повний опис</string>
@@ -268,24 +252,14 @@
     <string name="report_step_canary_body">Можливо, це вже виправлено, а супровідникам для допомоги потрібна саме зневаджувальна збірка. Тримайтеся master — збірки з pull request нестабільні.</string>
     <string name="report_step_zygisk">Не на Magisk? Оновіть Zygisk</string>
     <string name="report_step_zygisk_body">Прошийте найновішу реалізацію Zygisk, у зневаджувальній збірці, якщо така є.</string>
-    <string name="report_step_logs">Додайте журнали</string>
-    <string name="report_step_logs_body">Повідомлення без журналів — це розмова, що починається спочатку. Тут обидва журнали записуються в zip, який можна прикріпити.</string>
-    <string name="report_step_crashed">Якщо Zygisk аварійно завершився</string>
-    <string name="report_step_crashed_body">Попросити zip у служби вже не вийде, але файли вона все одно записала. Root прочитає їх навіть тоді, коли більше ніщо не може.</string>
     <string name="report_open_tracker">Відкрити трекер задач</string>
-    <string name="report_save_with_root">Зберегти теку журналів (потрібен root)</string>
-    <string name="report_saved_to">Збережено до %1$s</string>
-    <string name="report_see_guide">Повний посібник у задачі</string>
-    <string name="report_root_refused">Root відхилено. Дозвольте Vector у своєму root-менеджері й спробуйте ще раз%1$s</string>
     <string name="home_custom_build">Власна збірка — попереду master</string>
     <string name="language_title">Мова</string>
     <string name="language_system">Як у системі</string>
     <string name="language_system_summary">Використовувати мову, налаштовану на телефоні</string>
-
     <string name="language_translated_by">Переклад: %1$s</string>
     <string name="language_help_short">Перекласти</string>
     <string name="language_help">Допомогти з перекладом Vector</string>
-
     <string name="update_title">Оновлення фреймворку</string>
     <string name="update_channel_canary">Збірка canary</string>
     <string name="update_channel_release">Стабільний випуск</string>
@@ -411,25 +385,12 @@
     <string name="info_section_build">Що запущено</string>
     <string name="info_section_health">Чи це працює</string>
     <string name="info_section_device">Цей пристрій</string>
-    <string name="crash_recorded_title">Менеджер несподівано завершив роботу</string>
-    <string name="crash_recorded_summary">Повне трасування стека потрапляє в експорт журналів, у теку crash_manager.</string>
-    <string name="crash_recorded_clear">Відкинути</string>
-    <string name="crash_what">Що</string>
-    <string name="crash_message">Повідомлення</string>
-    <string name="crash_where">Де</string>
-    <string name="crash_when">Коли</string>
-    <string name="crash_where_unknown">Ніде у власному коді Vector</string>
-    <string name="crash_when_value">%1$s у потоці %2$s</string>
-    <string name="crash_open_trace">Переглянути трасування</string>
-    <string name="crash_trace">Збій</string>
-    <string name="crash_caused_by">Причина</string>
     <plurals name="crash_frames_elided">
         <item quantity="one">ще %1$d кадр, такий самий, як вище</item>
         <item quantity="few">ще %1$d кадри, такі самі, як вище</item>
         <item quantity="many">ще %1$d кадрів, таких самих, як вище</item>
         <item quantity="other">ще %1$d кадра, такі самі, як вище</item>
     </plurals>
-    <string name="crash_unreadable">Цей збій не вдалося прочитати. Скопіюйте його та додайте до звіту як є.</string>
     <string name="force_launcher_icons">Не дозволяти застосункам ховати свій значок у лаунчері</string>
     <string name="force_launcher_icons_summary">Починаючи з Android 10, застосунок, який ховає свій значок у лаунчері, отримує його назад, і цей значок відкриває сторінку відомостей про застосунок. Вимкніть це, щоб значок лишався прихованим — лаунчер може оновити свій перелік лише після перезапуску. Застосунків, які ніколи не мали значка в лаунчері, зокрема більшість модулів, це не стосується.</string>
     <string name="action_force_stop_failed">Не вдалося зупинити %1$s.</string>
@@ -452,7 +413,6 @@
     <string name="settings_doh_working">Працює — %1$s розвʼязано через Cloudflare.</string>
     <string name="settings_doh_fell_back">Cloudflare недоступний (%1$s), тому до кінця цього сеансу використовується резолвер мережі.</string>
     <string name="settings_doh_retry">Повторити</string>
-
     <string name="launcher_title">Як відкрити Vector</string>
     <string name="launcher_body">Vector не встановлено як застосунок, тож лаунчеру нема чого показувати. Ось як до нього повернутися.</string>
     <string name="launcher_shortcut">Ярлик на головному екрані</string>

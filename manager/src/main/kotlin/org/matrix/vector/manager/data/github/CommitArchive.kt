@@ -4,7 +4,6 @@ import java.io.File
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import org.matrix.vector.manager.logW
 
 /**
  * Every commit the app has ever seen, kept on disk.
@@ -115,16 +114,12 @@ class CommitArchive(private val file: File, private val stateFile: File, private
         val byShaLatestWins = LinkedHashMap<String, GhCommit>()
         var total = 0
         var skipped = 0
-        var firstFailure: Throwable? = null
         runCatching {
             file.forEachLine { line ->
                 if (line.isBlank()) return@forEachLine
                 total++
                 runCatching { json.decodeFromString<GhCommit>(line) }
-                    .onFailure { e ->
-                        skipped++
-                        if (firstFailure == null) firstFailure = e
-                    }
+                    .onFailure { skipped++ }
                     .getOrNull()
                     // A truncated final line — a process killed mid-append — costs that one commit
                     // and nothing else. It is why this is a line format and not one JSON document.
@@ -139,7 +134,6 @@ class CommitArchive(private val file: File, private val stateFile: File, private
         // Exactly one bad line is the truncated tail above and is not worth saying anything about;
         // more than one is systematic — a renamed field would make the whole archive read as empty.
         if (skipped > 1) {
-            logW("feed: skipped $skipped of $total archive lines", firstFailure)
             // Repaired here, where it is found, rather than left to [compactIfWasteful]: that runs
             // only during a backfill, which happens only if someone scrolls to the foot of
             // history, so damage would otherwise be re-skipped on every launch instead of being
@@ -170,9 +164,6 @@ class CommitArchive(private val file: File, private val stateFile: File, private
                     file.appendText(
                         commits.joinToString("\n", postfix = "\n") { json.encodeToString(it) }
                     )
-                }
-                .onFailure { e ->
-                    logW("feed: appending ${commits.size} commits to the archive failed", e)
                 }
         }
     }
@@ -212,9 +203,6 @@ class CommitArchive(private val file: File, private val stateFile: File, private
                     tmp.renameTo(file)
                     parsed = unique
                     lineCount = unique.size
-                }
-                .onFailure { e ->
-                    logW("feed: rewriting the archive failed", e)
                 }
         }
     }

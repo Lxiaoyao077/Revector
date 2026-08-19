@@ -2,7 +2,6 @@
 <resources>
     <string name="nav_home">خانه</string>
     <string name="nav_modules">ماژول‌ها</string>
-    <string name="nav_logs">گزارش‌ها</string>
     <string name="panels_ball_close">بستن ناوبری</string>
     <string name="panels_ball_open">باز کردن ناوبری</string>
     <string name="panels_done">انجام شد</string>

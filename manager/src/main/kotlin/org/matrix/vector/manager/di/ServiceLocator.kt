@@ -26,7 +26,6 @@ import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import org.matrix.vector.ipc.IManagerService
-import org.matrix.vector.manager.data.log.CrashRecorder
 import org.matrix.vector.manager.data.github.GitHubRepository
 import org.matrix.vector.manager.data.repository.AppRepository
 import org.matrix.vector.manager.data.repository.BackupRepository
@@ -227,9 +226,6 @@ object ServiceLocator {
     fun attach(context: Context) {
         if (appContext != null) return
         appContext = context.applicationContext ?: context
-        // Before anything else that could fail. Nothing below is load-bearing for it, and a crash
-        // during startup is exactly the one that is hardest to catch on a cable.
-        CrashRecorder.install(appContext!!)
 
         // Coil is configured by hand rather than through its manifest hooks, for the same reason
         // OkHttp is: parasitically this app's manifest is never installed, so nothing that

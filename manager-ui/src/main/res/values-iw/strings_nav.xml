@@ -2,7 +2,6 @@
 <resources>
     <string name="nav_home">בית</string>
     <string name="nav_modules">מודולים</string>
-    <string name="nav_logs">יומנים</string>
     <string name="nav_manage">ניהול</string>
     <string name="panels_ball_close">סגירת הניווט</string>
     <string name="panels_ball_open">פתיחת הניווט</string>

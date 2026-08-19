@@ -11,7 +11,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.telephony.TelephonyManager
-import android.util.Log
 import hidden.HiddenApiBridge
 import io.github.libxposed.service.IXposedScopeCallback
 import kotlinx.coroutines.launch
@@ -26,8 +25,6 @@ import org.matrix.vector.daemon.ipc.FrameworkService
 import org.matrix.vector.daemon.ipc.ManagerService
 import org.matrix.vector.daemon.ipc.ModuleAppService
 import org.matrix.vector.daemon.system.*
-
-private const val TAG = "VectorService"
 
 object VectorService : IVectorDaemon.Stub() {
 
@@ -60,7 +57,6 @@ object VectorService : IVectorDaemon.Stub() {
     registerReceivers()
 
     if (VectorDaemon.isLateInject) {
-      Log.i(TAG, "Late injection detected. Forcing boot completed event.")
       dispatchBootCompleted()
     }
   }
@@ -72,7 +68,6 @@ object VectorService : IVectorDaemon.Stub() {
       heartBeat: IBinder
   ): IFrameworkService? {
     if (Binder.getCallingUid() != 1000) {
-      Log.w(TAG, "Unauthorized attachProcess call")
       return null
     }
     if (FrameworkService.hasRegister(uid, pid)) return null
@@ -80,7 +75,6 @@ object VectorService : IVectorDaemon.Stub() {
     val scope = ProcessScope(processName, uid)
     if (!ManagerService.tryRegisterManagerProcess(pid, uid, processName) &&
         ConfigCache.shouldSkipProcess(scope)) {
-      Log.d(TAG, "Skipped $processName/$uid")
       return null
     }
 
@@ -125,7 +119,6 @@ object VectorService : IVectorDaemon.Stub() {
                       this, resultCode, data, extras, false, intent.flags)
                 }
               }
-              .onFailure { Log.e(TAG, "finishReceiver failed", it) }
         }
       }
 
@@ -236,20 +229,16 @@ object VectorService : IVectorDaemon.Stub() {
 
     activityManager?.registerUidObserver(
         uidObserver, which, HiddenApiBridge.ActivityManager_PROCESS_STATE_UNKNOWN(), "android")
-    Log.d(TAG, "Registered all OS Receivers and UID Observers")
   }
 
   private fun dispatchBootCompleted() {
     bootCompleted = true
-    Log.d(TAG, "BOOT_COMPLETED event received.")
     if (PreferenceStore.isStatusNotificationEnabled()) {
       NotificationManager.notifyStatusNotification()
     }
   }
 
   private fun dispatchConfigurationChanged() {
-    Log.d(TAG, "CONFIGURATION_CHANGED event received.")
-
     if (!bootCompleted) return
     if (PreferenceStore.isStatusNotificationEnabled()) {
       NotificationManager.notifyStatusNotification()
@@ -273,8 +262,6 @@ object VectorService : IVectorDaemon.Stub() {
 
     val uri = intent.data
     val moduleName = uri?.schemeSpecificPart ?: ConfigCache.getModuleByUid(uid)?.packageName
-
-    Log.d(TAG, "dispatchPackageChanged $action $moduleName [$uid]")
 
     val appInfo =
         moduleName?.let {
@@ -343,9 +330,7 @@ object VectorService : IVectorDaemon.Stub() {
                   }
 
               scopeList.add(newScope)
-              if (!ModuleDatabase.setModuleScope(xposedModule, scopeList)) {
-                Log.e(TAG, "Failed to auto-include $moduleName for $xposedModule")
-              }
+              ModuleDatabase.setModuleScope(xposedModule, scopeList)
             }
           }
         }
@@ -362,7 +347,6 @@ object VectorService : IVectorDaemon.Stub() {
     val isRemovedAction =
         action == Intent.ACTION_PACKAGE_FULLY_REMOVED || action == Intent.ACTION_UID_REMOVED
     if (moduleName == BuildConfig.DEFAULT_MANAGER_PACKAGE_NAME && userId == 0) {
-      Log.d(TAG, "Manager updated")
       ConfigCache.updateManager(isRemovedAction)
     }
 
@@ -422,10 +406,6 @@ object VectorService : IVectorDaemon.Stub() {
     // part of that, since the whole point is that a second *different* action must not answer
     // again.
     if (!NotificationManager.claimScopeAnswer(packageName, userId, scopePackageNames)) {
-      Log.d(
-          TAG,
-          "Ignoring $action of ${scopePackageNames.joinToString()} for $packageName:" +
-              " already answered")
       return
     }
 
@@ -487,14 +467,6 @@ object VectorService : IVectorDaemon.Stub() {
                     it == "system" || packageManager?.getPackageInfoCompat(it, 0, userId) != null
                   }
               if (granted.isEmpty()) {
-                // Logged, because until now this said nothing anywhere: the module was told
-                // "Package not found", the user was told nothing at all, and the daemon kept no
-                // record that the press had even arrived. The framework-scope failure above was
-                // invisible for exactly that reason.
-                Log.w(
-                    TAG,
-                    "None of ${scopePackageNames.joinToString()} resolve for user $userId;" +
-                        " refusing the scope request of $packageName")
                 // Leaving the whole function here skipped the cancel below, which used to be
                 // merely untidy and is now a prompt nobody can use: the request has been answered,
                 // so every later press of its buttons is dropped. The request is over either way,
@@ -528,7 +500,6 @@ object VectorService : IVectorDaemon.Stub() {
               // partly what was agreed to — and writing unconditionally would let a module enable
               // itself by asking again for what it has.
               if (added) ModuleDatabase.setModuleScope(packageName, scopes)
-              Log.i(TAG, "Approved ${granted.joinToString()} for $packageName on user $userId")
               // The packages that were granted, which is what the list in this callback is for. A
               // module comparing it against what it asked for can see what it did not get.
               iCallback.onScopeRequestApproved(granted)
@@ -577,6 +548,5 @@ object VectorService : IVectorDaemon.Stub() {
     if (packageName !in blocked) return
     PreferenceStore.updateModulePref(
         "lspd", 0, "config", "scope_request_blocked", blocked - packageName)
-    Log.i(TAG, "$packageName was uninstalled; it may ask for scope again if it returns")
   }
 }

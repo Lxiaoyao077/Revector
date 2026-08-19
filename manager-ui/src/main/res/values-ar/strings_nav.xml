@@ -2,7 +2,6 @@
 <resources>
     <string name="nav_home">الرئيسية</string>
     <string name="nav_modules">الوحدات</string>
-    <string name="nav_logs">السجلات</string>
     <string name="panels_ball_close">إغلاق التنقّل</string>
     <string name="panels_ball_open">فتح التنقّل</string>
     <string name="panels_done">تمّ</string>

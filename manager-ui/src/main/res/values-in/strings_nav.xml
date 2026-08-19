@@ -2,7 +2,6 @@
 <resources>
     <string name="nav_home">Beranda</string>
     <string name="nav_modules">Modul</string>
-    <string name="nav_logs">Log</string>
     <string name="panels_ball_close">Tutup navigasi</string>
     <string name="panels_ball_open">Buka navigasi</string>
     <string name="panels_done">Selesai</string>

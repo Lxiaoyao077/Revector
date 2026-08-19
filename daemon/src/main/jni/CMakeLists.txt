@@ -7,7 +7,6 @@ add_subdirectory(${VECTOR_ROOT}/external external)
 
 set(SOURCES
         dex2oat.cpp
-        logcat.cpp
         obfuscation.cpp
         )
 

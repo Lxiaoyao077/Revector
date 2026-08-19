@@ -39,8 +39,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -64,11 +62,8 @@ import androidx.compose.ui.draw.alpha
 import android.content.res.Configuration
 import java.util.Locale
 import org.matrix.vector.manager.R
-import org.matrix.vector.ui.R as UiR
-import org.matrix.vector.manager.data.log.CrashRecorder
 import org.matrix.vector.manager.data.model.ManagerCopy
 import org.matrix.vector.manager.data.model.XposedApi
-import org.matrix.vector.manager.data.log.CrashReport
 import org.matrix.vector.manager.data.model.buildStamp
 import org.matrix.vector.manager.data.repository.ManagerInstallStep
 import org.matrix.vector.manager.ui.components.SnackbarTone
@@ -89,7 +84,6 @@ import org.matrix.vector.manager.ui.theme.VectorMono
 @Composable
 fun SystemStatusScreen(
     onNavigateBack: () -> Unit,
-    onOpenCrash: () -> Unit,
     viewModel: HomeViewModel = viewModel(factory = HomeViewModel.Factory),
 ) {
     val status by viewModel.status.collectAsStateWithLifecycle()
@@ -123,14 +117,11 @@ fun SystemStatusScreen(
                 )
             buildSections(status, device, english)
         }
-    // Read once per visit rather than watched: a crash cannot be recorded while this screen is on
-    // screen, because the process that would record it is the one drawing it.
-    var crash by remember { mutableStateOf(CrashRecorder.newest(context)) }
     // The two switches below belong to the framework, so they are only live while it is.
     val daemonAlive = status.daemonUsable
     val snackbars = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
-    val copied = stringResource(UiR.string.copied)
+    val copied = stringResource(R.string.copied)
     val shortcutRefused = stringResource(R.string.launcher_shortcut_refused)
     val installDone = stringResource(R.string.launcher_install_done)
 
@@ -169,7 +160,7 @@ fun SystemStatusScreen(
                     ) {
                         Icon(
                             Icons.Rounded.ContentCopy,
-                            contentDescription = stringResource(UiR.string.action_copy_all),
+                            contentDescription = stringResource(R.string.action_copy_all),
                         )
                     }
                 },
@@ -184,19 +175,6 @@ fun SystemStatusScreen(
             if (status.issues.isNotEmpty()) {
                 items(status.issues, key = { it.name }) { issue -> IssueCard(issue) }
                 item { Spacer(Modifier.height(4.dp)) }
-            }
-            crash?.let { report ->
-                item(key = "crashes") {
-                    CrashCard(
-                        report = report,
-                        onOpenTrace = onOpenCrash,
-                        onClear = {
-                            CrashRecorder.clear(context)
-                            crash = null
-                        },
-                    )
-                    Spacer(Modifier.height(4.dp))
-                }
             }
             sections.forEach { (heading, items) ->
                 item(key = "h:$heading") { SectionHeading(heading) }
@@ -272,8 +250,7 @@ fun SystemStatusScreen(
  * read as them: a switch is always the same width, so a column of switches lines up, while these
  * trailing controls were a long label, a spinner and a button — three different widths that left the
  * right-hand edge ragged and squeezed each description into a narrow column with nothing beside it.
- * The page already has this shape for "here is a situation, here is what to do about it": IssueCard
- * and CrashCard.
+ * The page already has this shape for "here is a situation, here is what to do about it": IssueCard.
  *
  * One card rather than one per remedy, because the reader's question is not "should I pin a
  * shortcut" but "which of these do I have" — and each separate card would have to re-explain the
@@ -533,94 +510,6 @@ private fun IssueCard(issue: HealthIssue) {
                 )
             }
         }
-    }
-}
-
-/**
- * The manager's own crashes, which nothing else on the device keeps.
- *
- * On this page rather than under Logs, because every log there is the daemon's and because this is
- * the page someone opens when they are about to report something. It summarises the newest crash
- * only — the older ones are on file and travel with the log export — since the question being asked
- * is "what just happened", not "what has ever happened".
- *
- * Four facts, not a trace. This card sits among rows that each state one thing, and a block of
- * monospace here would be the only thing on the page a reader has to decode rather than read; the
- * trace has its own screen, one tap away, where it can be a list instead of a paragraph. The four
- * are chosen as the answers to what a maintainer asks first: what threw, what it said, the nearest
- * frame that is ours, and when. "Where" is the one worth having on the card at all — it is the
- * fact that decides who picks the report up, and it is buried in the middle of the printed trace.
- *
- * The card is absent when there have been no crashes, which is the normal state and deserves no
- * row of its own.
- */
-@Composable
-private fun CrashCard(report: CrashReport, onOpenTrace: () -> Unit, onClear: () -> Unit) {
-    val colors = MaterialTheme.colorScheme
-    OutlinedCard(modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row(verticalAlignment = Alignment.Top) {
-                Icon(Icons.Rounded.WarningAmber, contentDescription = null, tint = colors.error)
-                Spacer(Modifier.padding(horizontal = 6.dp))
-                Text(
-                    stringResource(R.string.crash_recorded_title),
-                    style = MaterialTheme.typography.titleSmall,
-                )
-            }
-            Spacer(Modifier.height(4.dp))
-            Text(
-                stringResource(R.string.crash_recorded_summary),
-                style = MaterialTheme.typography.bodySmall,
-                color = colors.onSurfaceVariant,
-            )
-            Spacer(Modifier.height(12.dp))
-            // The root cause rather than what reached the handler: "RuntimeException: Unable to
-            // start activity" is the platform saying where it noticed, and the end of the chain is
-            // the sentence that names what actually failed.
-            report.root?.let { cause ->
-                CrashFact(stringResource(R.string.crash_what), cause.simpleType, error = true)
-                cause.message?.let { CrashFact(stringResource(R.string.crash_message), it) }
-            }
-            CrashFact(
-                stringResource(R.string.crash_where),
-                report.ours?.shortMethod ?: stringResource(R.string.crash_where_unknown),
-                monospace = report.ours != null,
-            )
-            CrashFact(stringResource(R.string.crash_when), crashWhen(report))
-            Spacer(Modifier.height(8.dp))
-            Row {
-                TextButton(onClick = onOpenTrace) {
-                    Text(stringResource(R.string.crash_open_trace))
-                }
-                TextButton(onClick = onClear) { Text(stringResource(R.string.crash_recorded_clear)) }
-            }
-        }
-    }
-}
-
-/**
- * One line of the summary, laid out as the rows below it are: label above, fact underneath.
- *
- * Tighter than [InfoRow] because four of these sit inside a card rather than on the page, and
- * because none of them is a status anyone needs to spot from across the room.
- */
-@Composable
-private fun CrashFact(
-    label: String,
-    value: String,
-    monospace: Boolean = false,
-    error: Boolean = false,
-) {
-    val colors = MaterialTheme.colorScheme
-    Column(Modifier.padding(bottom = 8.dp)) {
-        Text(label, style = MaterialTheme.typography.labelMedium, color = colors.onSurfaceVariant)
-        Text(
-            value,
-            style =
-                if (monospace) VectorMono.copy(fontSize = 14.sp)
-                else MaterialTheme.typography.bodyMedium,
-            color = if (error) colors.error else colors.onSurface,
-        )
     }
 }
 

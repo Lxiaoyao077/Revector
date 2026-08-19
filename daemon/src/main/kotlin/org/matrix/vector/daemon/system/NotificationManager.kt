@@ -16,7 +16,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
-import android.util.Log
 import io.github.libxposed.service.IXposedScopeCallback
 import java.util.UUID
 import org.matrix.vector.daemon.BuildConfig
@@ -24,7 +23,6 @@ import org.matrix.vector.daemon.R
 import org.matrix.vector.daemon.data.FileSystem
 import org.matrix.vector.daemon.utils.FakeContext
 
-private const val TAG = "VectorNotificationManager"
 private const val STATUS_CHANNEL_ID = "vector_status"
 private const val UPDATED_CHANNEL_ID = "vector_module_updated"
 private const val STATUS_NOTIF_ID = BuildConfig.MANAGER_INJECTED_UID
@@ -91,7 +89,6 @@ object NotificationManager {
           nm?.createNotificationChannelsForPackage(
               "android", 1000, android.content.pm.ParceledListSlice(list))
         }
-        .onFailure { Log.e(TAG, "Failed to create notification channels", it) }
   }
 
   private fun getBitmap(id: Int): Bitmap {
@@ -178,7 +175,6 @@ object NotificationManager {
             nm?.cancelNotificationWithTag("android", tag, notifId, 0)
           }
         }
-        .onFailure { Log.e(TAG, "Failed to cancel notification $tag", it) }
   }
 
   /**
@@ -368,7 +364,6 @@ object NotificationManager {
   private fun abandonScopeRequest(dropped: OutstandingScopeRequests.Abandoned, reason: String) {
     cancelByTag(dropped.tag)
     runCatching { dropped.callback.onScopeRequestFailed(reason) }
-        .onFailure { Log.w(TAG, "Could not tell ${dropped.tag} that its request was dropped", it) }
   }
 
   fun requestModuleScope(
@@ -384,10 +379,6 @@ object NotificationManager {
     // rendering an icon for a prompt that is not going up.
     val abandoned = OutstandingScopeRequests.post(tag, callback)
     if (abandoned == null) {
-      Log.w(
-          TAG,
-          "$modulePkg is already waiting on $MAX_OPEN_SCOPE_REQUESTS_PER_MODULE scope prompts;" +
-              " not asking about ${scopePkgs.joinToString()}")
       // Refused, not ignored. The module is told rather than left holding a callback that can
       // never fire, and the message names what did not make it so a module developer can see it.
       runCatching {
@@ -395,11 +386,9 @@ object NotificationManager {
                 "Too many scope requests are already waiting for an answer from the user," +
                     " so ${scopePkgs.joinToString()} was not asked about")
           }
-          .onFailure { Log.w(TAG, "Could not tell $modulePkg its request was refused", it) }
       return
     }
     abandoned.forEach {
-      Log.w(TAG, "Giving up the scope prompt ${it.tag}: too many are open across all modules")
       abandonScopeRequest(
           it, "Scope request dropped: too many are waiting for an answer on this device")
     }
@@ -491,7 +480,6 @@ object NotificationManager {
               val service = checkNotNull(nm) { "the notification manager is not available" }
               service.enqueueNotificationWithTag("android", opPkg, tag, tag.hashCode(), notif, 0)
             }
-            .onFailure { Log.e(TAG, "Failed to post the scope prompt $tag", it) }
             .isSuccess
     if (!enqueued) {
       // The registration above outlives a failed enqueue, and it would then hold one of the

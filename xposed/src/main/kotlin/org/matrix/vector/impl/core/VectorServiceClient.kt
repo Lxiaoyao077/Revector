@@ -5,15 +5,12 @@ import android.os.ParcelFileDescriptor
 import org.matrix.vector.ipc.LoadedModule
 import org.matrix.vector.ipc.IProcessChannel
 import org.matrix.vector.ipc.IFrameworkService
-import org.matrix.vector.util.Log
 
 /**
  * Singleton client for managing IPC communication with the injected manager service. Handles Binder
  * death gracefully and ensures safe remote execution.
  */
 object VectorServiceClient : IFrameworkService, IBinder.DeathRecipient {
-
-    private const val TAG = "VectorServiceClient"
 
     private var service: IFrameworkService? = null
     var processName: String = ""
@@ -28,10 +25,7 @@ object VectorServiceClient : IFrameworkService, IBinder.DeathRecipient {
                     processName = niceName
                     binder.linkToDeath(this, 0)
                 }
-                .onFailure {
-                    Log.e(TAG, "Failed to link to death for service in process: $niceName", it)
-                    service = null
-                }
+                .onFailure { service = null }
 
             // Handed over here rather than after module loading, and carrying no module identity:
             // system_server loads its modules before the daemon's module cache exists, so anything
@@ -39,8 +33,7 @@ object VectorServiceClient : IFrameworkService, IBinder.DeathRecipient {
             service?.let {
                 try {
                     it.attachProcessChannel(VectorProcessChannel)
-                } catch (t: Throwable) {
-                    Log.e(TAG, "Failed to attach the process channel in process: $niceName", t)
+                } catch (_: Throwable) {
                 }
             }
         }
@@ -49,13 +42,8 @@ object VectorServiceClient : IFrameworkService, IBinder.DeathRecipient {
     override fun attachProcessChannel(channel: IProcessChannel?) {
         try {
             service?.attachProcessChannel(channel)
-        } catch (t: Throwable) {
-            Log.e(TAG, "Failed to attach the process channel", t)
+        } catch (_: Throwable) {
         }
-    }
-
-    override fun isLogMuted(): Boolean {
-        return runCatching { service?.isLogMuted == true }.getOrDefault(false)
     }
 
     override fun getLegacyModules(): List<LoadedModule> {

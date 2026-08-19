@@ -5,7 +5,6 @@ import io.github.libxposed.api.XposedInterface.ExceptionMode
 import io.github.libxposed.api.XposedInterface.Hooker
 import java.lang.reflect.Executable
 import java.util.Collections
-import org.matrix.vector.util.Utils
 
 /**
  * A registered hook configuration, stored natively by [HookBridge].
@@ -81,7 +80,6 @@ class VectorChain(
             executeDownstream {
                 handleInterceptorException(
                     t,
-                    hooker,
                     exceptionMode,
                     nextChain,
                     thisObject,
@@ -111,7 +109,6 @@ class VectorChain(
     /** Handles exceptions thrown by a hooker according to its [ExceptionMode]. */
     private fun handleInterceptorException(
         t: Throwable,
-        hooker: Hooker,
         exceptionMode: ExceptionMode,
         nextChain: VectorChain,
         recoveryThis: Any?,
@@ -127,14 +124,11 @@ class VectorChain(
             throw t
         }
 
-        val hookerName = hooker.javaClass.name
         if (!nextChain.proceedCalled) {
             // Crash occurred before calling proceed(); skip hooker and continue the chain
-            Utils.logD("Hooker [$hookerName] crashed before proceed. Skipping.", t)
             return nextChain.internalProceed(recoveryThis, recoveryArgs)
         } else {
             // Crash occurred after calling proceed(); suppress and restore downstream state
-            Utils.logD("Hooker [$hookerName] crashed after proceed. Restoring state.", t)
             nextChain.downstreamThrowable?.let { throw it }
             return nextChain.downstreamResult
         }

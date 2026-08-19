@@ -1,6 +1,5 @@
 package org.matrix.vector.manager.ui.screens.modules
 
-import android.os.SystemClock
 import android.content.pm.PackageManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -29,9 +28,6 @@ import org.matrix.vector.manager.data.model.XposedApi
 import org.matrix.vector.manager.data.model.versionCodeCompat
 import org.matrix.vector.manager.di.ServiceLocator
 import org.matrix.vector.manager.ipc.DaemonClient
-import org.matrix.vector.manager.logE
-import org.matrix.vector.manager.logI
-import org.matrix.vector.manager.logW
 
 /** One tab: a user, and the modules installed for them. */
 data class UserModulesState(val user: DeviceUser, val modules: List<InstalledModule>)
@@ -353,18 +349,10 @@ class ModulesViewModel(
             var removed = 0
             var failed = 0
             targets.forEach { key ->
-                val result = daemonClient.uninstallPackage(key.packageName, key.userId)
-                val ok = result.getOrDefault(false)
-                // On `!ok`, not on onFailure: the daemon returns a bare `false` for a refusal, so
-                // onFailure would miss the case this line exists for.
-                if (ok) removed++
-                else {
-                    failed++
-                    logE(
-                        "modules: uninstall of ${key.packageName} for user ${key.userId} failed",
-                        result.exceptionOrNull(),
-                    )
-                }
+                // A refusal comes back as a bare `false`, so the boolean has to be weighed.
+                val ok =
+                    daemonClient.uninstallPackage(key.packageName, key.userId).getOrDefault(false)
+                if (ok) removed++ else failed++
             }
             moduleRepository.refresh()
             loadModules()
@@ -477,9 +465,6 @@ class ModulesViewModel(
 
     private suspend fun discover(): List<UserModulesState> {
         val usersResult = daemonClient.getUsers()
-        usersResult.onFailure { e ->
-            logW("modules: user list unavailable, treating the daemon as unreachable", e)
-        }
         _daemonAvailable.value = usersResult.isSuccess
         val users = usersResult.getOrNull() ?: emptyList()
 
@@ -491,17 +476,13 @@ class ModulesViewModel(
         val packages =
             daemonClient
                 .getInstalledPackagesFromAllUsers(flags, filterNoProcess = false)
-                .getOrElse { e ->
-                    logE("modules: installed package list unavailable, showing no modules", e)
-                    emptyList()
-                }
+                .getOrDefault(emptyList())
 
         // Through the cache, not straight to ModuleDetection: inspecting a package means opening
         // its APK and every split as a zip, and there are ~550 of those on a normal device. Keyed
         // by version code and install time, so an unchanged package is a map lookup and only a
         // newly installed or updated one is actually opened.
         val detection = ServiceLocator.moduleDetection
-        val startedAt = SystemClock.elapsedRealtime()
         val allModules =
             packages.mapNotNull { pkg ->
                 val appInfo = pkg.applicationInfo ?: return@mapNotNull null
@@ -532,14 +513,6 @@ class ModulesViewModel(
             }
 
         detection.flush(packages.mapNotNull { it.packageName }.toSet())
-        // The one number that explains a slow Modules panel: how many APKs this scan had to open.
-        // Everything else is a map lookup, so a large figure here on a second run means the cache
-        // key is wrong rather than that the device is slow.
-        logI(
-            "modules: scanned ${packages.size} packages in " +
-                "${SystemClock.elapsedRealtime() - startedAt}ms, " +
-                "opened ${detection.inspectedThisRun}",
-        )
 
         val perUser =
             users.map { user ->

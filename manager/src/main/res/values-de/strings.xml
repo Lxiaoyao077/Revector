@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="nav_home">Start</string>
     <string name="nav_modules">Module</string>
-    <string name="nav_logs">Protokolle</string>
-
     <string name="panels_done">Fertig</string>
     <string name="panels_hide">%1$s ausblenden</string>
     <string name="panels_show">%1$s einblenden</string>
@@ -12,21 +9,20 @@
     <string name="panels_move_later">Nach hinten verschieben</string>
     <string name="panels_ball_open">Navigation öffnen</string>
     <string name="panels_ball_close">Navigation schließen</string>
-
     <string name="status_active">Aktiv</string>
     <string name="status_degraded">Prüfen nötig</string>
     <string name="status_inactive">Nicht aktiviert</string>
     <string name="status_mismatched">Versionskonflikt</string>
     <string name="status_checking">Wird geprüft…</string>
     <string name="status_open_details">Systemstatus öffnen</string>
-
+    <string name="copied">In die Zwischenablage kopiert</string>
+    <string name="action_copy_all">Alles kopieren</string>
     <string name="issue_sepolicy_title">SELinux-Richtlinie nicht geladen</string>
     <string name="issue_sepolicy_summary">Einige Funktionen werden nicht arbeiten. Meist bedeutet das, dass die Root-Implementierung die Regeln von Vector nicht angewendet hat.</string>
     <string name="issue_system_server_title">Injektion in das System-Framework fehlgeschlagen</string>
     <string name="issue_system_server_summary">Module können keine Systemdienste hooken. Das ist selten und liegt meist an einem anderen Root-Modul, das dazwischenfunkt.</string>
     <string name="issue_dex2oat_title">dex2oat-Wrapper nicht verfügbar</string>
     <string name="issue_dex2oat_summary">Einige System-Properties wurden entfernt oder geändert. Module greifen nach einem App-Update womöglich nicht mehr.</string>
-
     <string name="system_status">Systemstatus</string>
     <string name="info_api_version">Xposed-API</string>
     <string name="info_framework_version">Framework</string>
@@ -64,16 +60,13 @@
     <string name="home_open_issue">Problem melden</string>
     <string name="home_discussions">Diskussionen</string>
     <string name="home_review_prs">Änderung prüfen</string>
-
     <string name="home_with_coauthor">%1$s &amp; %2$s</string>
     <string name="home_with_coauthors">%1$s &amp; %2$d weitere</string>
-
     <string name="home_month_stats">%1$s · %2$s</string>
     <plurals name="home_people_count_plain">
         <item quantity="one">%1$d Person</item>
         <item quantity="other">%1$d Personen</item>
     </plurals>
-
     <plurals name="home_commits_ahead">
         <item quantity="one">%1$d Commit neuer als deiner</item>
         <item quantity="other">%1$d Commits neuer als deiner</item>
@@ -83,7 +76,6 @@
         <item quantity="one">%1$d Tag still</item>
         <item quantity="other">%1$d Tage still</item>
     </plurals>
-
     <string name="appearance_title">Darstellung</string>
     <string name="appearance_theme">Design</string>
     <string name="appearance_theme_system">System folgen</string>
@@ -94,7 +86,6 @@
     <string name="appearance_amoled_summary">Spart Strom auf OLED-Displays.</string>
     <string name="egg_two_more">Noch zwei Mal…</string>
     <string name="egg_one_more">Noch ein Mal…</string>
-
     <string name="modules_empty">Keine Module installiert.</string>
     <string name="modules_active_of">%1$d von %2$d aktiv</string>
     <string name="modules_no_match">Kein Modul passt zu dieser Suche oder diesem Filter.</string>
@@ -121,22 +112,18 @@
     <string name="modules_incompatible_legacy">Benötigt Xposed-API %1$d, die dieses Framework nicht bereitstellt.</string>
     <string name="modules_api_behind">Für libxposed-API %1$d gebaut. API %2$d hat die Schnittstelle geändert, daher funktioniert dieses Modul möglicherweise nicht vollständig.</string>
     <string name="modules_no_daemon">Vector läuft nicht, deshalb ist die Modulliste nicht verfügbar. Öffne den Systemstatus auf der Startseite, um zu sehen, warum.</string>
-
     <string name="web_open_external">Im Browser öffnen</string>
-
     <string name="settings_ambience">Kopfbereich-Fläche</string>
     <string name="ambience_snow">Schnee</string>
     <string name="ambience_maze">Labyrinth</string>
     <string name="ambience_circuit">Leiterbahnen</string>
     <string name="ambience_matrix">Coderegen</string>
     <string name="ambience_none">Ruhig</string>
-
     <string name="settings_navigation">Navigation</string>
     <string name="settings_floating_nav">Schwebende Navigation</string>
     <string name="settings_floating_nav_summary">Ersetzt die Leiste durch einen kleinen Ball, den du überallhin ziehen kannst. Halte ihn gedrückt, um die Bereiche aufzufächern, oder tippe ihn an, damit sie offen bleiben.</string>
     <string name="settings_rearrange_panels">Bereiche neu anordnen</string>
     <string name="settings_rearrange_panels_summary">Ändere ihre Reihenfolge oder blende aus, was du nie öffnest.</string>
-
     <string name="settings_activity">Aktivitätsverlauf</string>
     <plurals name="settings_window_months">
         <item quantity="one">Letzter %1$d Monat</item>
@@ -144,7 +131,6 @@
     </plurals>
     <string name="settings_open_externally">Links im Browser öffnen</string>
     <string name="settings_open_externally_summary">Aus: GitHub-Seiten öffnen sich in Vector.</string>
-
     <string name="scope_use_recommended">Nehmen, was das Modul verlangt</string>
     <string name="scope_select_visible">Alles Angezeigte auswählen</string>
     <string name="scope_clear_visible">Auswahl für alles Angezeigte aufheben</string>
@@ -178,7 +164,6 @@
     <string name="scope_empty_message">Dieses Modul ist aktiviert, hat aber keine Apps ausgewählt, also wird es nichts tun. Deaktiviere es oder wähle einige Apps.</string>
     <string name="scope_empty_disable">Modul deaktivieren</string>
     <string name="scope_empty_keep">Aktiviert lassen</string>
-
     <string name="action_launch">Öffnen</string>
     <string name="action_app_info">App-Info</string>
     <string name="action_force_stop">Beenden erzwingen</string>
@@ -193,10 +178,9 @@
     <string name="action_optimize_failed">%1$s konnte nicht neu optimiert werden.</string>
     <string name="action_uninstalled">%1$s deinstalliert.</string>
     <string name="action_uninstall_failed">%1$s konnte nicht deinstalliert werden.</string>
-
     <string name="back">Zurück</string>
     <string name="retry">Erneut versuchen</string>
-
+    <string name="cancel">Abbrechen</string>
     <string name="appearance_color">Farbe</string>
     <string name="appearance_custom_color">Farbe wählen</string>
     <string name="modules_expand">Vollständige Beschreibung anzeigen</string>
@@ -248,24 +232,14 @@
     <string name="report_step_canary_body">Vielleicht ist es schon behoben, und ein Debug-Build ist das, was die Maintainer brauchen, um dir zu helfen. Bleib bei master — Builds aus Pull Requests sind instabil.</string>
     <string name="report_step_zygisk">Nicht auf Magisk? Zygisk aktualisieren</string>
     <string name="report_step_zygisk_body">Flashe die neueste Zygisk-Implementierung, als Debug-Build, falls es einen gibt.</string>
-    <string name="report_step_logs">Protokolle anhängen</string>
-    <string name="report_step_logs_body">Eine Meldung ohne Protokolle ist ein Gespräch, das von vorn beginnt. Dies schreibt beide Protokolle in eine ZIP-Datei, die du anhängen kannst.</string>
-    <string name="report_step_crashed">Wenn Zygisk abgestürzt ist</string>
-    <string name="report_step_crashed_body">Der Daemon kann nicht mehr nach der ZIP-Datei gefragt werden, hat die Dateien aber trotzdem geschrieben. Root kann sie lesen, auch wenn sonst nichts mehr geht.</string>
     <string name="report_open_tracker">Issue-Tracker öffnen</string>
-    <string name="report_save_with_root">Protokollordner sichern (benötigt Root)</string>
-    <string name="report_saved_to">Gespeichert unter %1$s</string>
-    <string name="report_see_guide">Vollständige Anleitung im Issue</string>
-    <string name="report_root_refused">Root verweigert. Erlaube Vector in deinem Root-Manager und versuche es erneut%1$s</string>
     <string name="home_custom_build">Eigener Build — neuer als master</string>
     <string name="language_title">Sprache</string>
     <string name="language_system">Systemstandard</string>
     <string name="language_system_summary">Der auf dem Telefon eingestellten Sprache folgen</string>
-
     <string name="language_translated_by">Übersetzt von %1$s</string>
     <string name="language_help_short">Übersetzen</string>
     <string name="language_help">Vector übersetzen helfen</string>
-
     <string name="update_title">Framework-Update</string>
     <string name="update_channel_canary">Canary-Build</string>
     <string name="update_channel_release">Release</string>
@@ -371,23 +345,10 @@
     <string name="info_section_build">Was läuft</string>
     <string name="info_section_health">Ob es funktioniert</string>
     <string name="info_section_device">Dieses Gerät</string>
-    <string name="crash_recorded_title">Der Manager wurde unerwartet beendet</string>
-    <string name="crash_recorded_summary">Der vollständige Stacktrace geht im Protokoll-Export mit, unter crash_manager.</string>
-    <string name="crash_recorded_clear">Verwerfen</string>
-    <string name="crash_what">Was</string>
-    <string name="crash_message">Meldung</string>
-    <string name="crash_where">Wo</string>
-    <string name="crash_when">Wann</string>
-    <string name="crash_where_unknown">Nirgends in Vectors eigenem Code</string>
-    <string name="crash_when_value">%1$s auf %2$s</string>
-    <string name="crash_open_trace">Stacktrace ansehen</string>
-    <string name="crash_trace">Absturz</string>
-    <string name="crash_caused_by">Verursacht durch</string>
     <plurals name="crash_frames_elided">
         <item quantity="one">%1$d weiterer Frame, wie oben</item>
         <item quantity="other">%1$d weitere Frames, wie oben</item>
     </plurals>
-    <string name="crash_unreadable">Dieser Absturz ließ sich nicht lesen. Kopiere ihn und hänge ihn unverändert an den Bericht an.</string>
     <string name="force_launcher_icons">Apps daran hindern, ihr Launcher-Symbol zu verstecken</string>
     <string name="force_launcher_icons_summary">Seit Android 10 bekommt eine App, die ihr eigenes Launcher-Symbol versteckt, eines zurück, das ihre App-Info-Seite öffnet. Schalte das aus, damit sie versteckt bleiben kann — dein Launcher merkt das womöglich erst nach einem Neustart. Apps, die nie ein Launcher-Symbol hatten, darunter die meisten Module, sind nicht betroffen.</string>
     <string name="action_force_stop_failed">%1$s konnte nicht beendet werden.</string>
@@ -410,7 +371,6 @@
     <string name="settings_doh_working">Funktioniert — %1$s wurde über Cloudflare aufgelöst.</string>
     <string name="settings_doh_fell_back">Cloudflare ist nicht erreichbar (%1$s); für den Rest dieser Sitzung wird der Resolver des Netzwerks verwendet.</string>
     <string name="settings_doh_retry">Erneut versuchen</string>
-
     <string name="launcher_title">Wie du Vector öffnest</string>
     <string name="launcher_body">Vector ist nicht als App installiert, dein Launcher hat also nichts anzuzeigen. Das sind die Wege zurück.</string>
     <string name="launcher_shortcut">Verknüpfung auf dem Startbildschirm</string>

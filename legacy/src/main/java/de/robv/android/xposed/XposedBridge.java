@@ -3,9 +3,7 @@ package de.robv.android.xposed;
 import android.app.ActivityThread;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.util.Log;
 
-import org.matrix.vector.util.Utils;
 import org.matrix.vector.impl.hooks.VectorNativeHooker;
 import org.matrix.vector.impl.hooks.VectorInvocation;
 import org.matrix.vector.impl.hooks.VectorLegacyCallback;
@@ -93,9 +91,7 @@ public final class XposedBridge {
                         XposedHelpers.setStaticObjectField(ActivityThread.class, "sCurrentActivityThread", null);
                     }
                 }
-            } catch (Resources.NotFoundException nfe) {
-                XposedBridge.log(nfe);
-            }
+            } catch (Resources.NotFoundException ignored) { }
             ResourcesHook.makeInheritable(resClass);
             ResourcesHook.makeInheritable(taClass);
             ClassLoader myCL = XposedBridge.class.getClassLoader();
@@ -104,8 +100,7 @@ public final class XposedBridge {
             dummyClassLoader.loadClass("xposed.dummy.XResourcesSuperClass");
             dummyClassLoader.loadClass("xposed.dummy.XTypedArraySuperClass");
             XposedHelpers.setObjectField(myCL, "parent", dummyClassLoader);
-        } catch (Throwable throwable) {
-            XposedBridge.log(throwable);
+        } catch (Throwable ignored) {
             XposedInit.disableResources = true;
         }
     }
@@ -125,9 +120,7 @@ public final class XposedBridge {
      *
      * @param text The log message.
      */
-    public synchronized static void log(String text) {
-        Log.i(TAG, text);
-    }
+    public static void log(String text) { }
 
     /**
      * Logs a stack trace to the Xposed modules log.
@@ -137,14 +130,7 @@ public final class XposedBridge {
      *
      * @param t The Throwable object for the stack trace.
      */
-    public synchronized static void log(Throwable t) {
-        // Written out in full because this file also imports android.util.Log, and it is the
-        // framework's own that is wanted: the platform's returns an empty string for any
-        // UnknownHostException cause chain, so a module logging a failed request landed an empty
-        // line in the modules log.
-        String logStr = org.matrix.vector.util.Log.getStackTraceString(t);
-        Log.e(TAG, logStr);
-    }
+    public static void log(Throwable t) { }
 
     /**
      * Deoptimize a method to avoid callee being inlined.
@@ -197,7 +183,6 @@ public final class XposedBridge {
         }
 
         if (!HookBridge.hookMethod(false, (Executable) hookMethod, VectorNativeHooker.class, callback.priority, callback)) {
-            log("Failed to hook " + hookMethod);
             return null;
         }
 
@@ -390,8 +375,7 @@ public final class XposedBridge {
                 try {
                     var cb = (XC_MethodHook) snapshot[beforeIdx];
                     cb.beforeHookedMethod(param);
-                } catch (Throwable t) {
-                    XposedBridge.log(t);
+                } catch (Throwable ignored) {
                     param.setResult(null);
                     param.returnEarly = false;
                 }
@@ -412,8 +396,7 @@ public final class XposedBridge {
                 try {
                     var cb = (XC_MethodHook) snapshot[afterIdx];
                     cb.afterHookedMethod(param);
-                } catch (Throwable t) {
-                    XposedBridge.log(t);
+                } catch (Throwable ignored) {
                     if (lastThrowable == null) {
                         param.setResult(lastResult);
                     } else {

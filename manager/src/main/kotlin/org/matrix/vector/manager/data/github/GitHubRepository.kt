@@ -10,8 +10,6 @@ import okhttp3.CacheControl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.matrix.vector.manager.BuildConfig
-import org.matrix.vector.manager.logE
-import org.matrix.vector.manager.logW
 
 /**
  * Activity on the project's GitHub repository: the commits, the people behind them, the repository
@@ -129,14 +127,6 @@ class GitHubRepository(
                 }
             val fetched = runCatching { fetch(windowStart, freshness) }
             val fresh = fetched.getOrNull()
-            // Not on the Cached path: a cold OkHttp cache answers FORCE_CACHE with an
-            // unsatisfiable 504, and every scroll to the foot of the feed would log.
-            if (fresh == null && freshness != Freshness.Cached) {
-                logW(
-                    "feed: github commit fetch failed ($freshness), falling back to disk",
-                    fetched.exceptionOrNull(),
-                )
-            }
             if (fresh != null) {
                 // Merged with what is already on disk rather than replacing it. The stars, forks
                 // and licence come from a *second* request, and the two do not fail together — a
@@ -153,7 +143,6 @@ class GitHubRepository(
                             json.encodeToString(Snapshot(total, fresh.rawCommits, repo))
                         )
                     }
-                    .onFailure { e -> logW("feed: snapshot write failed", e) }
                 return@withContext build(
                     timeline(fresh.rawCommits, windowStart),
                     repo,
@@ -355,7 +344,6 @@ class GitHubRepository(
                 // means the next call tries again rather than declaring the archive finished
                 // because GitHub was rate limiting at the time.
                 if (batch == null) {
-                    logW("feed: history backfill $url unavailable", result.exceptionOrNull())
                     return@repeat
                 }
 
@@ -439,13 +427,6 @@ class GitHubRepository(
         // lose the upstream commits, which is why this one is optional where the other is not.
         val fork =
             runCatching { get("$API/$FORK_REPO/commits?since=$since&per_page=100", freshness) }
-                .onFailure { e ->
-                    // A cold cache answers FORCE_CACHE with a 504 on every Cached load; see [load]
-                    // for the same guard on the upstream fetch.
-                    if (freshness != Freshness.Cached) {
-                        logW("feed: fork commit fetch failed, showing upstream only", e)
-                    }
-                }
                 .getOrNull()
                 ?.let { runCatching { json.decodeFromString<List<GhCommit>>(it) }.getOrNull() }
                 .orEmpty()
@@ -719,7 +700,6 @@ class GitHubRepository(
      */
     private fun releaseListJson(freshness: Freshness): String? =
         runCatching { get("$API/$BUILD_REPO/releases?per_page=$CANARY_FETCH", freshness) }
-            .onFailure { e -> logW("update: github release list unavailable", e) }
             .getOrNull()
 
     /**
@@ -746,11 +726,9 @@ class GitHubRepository(
             val url = "$API/$REPO/issues?state=closed&per_page=100&sort=updated&direction=desc"
             val body =
                 runCatching { get(url, freshness) }
-                    .onFailure { e -> logW("canary: closed issue list unavailable", e) }
                     .getOrNull() ?: return@withContext emptyList()
 
             runCatching { json.decodeFromString<List<GhIssue>>(body) }
-                .onFailure { e -> logE("canary: closed issue list unreadable", e) }
                 .getOrDefault(emptyList())
                 .filter { !it.isPullRequest && it.stateReason == "completed" }
                 .mapNotNull { issue ->
@@ -790,7 +768,6 @@ class GitHubRepository(
             val body = releaseListJson(freshness) ?: return@withContext emptyList()
 
             runCatching { json.decodeFromString<List<GhRelease>>(body) }
-                .onFailure { e -> logE("update: release list unreadable", e) }
                 .getOrDefault(emptyList())
                 .mapNotNull { release ->
                     val canary = release.prerelease && release.tagName.startsWith(CANARY_TAG_PREFIX)

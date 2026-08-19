@@ -16,7 +16,6 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.ReentrantLock
 import org.matrix.vector.ipc.HotReloadOutcome
 import org.matrix.vector.ipc.LoadedModule
-import org.matrix.vector.util.Log
 import org.matrix.vector.impl.VectorContext
 import org.matrix.vector.impl.VectorLifecycleManager
 import org.matrix.vector.impl.hooks.VectorHookBuilder
@@ -28,8 +27,6 @@ import org.matrix.vector.nativebridge.NativeAPI
  * injects the framework context into the module instances.
  */
 object VectorModuleManager {
-
-    private const val TAG = "VectorModuleManager"
 
     // Entries are weak on purpose: activeModules owns the only strong reference, and detach()
     // removes it. A reload holds a local strong list for the cycle instead.
@@ -75,16 +72,12 @@ object VectorModuleManager {
             }
         entries.forEach { entry ->
             runCatching { entry.onModuleLoaded(param) }
-                .onFailure { e ->
-                    Log.e(TAG, "Error in onModuleLoaded for ${entry.javaClass.name}", e)
-                }
         }
 
         // Native entry points are recorded by buildGeneration, which has to do it before the entry
         // classes run. Recording them again here would put every library name in the list the dlopen
         // hook walks twice over, and that list never shrinks.
 
-        Log.d(TAG, "Loaded module ${module.packageName} successfully.")
         return true
     }
 
@@ -95,8 +88,6 @@ object VectorModuleManager {
         processName: String,
     ): Pair<Generation, List<XposedModule>>? {
         try {
-            Log.d(TAG, "Loading module ${module.packageName}")
-
             // Construct the native library search path
             val librarySearchPath = buildString {
                 // In system_server the in-APK entries below can only ever be refused: /data/app is
@@ -132,7 +123,6 @@ object VectorModuleManager {
                 moduleClassLoader.loadClass(XposedModule::class.java.name).classLoader !==
                     initLoader
             ) {
-                Log.e(TAG, "The Xposed API classes are compiled into ${module.packageName}")
                 return null
             }
 
@@ -160,10 +150,8 @@ object VectorModuleManager {
             for (className in module.code.moduleClassNames) {
                 runCatching {
                         val moduleClass = moduleClassLoader.loadClass(className)
-                        Log.v(TAG, "Loading class $moduleClass")
 
                         if (!XposedModule::class.java.isAssignableFrom(moduleClass)) {
-                            Log.e(TAG, "Class does not extend XposedModule, skipping.")
                             return@runCatching
                         }
 
@@ -178,7 +166,6 @@ object VectorModuleManager {
 
                         entries.add(moduleInstance)
                     }
-                    .onFailure { e -> Log.e(TAG, "Failed to instantiate class $className", e) }
             }
 
             // A generation with nothing in it is not a generation. Every entry class can fail to
@@ -190,15 +177,13 @@ object VectorModuleManager {
             // previous generation. The module was then wedged, because the committed generation had
             // no live entry for any later reload to hand over to.
             if (entries.isEmpty()) {
-                Log.e(TAG, "No entry class of ${module.packageName} could be instantiated")
                 return null
             }
 
             val generation =
                 Generation(moduleClassLoader, vectorContext, entries, isSystemServer, processName)
             return generation to entries
-        } catch (e: Throwable) {
-            Log.e(TAG, "Fatal error loading module ${module.packageName}", e)
+        } catch (_: Throwable) {
             return null
         }
     }
@@ -220,7 +205,6 @@ object VectorModuleManager {
         return try {
             runHotReload(packageName, extras, newModule)
         } catch (t: Throwable) {
-            Log.e(TAG, "Hot reload of $packageName failed", t)
             failed(describe(t))
         } finally {
             lock.unlock()
@@ -248,7 +232,6 @@ object VectorModuleManager {
         val oldEntries = old.liveEntries()
         if (oldEntries.isEmpty()) {
             // Not a refusal: a null message means onHotReloading returned false, and nothing ran.
-            Log.w(TAG, "No attached entry of $packageName can accept a hot reload")
             return unsupported("Every entry of $packageName has detached in this process")
         }
 
@@ -281,12 +264,10 @@ object VectorModuleManager {
                 oldEntries.all { it.onHotReloading(reloadingParam) }
             } catch (t: Throwable) {
                 old.context.unfreeze()
-                Log.e(TAG, "onHotReloading of $packageName threw", t)
                 return failed(describe(t))
             }
         if (!accepted) {
             old.context.unfreeze()
-            Log.d(TAG, "$packageName refused the hot reload")
             return refusal()
         }
 
@@ -329,11 +310,9 @@ object VectorModuleManager {
         // The last framework-owned reference to the old generation goes with this frame: its map
         // entry is gone, its entries are out of activeModules, and oldEntries dies on return.
         failure?.let {
-            Log.e(TAG, "onHotReloaded of $packageName threw", it)
             return failed(describe(it), generationChanged = true)
         }
 
-        Log.d(TAG, "Hot reloaded $packageName")
         return outcome(IXposedService.HOT_RELOAD_SUCCEEDED, null, generationChanged = true)
     }
 

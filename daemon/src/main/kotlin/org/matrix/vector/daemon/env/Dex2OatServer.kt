@@ -7,7 +7,6 @@ import android.os.SELinux
 import android.system.ErrnoException
 import android.system.Os
 import android.system.OsConstants
-import android.util.Log
 import java.io.File
 import java.io.FileDescriptor
 import java.io.FileInputStream
@@ -16,8 +15,6 @@ import java.nio.file.Paths
 import kotlinx.coroutines.launch
 import org.matrix.vector.ipc.IManagerService
 import org.matrix.vector.daemon.VectorDaemon
-
-private const val TAG = "VectorDex2Oat"
 
 // Wrapper states mirrored directly from the IManagerService AIDL contract.
 val DEX2OAT_OK = IManagerService.DEX2OAT_OK
@@ -182,7 +179,6 @@ object Dex2OatServer {
             if (index != -1 && dex2oatArray[index] == null) {
               dex2oatArray[index] = path
               fdArray[index] = Os.open(path, OsConstants.O_RDONLY, 0)
-              Log.i(TAG, "Detected $path -> Assigned Index $index")
             }
           }
         }
@@ -227,9 +223,7 @@ object Dex2OatServer {
   }
 
   private fun runSocketLoop() {
-    Log.i(TAG, "Dex2oat wrapper daemon start")
     val sockPath = getSockPath()
-    Log.d(TAG, "wrapper path: $sockPath")
 
     val xposedFile = "u:object_r:xposed_file:s0"
     val dex2oatExec = "u:object_r:dex2oat_exec:s0"
@@ -270,7 +264,6 @@ object Dex2OatServer {
           }
         }
         .onFailure {
-          Log.e(TAG, "Dex2oat wrapper daemon crashed", it)
           if (compatibility == DEX2OAT_OK) {
             doMount(false)
             compatibility = DEX2OAT_CRASHED

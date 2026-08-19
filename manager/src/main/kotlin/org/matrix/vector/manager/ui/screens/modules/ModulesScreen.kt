@@ -111,7 +111,6 @@ import org.matrix.vector.ui.store.StoreChannel
 import org.matrix.vector.ui.store.releasesOn
 import org.matrix.vector.ipc.IManagerService
 import org.matrix.vector.manager.R
-import org.matrix.vector.ui.R as UiR
 import org.matrix.vector.manager.data.model.InstalledModule
 import org.matrix.vector.manager.di.ServiceLocator
 import org.matrix.vector.manager.ui.components.AppIcon
@@ -476,7 +475,7 @@ fun ModulesScreen(
             },
             dismissButton = {
                 TextButton(onClick = { confirmUninstall = false }) {
-                    Text(stringResource(UiR.string.logs_cancel))
+                    Text(stringResource(R.string.cancel))
                 }
             },
         )
