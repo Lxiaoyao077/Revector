@@ -246,7 +246,7 @@
     <string name="canary_after_release">אתם על גרסה יציבה חדשה יותר מכל גרסאות ה־canary כאן. גרסת ה־canary הבאה תיבנה על גביה.</string>
     <string name="canary_build">canary %1$d</string>
     <string name="canary_report_title">מצאתם משהו?</string>
-    <string name="canary_report_body">גרסת canary שמתנהגת לא כשורה היא בדיוק הסיבה להריץ אותה — דיווח הוא מה שהופך אותה לתיקון. קחו את קובץ ה־ZIP מסוג Debug אם אתם מחפשים תקלה: הוא מתעד הרבה יותר, וזה בדיוק מה שדיווח צריך.</string>
+    <string name="canary_report_body">גרסת canary שמתנהגת לא כשורה היא בדיוק הסיבה להריץ אותה — דיווח הוא מה שהופכת אותה לתיקון. קחו את קובץ הציפיר מסוג Debug אם אתם מחפשים תקלה: הוא לא ממועטר, כך שדיווח קל יותר לקריאה.</string>
     <string name="home_contributors_by_commits">הכי הרבה קומיטים</string>
     <string name="home_contributors_by_recent">העדכניים ביותר</string>
     <string name="scope_recommended_only">מה שהמודול מבקש</string>
@@ -369,12 +369,6 @@
     <string name="info_section_build">מה פועל</string>
     <string name="info_section_health">האם זה עובד</string>
     <string name="info_section_device">המכשיר הזה</string>
-    <plurals name="crash_frames_elided">
-        <item quantity="one">מסגרת אחת נוספת, זהה לאלה שלמעלה</item>
-        <item quantity="two">שתי מסגרות נוספות, זהות לאלה שלמעלה</item>
-        <item quantity="many">%1$d מסגרות נוספות, זהות לאלה שלמעלה</item>
-        <item quantity="other">%1$d מסגרות נוספות, זהות לאלה שלמעלה</item>
-    </plurals>
     <string name="force_launcher_icons">למנוע מאפליקציות להסתיר את הסמל שלהן במסך הבית</string>
     <string name="force_launcher_icons_summary">החל מ-Android 10, אפליקציה שמסתירה את סמל מסך הבית שלה מקבלת סמל חלופי שפותח את פרטי האפליקציה שלה. כבו את האפשרות הזאת כדי לתת לה להישאר מוסתרת — ייתכן שאפליקציית מסך הבית תתעדכן רק לאחר הפעלה מחדש. אפליקציות שמעולם לא היה להן סמל במסך הבית, ובהן רוב המודולים, אינן מושפעות.</string>
     <string name="action_force_stop_failed">לא ניתן היה לעצור את %1$s.</string>

@@ -222,7 +222,7 @@
     <string name="canary_after_release">Du nutzt eine Veröffentlichung, die neuer ist als jedes Canary hier. Das nächste Canary baut darauf auf.</string>
     <string name="canary_build">Canary %1$d</string>
     <string name="canary_report_title">Etwas gefunden?</string>
-    <string name="canary_report_body">Ein Canary, das sich danebenbenimmt, ist genau der Zweck der Sache — erst eine Meldung macht daraus eine Korrektur. Nimm das Debug-ZIP, wenn du einem Fehler nachgehst: es protokolliert weit mehr, und genau das braucht eine Meldung.</string>
+    <string name="canary_report_body">Ein Canary, das sich danebenbenimmt, ist genau der Zweck der Sache — erst eine Meldung macht daraus eine Korrektur. Nimm das Debug-ZIP, wenn du einem Fehler nachgehst: es ist nicht minifiziert, was eine Meldung leichter lesbar macht.</string>
     <string name="home_contributors_by_commits">Meiste Commits</string>
     <string name="home_contributors_by_recent">Zuletzt aktiv</string>
     <string name="scope_recommended_only">Was das Modul verlangt</string>
@@ -345,10 +345,6 @@
     <string name="info_section_build">Was läuft</string>
     <string name="info_section_health">Ob es funktioniert</string>
     <string name="info_section_device">Dieses Gerät</string>
-    <plurals name="crash_frames_elided">
-        <item quantity="one">%1$d weiterer Frame, wie oben</item>
-        <item quantity="other">%1$d weitere Frames, wie oben</item>
-    </plurals>
     <string name="force_launcher_icons">Apps daran hindern, ihr Launcher-Symbol zu verstecken</string>
     <string name="force_launcher_icons_summary">Seit Android 10 bekommt eine App, die ihr eigenes Launcher-Symbol versteckt, eines zurück, das ihre App-Info-Seite öffnet. Schalte das aus, damit sie versteckt bleiben kann — dein Launcher merkt das womöglich erst nach einem Neustart. Apps, die nie ein Launcher-Symbol hatten, darunter die meisten Module, sind nicht betroffen.</string>
     <string name="action_force_stop_failed">%1$s konnte nicht beendet werden.</string>

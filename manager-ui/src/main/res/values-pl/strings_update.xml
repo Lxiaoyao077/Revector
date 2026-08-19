@@ -2,5 +2,5 @@
     <string name="update_variant_release">Stabilna</string>
     <string name="update_variant_debug">Debug</string>
     <string name="update_variant_release_why">Wersja do codziennego użytku</string>
-    <string name="update_variant_debug_why">Szczegółowe rejestrowanie w celu zgłoszenia błędu</string>
+    <string name="update_variant_debug_why">Bez minifikacji, do debugowania</string>
 </resources>

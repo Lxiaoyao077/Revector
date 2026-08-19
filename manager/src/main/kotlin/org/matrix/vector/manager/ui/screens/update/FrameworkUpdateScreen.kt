@@ -94,9 +94,6 @@ import org.matrix.vector.manager.ui.theme.VectorLogLine
  * One screen for both because they are one act with a pause in it: the reader is deciding whether
  * to flash, and then watching the flash. Splitting them would mean navigating away from the notes
  * at the moment they become most relevant — when the installer complains about something.
- *
- * The output pane is the same monospace treatment the Logs panel uses, because it is the same kind
- * of thing and a reader who has seen one should recognise the other.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

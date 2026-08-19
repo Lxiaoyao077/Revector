@@ -222,7 +222,7 @@
     <string name="canary_after_release">Sei su una versione più recente di ogni canary elencata qui. La prossima canary sarà costruita su di essa.</string>
     <string name="canary_build">canary %1$d</string>
     <string name="canary_report_title">Hai trovato qualcosa?</string>
-    <string name="canary_report_body">Una canary che si comporta male è esattamente il motivo per cui la si usa: è la segnalazione a trasformarla in una correzione. Prendi lo ZIP Debug se stai cercando un bug: registra molto di più, ed è ciò che serve per una segnalazione.</string>
+    <string name="canary_report_body">Una canary che si comporta male è esattamente il motivo per cui la si usa: è la segnalazione a trasformarla in una correzione. Prendi lo ZIP Debug se stai cercando un bug: non è minificato, il che rende una segnalazione più leggibile.</string>
     <string name="home_contributors_by_commits">Più commit</string>
     <string name="home_contributors_by_recent">Più recenti</string>
     <string name="scope_recommended_only">Quello che chiede il modulo</string>
@@ -345,10 +345,6 @@
     <string name="info_section_build">Che cosa è in esecuzione</string>
     <string name="info_section_health">Se funziona</string>
     <string name="info_section_device">Questo dispositivo</string>
-    <plurals name="crash_frames_elided">
-        <item quantity="one">%1$d frame in più, uguale a sopra</item>
-        <item quantity="other">%1$d frame in più, uguali a sopra</item>
-    </plurals>
     <string name="force_launcher_icons">Impedisci alle app di nascondere la loro icona nel launcher</string>
     <string name="force_launcher_icons_summary">Da Android 10, un\'app che nasconde la propria icona nel launcher ne riceve una che apre la sua pagina Info app. Disattiva questa opzione per lasciarla nascosta — il tuo launcher potrebbe non accorgersene finché non si riavvia. Le app che non hanno mai avuto un\'icona nel launcher, inclusa la maggior parte dei moduli, non sono interessate.</string>
     <string name="action_force_stop_failed">Impossibile arrestare %1$s.</string>

@@ -262,7 +262,7 @@
     <string name="canary_after_release">أنت على إصدار مستقر أحدث من كل نسخ canary هنا. ستُبنى نسخة canary التالية فوقه.</string>
     <string name="canary_build">canary %1$d</string>
     <string name="canary_report_title">هل وجدت شيئًا؟</string>
-    <string name="canary_report_body">سوء تصرّف نسخة canary هو تحديدًا سبب تشغيلها — والتبليغ هو ما يحوّله إلى إصلاح. خذ ملف ZIP من نوع Debug إن كنت تتعقّب علة: فهو يسجّل أكثر بكثير، وهو ما يحتاجه أي تبليغ.</string>
+    <string name="canary_report_body">سوء تصرّف نسخة canary هو تحديدًا سبب تشغيلها — والتبليغ هو ما يحوّله إلى إصلاح. خذ ملف ZIP من نوع Debug إن كنت تتعقّب علة: فهو غير مضغوط، ما يسهّل قراءة التبليغ.</string>
     <string name="home_contributors_by_commits">الأكثر إيداعًا</string>
     <string name="home_contributors_by_recent">الأحدث</string>
     <string name="scope_recommended_only">ما تطلبه الوحدة</string>
@@ -385,14 +385,6 @@
     <string name="info_section_build">ما الذي يعمل</string>
     <string name="info_section_health">هل يعمل بشكل صحيح</string>
     <string name="info_section_device">هذا الجهاز</string>
-    <plurals name="crash_frames_elided">
-        <item quantity="zero">بلا إطارات أخرى</item>
-        <item quantity="one">إطار آخر، مثل ما سبق</item>
-        <item quantity="two">إطاران آخران، مثل ما سبق</item>
-        <item quantity="few">%1$d إطارات أخرى، مثل ما سبق</item>
-        <item quantity="many">%1$d إطارًا آخر، مثل ما سبق</item>
-        <item quantity="other">%1$d إطار آخر، مثل ما سبق</item>
-    </plurals>
     <string name="force_launcher_icons">منع التطبيقات من إخفاء أيقوناتها في المشغّل</string>
     <string name="force_launcher_icons_summary">منذ Android 10، يستعيد التطبيق الذي يخفي أيقونته في المشغّل أيقونةً تفتح صفحة معلومات التطبيق. أوقف هذا الخيار ليبقى مخفيًا — وقد لا يلحق المشغّل بالتغيير حتى يُعاد تشغيله. أما التطبيقات التي لم تكن لها أيقونة أصلًا، ومنها معظم الوحدات، فلا يمسّها هذا.</string>
     <string name="action_force_stop_failed">تعذّر إيقاف %1$s.</string>

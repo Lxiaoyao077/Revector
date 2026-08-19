@@ -2,5 +2,5 @@
     <string name="update_variant_release">Kararlı</string>
     <string name="update_variant_debug">Hata ayıklama</string>
     <string name="update_variant_release_why">Günlük kullanım için</string>
-    <string name="update_variant_debug_why">Ayrıntılı günlükler, hata bildirimi için</string>
+    <string name="update_variant_debug_why">Minifikasyonsuz, hata ayıklama için</string>
 </resources>

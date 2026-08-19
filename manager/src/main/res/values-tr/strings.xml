@@ -222,7 +222,7 @@
     <string name="canary_after_release">Buradaki her canary sürümünden yeni bir sürümdesiniz. Sonraki canary bunun üzerine kurulacak.</string>
     <string name="canary_build">canary %1$d</string>
     <string name="canary_report_title">Bir şey mi buldunuz?</string>
-    <string name="canary_report_body">Hatalı davranan bir canary, onu çalıştırmanın asıl sebebidir — bildirim, onu bir düzeltmeye dönüştüren şeydir. Bir hatanın peşindeyseniz Debug ZIP dosyasını alın: çok daha fazlasını günlüğe yazar ve bir bildirimin ihtiyacı olan da budur.</string>
+    <string name="canary_report_body">Hatalı davranan bir canary, onu çalıştırmanın asıl sebebidir — bildirim, onu bir düzeltmeye dönüştüren şeydir. Bir hatanın peşindeyseniz Debug ZIP dosyasını alın: minifikasyon yapılmamıştır, böylece bir bildirimi okumak daha kolaydır.</string>
     <string name="home_contributors_by_commits">En çok commit</string>
     <string name="home_contributors_by_recent">En yeni</string>
     <string name="scope_recommended_only">Modülün istedikleri</string>
@@ -345,10 +345,6 @@
     <string name="info_section_build">Ne çalışıyor</string>
     <string name="info_section_health">Çalışıyor mu</string>
     <string name="info_section_device">Bu cihaz</string>
-    <plurals name="crash_frames_elided">
-        <item quantity="one">yukarıdakinin aynısı %1$d çerçeve daha</item>
-        <item quantity="other">yukarıdakilerin aynısı %1$d çerçeve daha</item>
-    </plurals>
     <string name="force_launcher_icons">Uygulamaların başlatıcı simgesini gizlemesini engelle</string>
     <string name="force_launcher_icons_summary">Android 10\'dan beri, kendi başlatıcı simgesini gizleyen bir uygulamaya, uygulama bilgisi sayfasını açan bir simge geri verilir. Gizli kalabilmesi için bunu kapatın — başlatıcınız yeniden başlatılana kadar durumu yansıtmayabilir. Hiçbir zaman başlatıcı simgesi olmamış uygulamalar, çoğu modül dahil, bundan etkilenmez.</string>
     <string name="action_force_stop_failed">%1$s durdurulamadı.</string>

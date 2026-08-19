@@ -212,7 +212,7 @@
     <string name="canary_after_release">你使用的正式版比这里所有 Canary 都新。下一个 Canary 将在它之上构建。</string>
     <string name="canary_build">canary %1$d</string>
     <string name="canary_report_title">发现问题了吗？</string>
-    <string name="canary_report_body">Canary 出问题正是运行它的意义所在——是反馈让它变成修复。如果你正在追查缺陷，请选择 Debug 压缩包：它记录的信息多得多，也正是反馈所需要的。</string>
+    <string name="canary_report_body">Canary 出问题正是运行它的意义所在——是反馈让它变成修复。如果你正在追查缺陷，请选择 Debug 压缩包：它未经过混淆，反馈读起来更轻松。</string>
     <string name="home_contributors_by_commits">提交最多</string>
     <string name="home_contributors_by_recent">最近提交</string>
     <string name="scope_recommended_only">模块请求的应用</string>
@@ -335,9 +335,6 @@
     <string name="info_section_build">正在运行</string>
     <string name="info_section_health">是否正常</string>
     <string name="info_section_device">本设备</string>
-    <plurals name="crash_frames_elided">
-        <item quantity="other">还有 %1$d 层调用栈，与上面相同</item>
-    </plurals>
     <string name="force_launcher_icons">阻止应用隐藏自己的桌面图标</string>
     <string name="force_launcher_icons_summary">从 Android 10 起，隐藏了自己桌面图标的应用会被补上一个图标，点击它会打开该应用的应用信息页面。关闭此项可以让它继续保持隐藏——桌面可能要等重启之后才会更新。本来就没有桌面图标的应用不受影响，大多数模块都属于此类。</string>
     <string name="action_force_stop_failed">无法停止 %1$s。</string>

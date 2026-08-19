@@ -216,7 +216,7 @@
     <string name="canary_after_release">Anda memakai rilis yang lebih baru daripada semua canary di sini. Canary berikutnya akan dibangun di atasnya.</string>
     <string name="canary_build">canary %1$d</string>
     <string name="canary_report_title">Menemukan sesuatu?</string>
-    <string name="canary_report_body">Canary yang bermasalah justru itulah gunanya dijalankan — laporanlah yang mengubahnya menjadi perbaikan. Ambil ZIP Debug jika Anda sedang memburu bug: log-nya jauh lebih banyak, dan itulah yang dibutuhkan sebuah laporan.</string>
+    <string name="canary_report_body">Canary yang bermasalah justru itulah gunanya dijalankan — laporanlah yang mengubahnya menjadi perbaikan. Ambil ZIP Debug jika Anda sedang memburu bug: tidak diminifikasi, sehingga laporan lebih mudah dibaca.</string>
     <string name="home_contributors_by_commits">Commit terbanyak</string>
     <string name="home_contributors_by_recent">Paling baru</string>
     <string name="scope_recommended_only">Yang diminta modul</string>
@@ -339,9 +339,6 @@
     <string name="info_section_build">Apa yang berjalan</string>
     <string name="info_section_health">Apakah berfungsi</string>
     <string name="info_section_device">Perangkat ini</string>
-    <plurals name="crash_frames_elided">
-        <item quantity="other">%1$d bingkai lagi, sama seperti di atas</item>
-    </plurals>
     <string name="force_launcher_icons">Cegah aplikasi menyembunyikan ikon launcher-nya</string>
     <string name="force_launcher_icons_summary">Sejak Android 10, aplikasi yang menyembunyikan ikon launcher-nya sendiri diberi ikon pengganti yang membuka halaman info aplikasinya. Matikan ini agar aplikasi tersebut tetap tersembunyi — launcher Anda mungkin baru menyusul setelah dimulai ulang. Aplikasi yang memang tidak pernah punya ikon launcher, termasuk sebagian besar modul, tidak terpengaruh.</string>
     <string name="action_force_stop_failed">%1$s tidak bisa dihentikan.</string>

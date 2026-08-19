@@ -222,7 +222,7 @@
     <string name="canary_after_release">Vous êtes sur une version plus récente que toutes les canary listées ici. La prochaine canary sera construite dessus.</string>
     <string name="canary_build">canary %1$d</string>
     <string name="canary_report_title">Vous avez trouvé quelque chose ?</string>
-    <string name="canary_report_body">Une canary qui déraille, c\'est précisément l\'intérêt d\'en utiliser une — c\'est le rapport qui la transforme en correctif. Prenez le ZIP Debug si vous traquez un bogue : il journalise bien plus, et c\'est ce qu\'un rapport demande.</string>
+    <string name="canary_report_body">Une canary qui déraille, c'est précisément l'intérêt d'en utiliser une — c'est le rapport qui la transforme en correctif. Prenez le ZIP Debug si vous traquez un bogue : il n'est pas minifié, ce qui rend un rapport plus lisible.</string>
     <string name="home_contributors_by_commits">Plus de commits</string>
     <string name="home_contributors_by_recent">Plus récents</string>
     <string name="scope_recommended_only">Ce que le module demande</string>
@@ -345,10 +345,6 @@
     <string name="info_section_build">Ce qui tourne</string>
     <string name="info_section_health">Si cela fonctionne</string>
     <string name="info_section_device">Cet appareil</string>
-    <plurals name="crash_frames_elided">
-        <item quantity="one">%1$d trame de plus, identique à ci-dessus</item>
-        <item quantity="other">%1$d trames de plus, identiques à ci-dessus</item>
-    </plurals>
     <string name="force_launcher_icons">Empêcher les applications de masquer leur icône de lancement</string>
     <string name="force_launcher_icons_summary">Depuis Android 10, une application qui masque sa propre icône de lancement en récupère une, qui ouvre sa page d\'infos sur l\'application. Désactivez cette option pour la laisser masquée — votre lanceur ne s\'en apercevra peut-être qu\'après son redémarrage. Les applications qui n\'ont jamais eu d\'icône de lancement, dont la plupart des modules, ne sont pas concernées.</string>
     <string name="action_force_stop_failed">Impossible d\'arrêter %1$s.</string>

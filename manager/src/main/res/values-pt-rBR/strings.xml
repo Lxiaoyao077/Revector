@@ -222,7 +222,7 @@
     <string name="canary_after_release">Você está em uma versão mais recente que todas as canary daqui. A próxima canary será construída sobre ela.</string>
     <string name="canary_build">canary %1$d</string>
     <string name="canary_report_title">Encontrou algo?</string>
-    <string name="canary_report_body">Uma canary que se comporta mal é justamente o motivo de usá-la — é o relato que a transforma em correção. Pegue o ZIP Debug se estiver atrás de um bug: ele registra muito mais, e é o que um relato precisa.</string>
+    <string name="canary_report_body">Uma canary que se comporta mal é justamente o motivo de usá-la — é o relato que a transforma em correção. Pegue o ZIP Debug se estiver atrás de um bug: ele não é minificado, o que torna o relato mais legível.</string>
     <string name="home_contributors_by_commits">Mais commits</string>
     <string name="home_contributors_by_recent">Mais recentes</string>
     <string name="scope_recommended_only">O que o módulo pede</string>
@@ -345,10 +345,6 @@
     <string name="info_section_build">O que está em execução</string>
     <string name="info_section_health">Se está funcionando</string>
     <string name="info_section_device">Este dispositivo</string>
-    <plurals name="crash_frames_elided">
-        <item quantity="one">mais %1$d quadro, igual aos de cima</item>
-        <item quantity="other">mais %1$d quadros, iguais aos de cima</item>
-    </plurals>
     <string name="force_launcher_icons">Impedir que apps escondam o ícone do launcher</string>
     <string name="force_launcher_icons_summary">Desde o Android 10, um app que esconde o próprio ícone do launcher recebe um de volta, que abre a página de informações do app. Desligue isto para deixá-lo continuar escondido — seu launcher pode seguir mostrando a lista antiga até reiniciar. Apps que nunca tiveram ícone no launcher, incluindo a maioria dos módulos, não são afetados.</string>
     <string name="action_force_stop_failed">Não foi possível parar %1$s.</string>

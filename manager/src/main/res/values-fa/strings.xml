@@ -222,7 +222,7 @@
     <string name="canary_after_release">روی نسخه‌ای هستید که از همهٔ canaryهای اینجا تازه‌تر است. canary بعدی روی همین ساخته می‌شود.</string>
     <string name="canary_build">canary %1$d</string>
     <string name="canary_report_title">چیزی پیدا کردید؟</string>
-    <string name="canary_report_body">بدرفتاری یک canary دقیقاً دلیل اجرای آن است — گزارش است که آن را به یک اصلاح تبدیل می‌کند. اگر دنبال یک اشکال هستید ZIP نسخهٔ Debug را بردارید: بسیار بیشتر ثبت می‌کند و همان چیزی است که گزارش لازم دارد.</string>
+    <string name="canary_report_body">بدرفتاری یک canary دقیقاً دلیل اجرای آن است — گزارش است که آن را به یک اصلاح تبدیل می‌کند. اگر دنبال یک اشکال هستید ZIP نسخهٔ Debug را بردارید: فشرده‌سازی نشده و گزارش را خواناتر می‌کند.</string>
     <string name="home_contributors_by_commits">بیشترین کامیت</string>
     <string name="home_contributors_by_recent">تازه‌ترین</string>
     <string name="scope_recommended_only">آنچه ماژول می‌خواهد</string>
@@ -345,10 +345,6 @@
     <string name="info_section_build">چه چیزی در حال اجراست</string>
     <string name="info_section_health">آیا کار می‌کند</string>
     <string name="info_section_device">این دستگاه</string>
-    <plurals name="crash_frames_elided">
-        <item quantity="one">%1$d قاب دیگر، مانند بالا</item>
-        <item quantity="other">%1$d قاب دیگر، مانند بالا</item>
-    </plurals>
     <string name="force_launcher_icons">جلوگیری از پنهان کردن نماد برنامه‌ها در لانچر</string>
     <string name="force_launcher_icons_summary">از Android 10 به بعد، برنامه‌ای که نماد خود را در لانچر پنهان می‌کند، نمادی جایگزین می‌گیرد که صفحهٔ اطلاعات برنامه را باز می‌کند. این را خاموش کنید تا پنهان بماند — شاید لانچر شما تا راه‌اندازی دوبارهٔ خودش به‌روز نشود. برنامه‌هایی که هرگز نماد لانچر نداشته‌اند، از جمله بیشتر ماژول‌ها، تحت تأثیر قرار نمی‌گیرند.</string>
     <string name="action_force_stop_failed">توقف %1$s ممکن نشد.</string>

@@ -40,12 +40,6 @@
     <!-- Shown for "Where" when no frame in the trace belongs to Vector's own code. -->
     <!-- %1$s is a timestamp, %2$s a thread name, e.g. "2026-07-29 11:42:03 +0200 on main". -->
     <!-- The frames printStackTrace replaced with "... N more" because it had printed them already. -->
-    <plurals name="crash_frames_elided">
-        <item quantity="one">%1$d ramka więcej, taka sama jak powyżej</item>
-        <item quantity="few">%1$d ramki więcej, takie same jak powyżej</item>
-        <item quantity="many">%1$d ramek więcej, takich samych jak powyżej</item>
-        <item quantity="other">%1$d ramek więcej, takich samych jak powyżej</item>
-    </plurals>
     <!-- System status detail -->
     <string name="system_status">Stan systemu</string>
     <string name="info_manager_version">Menedżer</string>
@@ -392,7 +386,7 @@
     <!-- The build number, shown in monospace: "canary 3049" -->
     <string name="canary_build">Canary %1$d</string>
     <string name="canary_report_title">Znalazłeś coś?</string>
-    <string name="canary_report_body">Canary, która zawodzi, to właśnie powód, by ją uruchamiać — dopiero zgłoszenie zmienia to w poprawkę. Jeśli tropisz błąd, weź archiwum Debug: zapisuje znacznie więcej, a tego właśnie wymaga zgłoszenie.</string>
+    <string name="canary_report_body">Canary, która zawodzi, to właśnie powód, by ją uruchamiać — dopiero zgłoszenie zmienia to w poprawkę. Jeśli tropisz błąd, weź archiwum Debug: nie jest zminifikowane, dzięki czemu zgłoszenie łatwiej przeczytać.</string>
     <string name="home_contributors_by_commits">Najwięcej zatwierdzeń</string>
     <string name="home_contributors_by_recent">Najnowsi</string>
     <string name="scope_recommended_only">To, czego wymaga moduł</string>

@@ -2,5 +2,5 @@
     <string name="update_variant_release">Release</string>
     <string name="update_variant_debug">Debug</string>
     <string name="update_variant_release_why">Der Build für den Alltag</string>
-    <string name="update_variant_debug_why">Ausführliche Protokolle, für einen Fehlerbericht</string>
+    <string name="update_variant_debug_why">Unminifiziert, zum Debuggen</string>
 </resources>

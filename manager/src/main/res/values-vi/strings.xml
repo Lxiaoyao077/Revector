@@ -212,7 +212,7 @@
     <string name="canary_after_release">Bạn đang dùng một bản phát hành mới hơn mọi bản canary ở đây. Bản canary kế tiếp sẽ được dựng trên nó.</string>
     <string name="canary_build">canary %1$d</string>
     <string name="canary_report_title">Phát hiện điều gì chăng?</string>
-    <string name="canary_report_body">Một bản canary trục trặc chính là lý do để chạy nó — báo cáo mới là thứ biến nó thành bản sửa lỗi. Hãy lấy tệp ZIP Debug nếu bạn đang truy một lỗi: nó ghi log nhiều hơn hẳn, và đó là thứ một báo cáo cần.</string>
+    <string name="canary_report_body">Một bản canary trục trặc chính là lý do để chạy nó — báo cáo mới là thứ biến nó thành bản sửa lỗi. Hãy lấy tệp ZIP Debug nếu bạn đang truy một lỗi: mã không bị rút gọn, giúp báo cáo dễ đọc hơn.</string>
     <string name="home_contributors_by_commits">Nhiều commit nhất</string>
     <string name="home_contributors_by_recent">Gần đây nhất</string>
     <string name="scope_recommended_only">Những gì mô-đun yêu cầu</string>
@@ -335,9 +335,6 @@
     <string name="info_section_build">Đang chạy những gì</string>
     <string name="info_section_health">Có hoạt động không</string>
     <string name="info_section_device">Thiết bị này</string>
-    <plurals name="crash_frames_elided">
-        <item quantity="other">thêm %1$d khung nữa, giống như trên</item>
-    </plurals>
     <string name="force_launcher_icons">Không cho ứng dụng ẩn biểu tượng trên trình khởi chạy</string>
     <string name="force_launcher_icons_summary">Từ Android 10, ứng dụng tự ẩn biểu tượng của mình trên trình khởi chạy sẽ được cấp lại một biểu tượng mở trang thông tin ứng dụng. Tắt mục này để nó vẫn được ẩn — trình khởi chạy có thể chưa cập nhật cho tới khi nó khởi động lại. Những ứng dụng vốn không có biểu tượng khởi chạy, gồm hầu hết mô-đun, không bị ảnh hưởng.</string>
     <string name="action_force_stop_failed">Không dừng được %1$s.</string>

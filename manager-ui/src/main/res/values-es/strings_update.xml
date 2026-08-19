@@ -2,5 +2,5 @@
     <string name="update_variant_release">Estable</string>
     <string name="update_variant_debug">Depuración</string>
     <string name="update_variant_release_why">La compilación del día a día</string>
-    <string name="update_variant_debug_why">Registros detallados, para informar de un error</string>
+    <string name="update_variant_debug_why">Sin minificar, para depurar</string>
 </resources>

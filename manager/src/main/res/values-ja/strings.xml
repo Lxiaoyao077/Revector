@@ -212,7 +212,7 @@
     <string name="canary_after_release">現在使用しているリリースは、ここにあるどの Canary 版よりも新しいものです。次回の Canary 版は、このリリースをベースにビルドされます。</string>
     <string name="canary_build">Canary %1$d</string>
     <string name="canary_report_title">何か見つけましたか？</string>
-    <string name="canary_report_body">Canary 版を運用する最大の意義は、あえて不具合を起こさせることにあります。報告があって初めて、それが修正へとつながるのです。バグを追跡する際はデバッグの ZIP を使用してください。詳細なログが記録されるため、報告に必要な情報が得られます。</string>
+    <string name="canary_report_body">Canary 版を運用する最大の意義は、あえて不具合を起こさせることにあります。報告があって初めて、それが修正へとつながるのです。バグを追跡する際はデバッグの ZIP を使用してください。難読化されていないため、報告が読みやすくなります。</string>
     <string name="home_contributors_by_commits">コミット数順</string>
     <string name="home_contributors_by_recent">最近の順</string>
     <string name="scope_recommended_only">モジュールが要求したもの</string>
@@ -325,9 +325,6 @@
     <string name="info_section_build">現在の実行環境</string>
     <string name="info_section_health">動作状況</string>
     <string name="info_section_device">デバイスの情報</string>
-    <plurals name="crash_frames_elided">
-        <item quantity="other">上と同じスタックがさらに %1$d 段</item>
-    </plurals>
     <string name="force_launcher_icons">アプリがランチャーアイコンを非表示にするのを防止</string>
     <string name="force_launcher_icons_summary">Android 10 以降、自身のランチャーアイコンを非表示にしたアプリには、代わりにアプリ情報画面を開くアイコンが表示されます。この設定をオフにすると、アイコンを非表示のままにできます。ただし、ランチャーを再起動するまで表示が更新されない可能性があります。ほとんどのモジュールを含め、もともとランチャーアイコンを持たないアプリには影響しません。</string>
     <string name="action_force_stop_failed">%1$s を停止できませんでした。</string>

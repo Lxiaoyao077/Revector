@@ -106,8 +106,6 @@ const NativeAPIEntries *g_native_api_entries = nullptr;
  */
 void InitializeApiEntries() {
     if (g_api_page.get() == MAP_FAILED) {
-        LOGF("Failed to allocate memory for native API entries.");
-        LOGD("Release the memory page pointer %p", g_api_page.release());
         return;
     }
     auto *entries = new (g_api_page.get()) NativeAPIEntries{

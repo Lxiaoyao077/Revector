@@ -40,10 +40,6 @@
     <!-- Shown for "Where" when no frame in the trace belongs to Vector's own code. -->
     <!-- %1$s is a timestamp, %2$s a thread name, e.g. "2026-07-29 11:42:03 +0200 on main". -->
     <!-- The frames printStackTrace replaced with "... N more" because it had printed them already. -->
-    <plurals name="crash_frames_elided">
-        <item quantity="one">%1$d more frame, the same as above</item>
-        <item quantity="other">%1$d more frames, the same as above</item>
-    </plurals>
     <!-- System status detail -->
     <string name="system_status">System status</string>
     <string name="info_manager_version">Manager</string>
@@ -354,7 +350,7 @@
     <!-- The build number, shown in monospace: "canary 3049" -->
     <string name="canary_build">canary %1$d</string>
     <string name="canary_report_title">Found something?</string>
-    <string name="canary_report_body">A canary that misbehaves is the whole point of running one — a report is what turns it into a fix. Take the Debug zip if you are chasing a bug: it logs far more, and it is what a report needs.</string>
+    <string name="canary_report_body">A canary that misbehaves is the whole point of running one — a report is what turns it into a fix. Take the Debug zip if you are chasing a bug: it is unminified, which keeps a report easier to read.</string>
     <string name="home_contributors_by_commits">Most commits</string>
     <string name="home_contributors_by_recent">Most recent</string>
     <string name="scope_recommended_only">What the module asks for</string>

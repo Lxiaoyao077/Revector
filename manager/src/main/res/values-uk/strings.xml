@@ -242,7 +242,7 @@
     <string name="canary_after_release">У вас випуск, новіший за всі canary в цьому списку. Наступну canary буде зібрано поверх нього.</string>
     <string name="canary_build">canary %1$d</string>
     <string name="canary_report_title">Щось знайшли?</string>
-    <string name="canary_report_body">Збій у canary — саме те, заради чого її й запускають: звіт перетворює його на виправлення. Якщо ви шукаєте помилку, беріть Debug-архів: він пише значно більше, і саме це потрібно для звіту.</string>
+    <string name="canary_report_body">Збій у canary — саме те, заради чого її й запускають: звіт перетворює його на виправлення. Якщо ви шукаєте помилку, беріть Debug-архів: він не мініфікований, тому звіт читається легше.</string>
     <string name="home_contributors_by_commits">Найбільше комітів</string>
     <string name="home_contributors_by_recent">Найновіші</string>
     <string name="scope_recommended_only">Те, що просить модуль</string>
@@ -385,12 +385,6 @@
     <string name="info_section_build">Що запущено</string>
     <string name="info_section_health">Чи це працює</string>
     <string name="info_section_device">Цей пристрій</string>
-    <plurals name="crash_frames_elided">
-        <item quantity="one">ще %1$d кадр, такий самий, як вище</item>
-        <item quantity="few">ще %1$d кадри, такі самі, як вище</item>
-        <item quantity="many">ще %1$d кадрів, таких самих, як вище</item>
-        <item quantity="other">ще %1$d кадра, такі самі, як вище</item>
-    </plurals>
     <string name="force_launcher_icons">Не дозволяти застосункам ховати свій значок у лаунчері</string>
     <string name="force_launcher_icons_summary">Починаючи з Android 10, застосунок, який ховає свій значок у лаунчері, отримує його назад, і цей значок відкриває сторінку відомостей про застосунок. Вимкніть це, щоб значок лишався прихованим — лаунчер може оновити свій перелік лише після перезапуску. Застосунків, які ніколи не мали значка в лаунчері, зокрема більшість модулів, це не стосується.</string>
     <string name="action_force_stop_failed">Не вдалося зупинити %1$s.</string>
