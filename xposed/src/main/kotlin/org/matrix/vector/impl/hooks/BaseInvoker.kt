@@ -88,9 +88,21 @@ internal abstract class BaseInvoker<T : Invoker<T, U>, U : Executable>(
                 val allModernHooks = snapshots[0] as Array<VectorHookRecord>
                 val legacyHooks = snapshots[1]
 
-                // Filter hooks to respect the maxPriority requested by the module
+                // A legacy hooker rewrites the argument array in place, and a rewrite must reach
+                // the original call without reaching the caller's own array — which the fast path
+                // in coerceArguments may have handed through unchanged. The legacy chain gets its
+                // own copy.
+                val chainArgs = if (legacyHooks.isNotEmpty()) actualArgs.copyOf() else actualArgs
+
+                // Filter hooks to respect the maxPriority requested by the module. FULL keeps
+                // everything, which is what a snapshot already is, so the one type almost every
+                // call asks for never pays for the filter and its copy.
                 val filteredHooks =
-                    allModernHooks.filter { it.priority <= currentType.maxPriority }.toTypedArray()
+                    if (currentType.maxPriority == Int.MAX_VALUE) {
+                        allModernHooks
+                    } else {
+                        allModernHooks.filter { it.priority <= currentType.maxPriority }.toTypedArray()
+                    }
 
                 // Chain#proceed is documented to throw whatever the original executable threw, so
                 // the reflective wrapper comes off here rather than at the public boundary.
@@ -114,7 +126,7 @@ internal abstract class BaseInvoker<T : Invoker<T, U>, U : Executable>(
                 }
 
                 val chain =
-                    VectorChain(executable, receiver, actualArgs, filteredHooks, 0, terminal)
+                    VectorChain(executable, receiver, chainArgs, filteredHooks, 0, terminal)
                 try {
                     chain.proceed()
                 } catch (t: Throwable) {

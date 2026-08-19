@@ -220,7 +220,45 @@ object VectorInvocation {
                 "Wrong number of arguments; expected ${parameterTypes.size}, got ${args.size}"
             )
         }
+        // An argument list that already matches its types is the common case, and reflection
+        // hands it through untouched, so it is handed through untouched here too: the array is
+        // only ever read once it reaches the chain, so returning the caller's own saves an
+        // allocation on every call that needs no conversion.
+        if (allMatch(parameterTypes, args)) {
+            @Suppress("UNCHECKED_CAST")
+            return args as Array<Any?>
+        }
         return Array(args.size) { i -> coerce(executable, parameterTypes[i], args[i], i) }
+    }
+
+    /**
+     * Whether every argument already satisfies its declared type, so [coerce] would leave each
+     * one as it is. A primitive only matches its own wrapper: anything narrower would need a
+     * widening conversion, which is exactly what this fast path is there to avoid skipping.
+     */
+    private fun allMatch(parameterTypes: Array<Class<*>>, args: Array<out Any?>): Boolean {
+        for (i in parameterTypes.indices) {
+            val type = parameterTypes[i]
+            val value = args[i]
+            val matches =
+                if (!type.isPrimitive) {
+                    value == null || type.isInstance(value)
+                } else {
+                    when (type) {
+                        Boolean::class.javaPrimitiveType -> value is Boolean
+                        Char::class.javaPrimitiveType -> value is Char
+                        Byte::class.javaPrimitiveType -> value is Byte
+                        Short::class.javaPrimitiveType -> value is Short
+                        Int::class.javaPrimitiveType -> value is Int
+                        Long::class.javaPrimitiveType -> value is Long
+                        Float::class.javaPrimitiveType -> value is Float
+                        Double::class.javaPrimitiveType -> value is Double
+                        else -> false
+                    }
+                }
+            if (!matches) return false
+        }
+        return true
     }
 
     private fun coerce(executable: Executable, type: Class<*>, value: Any?, index: Int): Any? {
