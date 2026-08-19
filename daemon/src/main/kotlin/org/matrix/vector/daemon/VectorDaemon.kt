@@ -13,6 +13,7 @@ import android.os.Process
 import android.os.ServiceManager
 import android.os.SystemProperties
 import android.system.Os
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -32,8 +33,9 @@ private const val ACTION_SEND_BINDER = 1
 
 object VectorDaemon {
   // Dispatchers.IO: Uses the shared background thread pool.
-  // SupervisorJob(): Ensures one failing task doesn't kill the whole daemon.
-  val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+  // SupervisorJob() plus a no-op handler: a failing background task must not reach the
+  // process-wide uncaught exception handler in main(), which exits the daemon.
+  val scope = CoroutineScope(Dispatchers.IO + SupervisorJob() + CoroutineExceptionHandler { _, _ -> })
   val bridgeServiceName = "activity"
 
   var isLateInject = false
